@@ -1,0 +1,278 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider     = "prisma-client"
+  // output   = "./generated"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  type                String?
+  provider            String?
+  provider_account_id String?
+  refresh_token       String?
+  access_token        String?
+  expires_at          DateTime?
+  token_type          String?
+  scope               String?
+  id_token            String?
+  session_state       String?
+
+  @@unique([provider, provider_account_id])
+  @@map("accounts")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @default(now())
+  deleted_at   DateTime?
+  status       Int?      @default(1) @db.SmallInt
+  approved_at  DateTime?
+  availability String?
+
+  // Authentication fields
+  email        String? @unique
+  username     String? @unique
+  password     String? @db.VarChar(255)
+  phone_number String?
+
+  // Personal info
+  name          String?   @db.VarChar(255)
+  first_name    String?   @db.VarChar(255)
+  last_name     String?   @db.VarChar(255)
+  avatar        String?
+  gender        String?
+  date_of_birth DateTime? @db.Date
+
+  // Location
+  country  String?
+  state    String?
+  city     String?
+  address  String?
+  zip_code String?
+  domain   String? @unique
+
+  // Verification & billing
+  email_verified_at   DateTime?
+  billing_id          String?
+  stripeAccountId     String?   @unique
+  onboardingCompleted Boolean   @default(false)
+  type                String? // Consider changing to enum
+
+  // Two-factor auth
+  is_two_factor_enabled Int?     @default(0)
+  two_factor_secret     String?
+  isPhoneVerified       Boolean? @default(false)
+
+  // Invitation & referral
+   isActive            Boolean  @default(false)
+  inviteToken         String?  // Hashed token
+  inviteTokenExpiry   DateTime?
+
+
+    // Other relations
+  accounts                     Account[]
+  ucodes                       Ucode[]
+  messages                     Message[]            @relation("receiver")
+  sent_messages                Message[]            @relation("sender")
+  conversations_created        Conversation[]       @relation("creator")
+  conversations_as_participant Conversation[]       @relation("participant")
+  roleUsers                    RoleUser[]
+
+
+  @@index([email])
+  @@index([phone_number])
+  @@map("users")
+}
+
+model Ucode {
+  id         String   @id @default(cuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+  status     Int?     @default(1) @db.SmallInt
+
+  user_id String?
+  user    User?   @relation(fields: [user_id], references: [id])
+
+  token        String?
+  email        String?
+  phone_number String?
+  expired_at   DateTime?
+
+  @@map("ucodes")
+}
+
+// Add the dynamic Role model
+model Role {
+  id          String           @id @default(cuid())
+  name        String           @unique // e.g., "Content Manager", "Support Tier 2"
+  description String?
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
+  
+  users       RoleUser[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+// Add the granular Permission model (The "atoms" of system actions)
+model Permission {
+  id          String           @id @default(cuid())
+  name        String           @unique // e.g., "users:create", "billing:refund", "posts:delete"
+  description String?
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
+  
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+// Join Table: Maps Users to Roles
+model RoleUser {
+  user_id String
+  role_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  role    Role   @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, role_id])
+  @@map("role_users")
+}
+
+// Join Table: Maps Roles to Permissions
+model RolePermission {
+  role_id       String
+  permission_id String
+  role          Role       @relation(fields: [role_id], references: [id], onDelete: Cascade)
+  permission    Permission @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+
+  @@id([role_id, permission_id])
+  @@map("role_permissions")
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+}
+
+// message is used for conversation
+model Message {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  status MessageStatus? @default(PENDING)
+
+  sender_id String?
+  sender    User?   @relation("sender", fields: [sender_id], references: [id])
+
+  receiver_id String?
+  receiver    User?   @relation("receiver", fields: [receiver_id], references: [id])
+
+  conversation_id String?
+  conversation    Conversation? @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+
+  attachment_id String?
+  attachment    Attachment? @relation(fields: [attachment_id], references: [id])
+
+  message String?
+
+  @@map("messages")
+}
+
+// this table stores attachment of message
+model Attachment {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  name     String?
+  type     String?
+  size     Int?
+  file     String?
+  file_alt String?
+
+  messages Message[]
+
+  @@map("attachments")
+}
+
+// this table stores conversation
+model Conversation {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  creator_id String?
+  creator    User?   @relation("creator", fields: [creator_id], references: [id])
+
+  participant_id String?
+  participant    User?   @relation("participant", fields: [participant_id], references: [id])
+
+  messages Message[]
+
+  @@map("conversations")
+}
+
+// ---------End Chat schema---------
+
+model SocialMedia {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  status     Int?    @default(1) @db.SmallInt
+  sort_order Int?    @default(0)
+  name       String?
+  url        String?
+  icon       String?
+
+  @@map("social_media")
+}
+
+model WebsiteInfo {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  name                String?
+  phone_number        String?
+  email               String?
+  address             String?
+  logo                String?
+  favicon             String?
+  copyright           String?
+  cancellation_policy String?
+
+  @@map("website_info")
+}
+
+
+
+
+

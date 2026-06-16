@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Staff Invitation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 580px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #4F46E5;
+    }
+    .header h1 {
+      color: #4F46E5;
+      margin: 0;
+    }
+    .content {
+      padding: 20px 0;
+    }
+    .button {
+      display: inline-block;
+      background: #4F46E5;
+      color: #ffffff !important;
+      padding: 12px 30px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+    }
+    .info {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome to <%= appName %>!</h1>
+    </div>
+    
+    <div class="content">
+      <p>Hi <strong><%= name %></strong>,</p>
+      
+      <p>You've been invited to join <strong><%= appName %></strong> as a team member.</p>
+      
+      <div class="info">
+        <strong>Quick Steps:</strong><br>
+        1. Click the button below<br>
+        2. Create a secure password<br>
+        3. Start using the platform
+      </div>
+      
+      <p style="text-align: center;">
+        <a href="<%= inviteUrl %>" target="_blank" class="button">Set Up Your Account</a>
+      </p>
+      
+      <p style="font-size: 14px; color: #666;">
+        This link will expire in 24 hours. If you didn't request this, please ignore this email.
+      </p>
+      
+      <p style="font-size: 13px; color: #666;">
+        Questions? Contact <a href="mailto:<%= supportEmail %>" style="color: #4F46E5;">
+          <%= supportEmail %>
+        </a>
+      </p>
+    </div>
+    
+    <div class="footer">
+      <p>&copy; <%= new Date().getFullYear() %> <%= appName %>. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
