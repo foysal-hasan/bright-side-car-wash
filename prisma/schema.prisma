@@ -95,6 +95,7 @@ model User {
   conversations_created        Conversation[]       @relation("creator")
   conversations_as_participant Conversation[]       @relation("participant")
   roleUsers                    RoleUser[]
+  activityLogs                 ActivityLog[]
 
 
   @@index([email])
@@ -271,6 +272,80 @@ model WebsiteInfo {
 
   @@map("website_info")
 }
+
+
+model ActivityLog {
+  id          String    @id @default(cuid())
+  action      String    // e.g., "CREATE", "UPDATE", "DELETE", "LOGIN", "LOGOUT"
+  entity      String    // e.g., "User", "Product", "Order"
+  entityId    String?   @map("entity_id") // ID of the affected entity
+  changes     Json?     // Store before/after values for updates
+  metadata    Json?     // Additional context (IP, user agent, etc.)
+  description String?   // Human-readable description
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Optional relation to User who performed the action
+  userId      String?   @map("user_id")
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt(sort: Desc)])
+  @@map("activity_logs")
+}
+
+enum DepositStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+model Stage {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  name       String
+  sort_order Int?    @default(0)
+  color      String?
+
+
+  // Add a relation to Lead
+  leads Lead[]
+
+  @@index([name])
+  @@map("stages")
+}
+
+model Lead {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  name       String?
+  email      String?
+  phone      String?
+  service    String?
+  vehicle    String?
+  source     String?
+  deposit_status DepositStatus? @default(PENDING)
+  note       String?
+
+  // Relation to Stage
+  stage_id  String?
+  stage     Stage? @relation(fields: [stage_id], references: [id])
+
+
+  @@index([email])
+  @@map("leads")
+}
+
+
 
 
 

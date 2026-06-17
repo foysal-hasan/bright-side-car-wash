@@ -77,3 +77,18 @@ export type SocialMedia = Prisma.SocialMediaModel
  * 
  */
 export type WebsiteInfo = Prisma.WebsiteInfoModel
+/**
+ * Model ActivityLog
+ * 
+ */
+export type ActivityLog = Prisma.ActivityLogModel
+/**
+ * Model Stage
+ * 
+ */
+export type Stage = Prisma.StageModel
+/**
+ * Model Lead
+ * 
+ */
+export type Lead = Prisma.LeadModel

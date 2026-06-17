@@ -25,6 +25,7 @@ import { RepositoryModule } from './common/repository/repository.module';
 import { AnalyticsTrackingService } from './common/analytics/analytics-tracking.service';
 import { APP_GUARD } from '@nestjs/core';
 import { PermissionGuard } from './modules/auth/guards/permission.guard';
+import { ActivityLogModule } from './activity-log/activity-log.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { PermissionGuard } from './modules/auth/guards/permission.guard';
     AdminModule,
     ChatModule,
     PrometheusModule,
+    ActivityLogModule,
     // FirebaseModule,
   ],
   controllers: [AppController],

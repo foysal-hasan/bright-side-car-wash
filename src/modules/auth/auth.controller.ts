@@ -36,9 +36,12 @@ import { CreateStaffDto } from './dto/create-staff.dto';
 import { RequirePermission } from './decorators/require-permission.decorator';
 import { PermissionGuard } from './guards/permission.guard';
 import { ResendInviteDto } from './dto/resend-invite.dto';
+import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
+import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
+@UseInterceptors(ActivityLogInterceptor)
 export class AuthController {
   constructor(private authService: AuthService) { }
 
@@ -160,7 +163,7 @@ export class AuthController {
       - Available roles: admin, manager, staff, super_admin
     `
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @RequirePermission('staff:invite')
   @ApiBody({ 
     type: CreateStaffDto,
@@ -198,8 +201,8 @@ export class AuthController {
       }
     }
   })
-
   @UseGuards(JwtAuthGuard, PermissionGuard)
+  @LogActivity({ action: 'invite', entity: 'staff' })
   @RequirePermission('staff:invite')
   @Post('invite-staff')
   async inviteStaff(@Body() createStaffDto: CreateStaffDto) {
