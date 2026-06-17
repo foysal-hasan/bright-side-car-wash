@@ -1797,7 +1797,7 @@ export const LeadScalarFieldEnum = {
   vehicle: 'vehicle',
   source: 'source',
   deposit_status: 'deposit_status',
-  note: 'note',
+  notes: 'notes',
   stage_id: 'stage_id'
 } as const
 

@@ -36,7 +36,6 @@ export type LeadMinAggregateOutputType = {
   vehicle: string | null
   source: string | null
   deposit_status: $Enums.DepositStatus | null
-  note: string | null
   stage_id: string | null
 }
 
@@ -52,7 +51,6 @@ export type LeadMaxAggregateOutputType = {
   vehicle: string | null
   source: string | null
   deposit_status: $Enums.DepositStatus | null
-  note: string | null
   stage_id: string | null
 }
 
@@ -68,7 +66,7 @@ export type LeadCountAggregateOutputType = {
   vehicle: number
   source: number
   deposit_status: number
-  note: number
+  notes: number
   stage_id: number
   _all: number
 }
@@ -86,7 +84,6 @@ export type LeadMinAggregateInputType = {
   vehicle?: true
   source?: true
   deposit_status?: true
-  note?: true
   stage_id?: true
 }
 
@@ -102,7 +99,6 @@ export type LeadMaxAggregateInputType = {
   vehicle?: true
   source?: true
   deposit_status?: true
-  note?: true
   stage_id?: true
 }
 
@@ -118,7 +114,7 @@ export type LeadCountAggregateInputType = {
   vehicle?: true
   source?: true
   deposit_status?: true
-  note?: true
+  notes?: true
   stage_id?: true
   _all?: true
 }
@@ -207,7 +203,7 @@ export type LeadGroupByOutputType = {
   vehicle: string | null
   source: string | null
   deposit_status: $Enums.DepositStatus | null
-  note: string | null
+  notes: string[]
   stage_id: string | null
   _count: LeadCountAggregateOutputType | null
   _min: LeadMinAggregateOutputType | null
@@ -244,7 +240,7 @@ export type LeadWhereInput = {
   vehicle?: Prisma.StringNullableFilter<"Lead"> | string | null
   source?: Prisma.StringNullableFilter<"Lead"> | string | null
   deposit_status?: Prisma.EnumDepositStatusNullableFilter<"Lead"> | $Enums.DepositStatus | null
-  note?: Prisma.StringNullableFilter<"Lead"> | string | null
+  notes?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableFilter<"Lead"> | string | null
   stage?: Prisma.XOR<Prisma.StageNullableScalarRelationFilter, Prisma.StageWhereInput> | null
 }
@@ -261,7 +257,7 @@ export type LeadOrderByWithRelationInput = {
   vehicle?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrderInput | Prisma.SortOrder
   deposit_status?: Prisma.SortOrderInput | Prisma.SortOrder
-  note?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrder
   stage_id?: Prisma.SortOrderInput | Prisma.SortOrder
   stage?: Prisma.StageOrderByWithRelationInput
 }
@@ -281,7 +277,7 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   vehicle?: Prisma.StringNullableFilter<"Lead"> | string | null
   source?: Prisma.StringNullableFilter<"Lead"> | string | null
   deposit_status?: Prisma.EnumDepositStatusNullableFilter<"Lead"> | $Enums.DepositStatus | null
-  note?: Prisma.StringNullableFilter<"Lead"> | string | null
+  notes?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableFilter<"Lead"> | string | null
   stage?: Prisma.XOR<Prisma.StageNullableScalarRelationFilter, Prisma.StageWhereInput> | null
 }, "id">
@@ -298,7 +294,7 @@ export type LeadOrderByWithAggregationInput = {
   vehicle?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrderInput | Prisma.SortOrder
   deposit_status?: Prisma.SortOrderInput | Prisma.SortOrder
-  note?: Prisma.SortOrderInput | Prisma.SortOrder
+  notes?: Prisma.SortOrder
   stage_id?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.LeadCountOrderByAggregateInput
   _max?: Prisma.LeadMaxOrderByAggregateInput
@@ -320,7 +316,7 @@ export type LeadScalarWhereWithAggregatesInput = {
   vehicle?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   source?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   deposit_status?: Prisma.EnumDepositStatusNullableWithAggregatesFilter<"Lead"> | $Enums.DepositStatus | null
-  note?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
+  notes?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
 }
 
@@ -336,7 +332,7 @@ export type LeadCreateInput = {
   vehicle?: string | null
   source?: string | null
   deposit_status?: $Enums.DepositStatus | null
-  note?: string | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
 }
 
@@ -352,7 +348,7 @@ export type LeadUncheckedCreateInput = {
   vehicle?: string | null
   source?: string | null
   deposit_status?: $Enums.DepositStatus | null
-  note?: string | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
   stage_id?: string | null
 }
 
@@ -368,7 +364,7 @@ export type LeadUpdateInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
 }
 
@@ -384,7 +380,7 @@ export type LeadUncheckedUpdateInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -400,7 +396,7 @@ export type LeadCreateManyInput = {
   vehicle?: string | null
   source?: string | null
   deposit_status?: $Enums.DepositStatus | null
-  note?: string | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
   stage_id?: string | null
 }
 
@@ -416,7 +412,7 @@ export type LeadUpdateManyMutationInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
 }
 
 export type LeadUncheckedUpdateManyInput = {
@@ -431,7 +427,7 @@ export type LeadUncheckedUpdateManyInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -443,6 +439,14 @@ export type LeadListRelationFilter = {
 
 export type LeadOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
+}
+
+export type StringNullableListFilter<$PrismaModel = never> = {
+  equals?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null
+  has?: string | Prisma.StringFieldRefInput<$PrismaModel> | null
+  hasEvery?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  hasSome?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  isEmpty?: boolean
 }
 
 export type LeadCountOrderByAggregateInput = {
@@ -457,7 +461,7 @@ export type LeadCountOrderByAggregateInput = {
   vehicle?: Prisma.SortOrder
   source?: Prisma.SortOrder
   deposit_status?: Prisma.SortOrder
-  note?: Prisma.SortOrder
+  notes?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
 }
 
@@ -473,7 +477,6 @@ export type LeadMaxOrderByAggregateInput = {
   vehicle?: Prisma.SortOrder
   source?: Prisma.SortOrder
   deposit_status?: Prisma.SortOrder
-  note?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
 }
 
@@ -489,7 +492,6 @@ export type LeadMinOrderByAggregateInput = {
   vehicle?: Prisma.SortOrder
   source?: Prisma.SortOrder
   deposit_status?: Prisma.SortOrder
-  note?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
 }
 
@@ -535,8 +537,17 @@ export type LeadUncheckedUpdateManyWithoutStageNestedInput = {
   deleteMany?: Prisma.LeadScalarWhereInput | Prisma.LeadScalarWhereInput[]
 }
 
+export type LeadCreatenotesInput = {
+  set: string[]
+}
+
 export type NullableEnumDepositStatusFieldUpdateOperationsInput = {
   set?: $Enums.DepositStatus | null
+}
+
+export type LeadUpdatenotesInput = {
+  set?: string[]
+  push?: string | string[]
 }
 
 export type LeadCreateWithoutStageInput = {
@@ -551,7 +562,7 @@ export type LeadCreateWithoutStageInput = {
   vehicle?: string | null
   source?: string | null
   deposit_status?: $Enums.DepositStatus | null
-  note?: string | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
 }
 
 export type LeadUncheckedCreateWithoutStageInput = {
@@ -566,7 +577,7 @@ export type LeadUncheckedCreateWithoutStageInput = {
   vehicle?: string | null
   source?: string | null
   deposit_status?: $Enums.DepositStatus | null
-  note?: string | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
 }
 
 export type LeadCreateOrConnectWithoutStageInput = {
@@ -610,7 +621,7 @@ export type LeadScalarWhereInput = {
   vehicle?: Prisma.StringNullableFilter<"Lead"> | string | null
   source?: Prisma.StringNullableFilter<"Lead"> | string | null
   deposit_status?: Prisma.EnumDepositStatusNullableFilter<"Lead"> | $Enums.DepositStatus | null
-  note?: Prisma.StringNullableFilter<"Lead"> | string | null
+  notes?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableFilter<"Lead"> | string | null
 }
 
@@ -626,7 +637,7 @@ export type LeadCreateManyStageInput = {
   vehicle?: string | null
   source?: string | null
   deposit_status?: $Enums.DepositStatus | null
-  note?: string | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
 }
 
 export type LeadUpdateWithoutStageInput = {
@@ -641,7 +652,7 @@ export type LeadUpdateWithoutStageInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
 }
 
 export type LeadUncheckedUpdateWithoutStageInput = {
@@ -656,7 +667,7 @@ export type LeadUncheckedUpdateWithoutStageInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
 }
 
 export type LeadUncheckedUpdateManyWithoutStageInput = {
@@ -671,7 +682,7 @@ export type LeadUncheckedUpdateManyWithoutStageInput = {
   vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
-  note?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
 }
 
 
@@ -688,7 +699,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   vehicle?: boolean
   source?: boolean
   deposit_status?: boolean
-  note?: boolean
+  notes?: boolean
   stage_id?: boolean
   stage?: boolean | Prisma.Lead$stageArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
@@ -705,7 +716,7 @@ export type LeadSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   vehicle?: boolean
   source?: boolean
   deposit_status?: boolean
-  note?: boolean
+  notes?: boolean
   stage_id?: boolean
   stage?: boolean | Prisma.Lead$stageArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
@@ -722,7 +733,7 @@ export type LeadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   vehicle?: boolean
   source?: boolean
   deposit_status?: boolean
-  note?: boolean
+  notes?: boolean
   stage_id?: boolean
   stage?: boolean | Prisma.Lead$stageArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
@@ -739,11 +750,11 @@ export type LeadSelectScalar = {
   vehicle?: boolean
   source?: boolean
   deposit_status?: boolean
-  note?: boolean
+  notes?: boolean
   stage_id?: boolean
 }
 
-export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "email" | "phone" | "service" | "vehicle" | "source" | "deposit_status" | "note" | "stage_id", ExtArgs["result"]["lead"]>
+export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "email" | "phone" | "service" | "vehicle" | "source" | "deposit_status" | "notes" | "stage_id", ExtArgs["result"]["lead"]>
 export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stage?: boolean | Prisma.Lead$stageArgs<ExtArgs>
 }
@@ -771,7 +782,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     vehicle: string | null
     source: string | null
     deposit_status: $Enums.DepositStatus | null
-    note: string | null
+    notes: string[]
     stage_id: string | null
   }, ExtArgs["result"]["lead"]>
   composites: {}
@@ -1208,7 +1219,7 @@ export interface LeadFieldRefs {
   readonly vehicle: Prisma.FieldRef<"Lead", 'String'>
   readonly source: Prisma.FieldRef<"Lead", 'String'>
   readonly deposit_status: Prisma.FieldRef<"Lead", 'DepositStatus'>
-  readonly note: Prisma.FieldRef<"Lead", 'String'>
+  readonly notes: Prisma.FieldRef<"Lead", 'String[]'>
   readonly stage_id: Prisma.FieldRef<"Lead", 'String'>
 }
     

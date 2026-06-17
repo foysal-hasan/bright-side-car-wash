@@ -105,7 +105,7 @@ async function seedUsers() {
 }
 
   async function seedRoleAndPermission() {
-    const RESOURCES = ['user', 'billing', 'conversation', 'lead',];
+    const RESOURCES = ['user', 'billing', 'conversation', 'lead', 'stage'];
     const ACTIONS = ['create', 'read', 'update', 'delete'];
     const SPECIAL_PERMISSIONS = ['admin_override:delete', 'system:maintenance', 'staff:invite'];
 
