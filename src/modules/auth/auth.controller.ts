@@ -245,6 +245,22 @@ export class AuthController {
       }
   }
 
+  // set password for invited staff  @ApiOperation({ summary: 'Set password for invited staff' })
+  @ApiBody({ 
+    type: ResetPasswordDto,
+    description: 'Set password for an invited staff member using the token from the invitation email'
+  })
+  @Post('set-password')
+  async setPassword(@Body() body: ResetPasswordDto) {
+      const { token, email, password } = body;
+      const response = await this.authService.setPassword(token, email, password);
+      return {
+        success: true,
+        message: 'Password set successfully',
+        data: response,
+      }
+  }
+
   // login user
   @ApiOperation({ summary: 'Login user' })
   @ApiBody({ type: LoginDto })
@@ -259,8 +275,6 @@ export class AuthController {
       const user_id = req.user.id;
       const user_email = req.user.email;
 
-      // debug
-      console.log(`User => ${JSON.stringify(req.user, null, 4)}`);
       const roleNames = req.user.roleUsers.map(item => item.role.name);
 
       const response = await this.authService.login({
@@ -327,6 +341,7 @@ export class AuthController {
     }
   }
 
+  @ApiExcludeEndpoint()
   @Post('google')
   async googleLogin(@Body() dto: GoogleLoginDto) {
     const { user, token } = await this.authService.googleLogin(dto.token);

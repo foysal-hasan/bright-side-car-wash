@@ -237,10 +237,10 @@ export class AuthService {
         }
         return result;
       } else {
-        throw new UnauthorizedException('Password not matched');
+        throw new UnauthorizedException('Email or password is incorrect');
         // return {
         //   success: false,
-        //   message: 'Password not matched',
+        //   message: 'Email or password is incorrect',
         // };
       }
     } else {
@@ -277,7 +277,7 @@ export class AuthService {
           access_token: accessToken,
           refresh_token: refreshToken,
         },
-        type: user.type,
+        roles: roles,
       };
     } catch (error) {
       return {
@@ -472,16 +472,21 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update user
-    return this.prisma.user.update({
+   this.prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,
         isActive: true,
         inviteToken: null,
         inviteTokenExpiry: null,
-        emailVerified: true,
+        email_verified_at: new Date(),
       },
+      select: {
+        id: true,
+      }
     });
+
+    return null;
   }
 
   async resendInvite(email: string) {
