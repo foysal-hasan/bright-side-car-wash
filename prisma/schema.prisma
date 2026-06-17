@@ -96,6 +96,8 @@ model User {
   conversations_as_participant Conversation[]       @relation("participant")
   roleUsers                    RoleUser[]
   activityLogs                 ActivityLog[]
+  lead_activity_timelines           LeadActivityTimeline[]
+  created_leads                Lead[] @relation("created_by_user")
 
 
   @@index([email])
@@ -296,13 +298,6 @@ model ActivityLog {
   @@map("activity_logs")
 }
 
-enum DepositStatus {
-  PENDING
-  PAID
-  REFUNDED
-  FAILED
-}
-
 model Stage {
   id         String    @id @default(cuid())
   created_at DateTime  @default(now())
@@ -321,6 +316,13 @@ model Stage {
   @@map("stages")
 }
 
+enum DepositStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
 model Lead {
   id         String    @id @default(cuid())
   created_at DateTime  @default(now())
@@ -334,15 +336,41 @@ model Lead {
   vehicle    String?
   source     String?
   deposit_status DepositStatus? @default(PENDING)
-  note       String?
+  notes       String[] @default([])
 
   // Relation to Stage
   stage_id  String?
   stage     Stage? @relation(fields: [stage_id], references: [id])
 
+  // Relation to LeadActivityTimeline
+  activity_timelines LeadActivityTimeline[]
+
+  // Optional relation to User who created the lead
+  created_by_user_id String?
+  created_by_user User? @relation("created_by_user", fields: [created_by_user_id], references: [id], onDelete: SetNull)
 
   @@index([email])
   @@map("leads")
+}
+
+model LeadActivityTimeline {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+  deleted_at DateTime?
+
+  lead_id    String
+  lead       Lead      @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  description String?
+  source      String?
+
+  user_id    String?
+  user       User?     @relation(fields: [user_id], references: [id], onDelete: SetNull)
+
+
+  @@index([lead_id])
+  @@map("lead_activity_timelines")
 }
 
 

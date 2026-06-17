@@ -398,7 +398,8 @@ export const ModelName = {
   WebsiteInfo: 'WebsiteInfo',
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
-  Lead: 'Lead'
+  Lead: 'Lead',
+  LeadActivityTimeline: 'LeadActivityTimeline'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +415,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "user" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead"
+    modelProps: "account" | "user" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadActivityTimeline"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1528,6 +1529,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LeadActivityTimeline: {
+      payload: Prisma.$LeadActivityTimelinePayload<ExtArgs>
+      fields: Prisma.LeadActivityTimelineFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LeadActivityTimelineFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LeadActivityTimelineFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>
+        }
+        findFirst: {
+          args: Prisma.LeadActivityTimelineFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LeadActivityTimelineFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>
+        }
+        findMany: {
+          args: Prisma.LeadActivityTimelineFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>[]
+        }
+        create: {
+          args: Prisma.LeadActivityTimelineCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>
+        }
+        createMany: {
+          args: Prisma.LeadActivityTimelineCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LeadActivityTimelineCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>[]
+        }
+        delete: {
+          args: Prisma.LeadActivityTimelineDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>
+        }
+        update: {
+          args: Prisma.LeadActivityTimelineUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>
+        }
+        deleteMany: {
+          args: Prisma.LeadActivityTimelineDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LeadActivityTimelineUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LeadActivityTimelineUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>[]
+        }
+        upsert: {
+          args: Prisma.LeadActivityTimelineUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadActivityTimelinePayload>
+        }
+        aggregate: {
+          args: Prisma.LeadActivityTimelineAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLeadActivityTimeline>
+        }
+        groupBy: {
+          args: Prisma.LeadActivityTimelineGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadActivityTimelineGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LeadActivityTimelineCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadActivityTimelineCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1798,10 +1873,25 @@ export const LeadScalarFieldEnum = {
   source: 'source',
   deposit_status: 'deposit_status',
   notes: 'notes',
-  stage_id: 'stage_id'
+  stage_id: 'stage_id',
+  created_by_user_id: 'created_by_user_id'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
+
+
+export const LeadActivityTimelineScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at',
+  lead_id: 'lead_id',
+  description: 'description',
+  source: 'source',
+  user_id: 'user_id'
+} as const
+
+export type LeadActivityTimelineScalarFieldEnum = (typeof LeadActivityTimelineScalarFieldEnum)[keyof typeof LeadActivityTimelineScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2049,6 +2139,7 @@ export type GlobalOmitConfig = {
   activityLog?: Prisma.ActivityLogOmit
   stage?: Prisma.StageOmit
   lead?: Prisma.LeadOmit
+  leadActivityTimeline?: Prisma.LeadActivityTimelineOmit
 }
 
 /* Types for Logging */

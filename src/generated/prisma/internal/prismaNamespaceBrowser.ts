@@ -65,7 +65,8 @@ export const ModelName = {
   WebsiteInfo: 'WebsiteInfo',
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
-  Lead: 'Lead'
+  Lead: 'Lead',
+  LeadActivityTimeline: 'LeadActivityTimeline'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -315,10 +316,25 @@ export const LeadScalarFieldEnum = {
   source: 'source',
   deposit_status: 'deposit_status',
   notes: 'notes',
-  stage_id: 'stage_id'
+  stage_id: 'stage_id',
+  created_by_user_id: 'created_by_user_id'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
+
+
+export const LeadActivityTimelineScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at',
+  lead_id: 'lead_id',
+  description: 'description',
+  source: 'source',
+  user_id: 'user_id'
+} as const
+
+export type LeadActivityTimelineScalarFieldEnum = (typeof LeadActivityTimelineScalarFieldEnum)[keyof typeof LeadActivityTimelineScalarFieldEnum]
 
 
 export const SortOrder = {

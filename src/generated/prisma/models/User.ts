@@ -460,6 +460,8 @@ export type UserWhereInput = {
   conversations_as_participant?: Prisma.ConversationListRelationFilter
   roleUsers?: Prisma.RoleUserListRelationFilter
   activityLogs?: Prisma.ActivityLogListRelationFilter
+  lead_activity_timelines?: Prisma.LeadActivityTimelineListRelationFilter
+  created_leads?: Prisma.LeadListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -505,6 +507,8 @@ export type UserOrderByWithRelationInput = {
   conversations_as_participant?: Prisma.ConversationOrderByRelationAggregateInput
   roleUsers?: Prisma.RoleUserOrderByRelationAggregateInput
   activityLogs?: Prisma.ActivityLogOrderByRelationAggregateInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineOrderByRelationAggregateInput
+  created_leads?: Prisma.LeadOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -553,6 +557,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   conversations_as_participant?: Prisma.ConversationListRelationFilter
   roleUsers?: Prisma.RoleUserListRelationFilter
   activityLogs?: Prisma.ActivityLogListRelationFilter
+  lead_activity_timelines?: Prisma.LeadActivityTimelineListRelationFilter
+  created_leads?: Prisma.LeadListRelationFilter
 }, "id" | "email" | "username" | "domain" | "stripeAccountId">
 
 export type UserOrderByWithAggregationInput = {
@@ -680,6 +686,8 @@ export type UserCreateInput = {
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -725,6 +733,8 @@ export type UserUncheckedCreateInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUpdateInput = {
@@ -770,6 +780,8 @@ export type UserUpdateInput = {
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -815,6 +827,8 @@ export type UserUncheckedUpdateInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1199,6 +1213,38 @@ export type UserUpdateOneWithoutActivityLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutActivityLogsInput, Prisma.UserUpdateWithoutActivityLogsInput>, Prisma.UserUncheckedUpdateWithoutActivityLogsInput>
 }
 
+export type UserCreateNestedOneWithoutCreated_leadsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreated_leadsInput, Prisma.UserUncheckedCreateWithoutCreated_leadsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreated_leadsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutCreated_leadsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreated_leadsInput, Prisma.UserUncheckedCreateWithoutCreated_leadsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreated_leadsInput
+  upsert?: Prisma.UserUpsertWithoutCreated_leadsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreated_leadsInput, Prisma.UserUpdateWithoutCreated_leadsInput>, Prisma.UserUncheckedUpdateWithoutCreated_leadsInput>
+}
+
+export type UserCreateNestedOneWithoutLead_activity_timelinesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLead_activity_timelinesInput, Prisma.UserUncheckedCreateWithoutLead_activity_timelinesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLead_activity_timelinesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutLead_activity_timelinesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutLead_activity_timelinesInput, Prisma.UserUncheckedCreateWithoutLead_activity_timelinesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutLead_activity_timelinesInput
+  upsert?: Prisma.UserUpsertWithoutLead_activity_timelinesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLead_activity_timelinesInput, Prisma.UserUpdateWithoutLead_activity_timelinesInput>, Prisma.UserUncheckedUpdateWithoutLead_activity_timelinesInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   created_at?: Date | string
@@ -1241,6 +1287,8 @@ export type UserCreateWithoutAccountsInput = {
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1285,6 +1333,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1345,6 +1395,8 @@ export type UserUpdateWithoutAccountsInput = {
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1389,6 +1441,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserCreateWithoutUcodesInput = {
@@ -1433,6 +1487,8 @@ export type UserCreateWithoutUcodesInput = {
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutUcodesInput = {
@@ -1477,6 +1533,8 @@ export type UserUncheckedCreateWithoutUcodesInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutUcodesInput = {
@@ -1537,6 +1595,8 @@ export type UserUpdateWithoutUcodesInput = {
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUcodesInput = {
@@ -1581,6 +1641,8 @@ export type UserUncheckedUpdateWithoutUcodesInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserCreateWithoutRoleUsersInput = {
@@ -1625,6 +1687,8 @@ export type UserCreateWithoutRoleUsersInput = {
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutRoleUsersInput = {
@@ -1669,6 +1733,8 @@ export type UserUncheckedCreateWithoutRoleUsersInput = {
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutRoleUsersInput = {
@@ -1729,6 +1795,8 @@ export type UserUpdateWithoutRoleUsersInput = {
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRoleUsersInput = {
@@ -1773,6 +1841,8 @@ export type UserUncheckedUpdateWithoutRoleUsersInput = {
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserCreateWithoutSent_messagesInput = {
@@ -1817,6 +1887,8 @@ export type UserCreateWithoutSent_messagesInput = {
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutSent_messagesInput = {
@@ -1861,6 +1933,8 @@ export type UserUncheckedCreateWithoutSent_messagesInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutSent_messagesInput = {
@@ -1910,6 +1984,8 @@ export type UserCreateWithoutMessagesInput = {
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -1954,6 +2030,8 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -2014,6 +2092,8 @@ export type UserUpdateWithoutSent_messagesInput = {
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSent_messagesInput = {
@@ -2058,6 +2138,8 @@ export type UserUncheckedUpdateWithoutSent_messagesInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUpsertWithoutMessagesInput = {
@@ -2113,6 +2195,8 @@ export type UserUpdateWithoutMessagesInput = {
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -2157,6 +2241,8 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserCreateWithoutConversations_createdInput = {
@@ -2201,6 +2287,8 @@ export type UserCreateWithoutConversations_createdInput = {
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutConversations_createdInput = {
@@ -2245,6 +2333,8 @@ export type UserUncheckedCreateWithoutConversations_createdInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutConversations_createdInput = {
@@ -2294,6 +2384,8 @@ export type UserCreateWithoutConversations_as_participantInput = {
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutConversations_as_participantInput = {
@@ -2338,6 +2430,8 @@ export type UserUncheckedCreateWithoutConversations_as_participantInput = {
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutConversations_as_participantInput = {
@@ -2398,6 +2492,8 @@ export type UserUpdateWithoutConversations_createdInput = {
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversations_createdInput = {
@@ -2442,6 +2538,8 @@ export type UserUncheckedUpdateWithoutConversations_createdInput = {
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUpsertWithoutConversations_as_participantInput = {
@@ -2497,6 +2595,8 @@ export type UserUpdateWithoutConversations_as_participantInput = {
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversations_as_participantInput = {
@@ -2541,6 +2641,8 @@ export type UserUncheckedUpdateWithoutConversations_as_participantInput = {
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserCreateWithoutActivityLogsInput = {
@@ -2585,6 +2687,8 @@ export type UserCreateWithoutActivityLogsInput = {
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserUncheckedCreateWithoutActivityLogsInput = {
@@ -2629,6 +2733,8 @@ export type UserUncheckedCreateWithoutActivityLogsInput = {
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
   roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
 }
 
 export type UserCreateOrConnectWithoutActivityLogsInput = {
@@ -2689,6 +2795,8 @@ export type UserUpdateWithoutActivityLogsInput = {
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutActivityLogsInput = {
@@ -2733,6 +2841,408 @@ export type UserUncheckedUpdateWithoutActivityLogsInput = {
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
   roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
+}
+
+export type UserCreateWithoutCreated_leadsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCreated_leadsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCreated_leadsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreated_leadsInput, Prisma.UserUncheckedCreateWithoutCreated_leadsInput>
+}
+
+export type UserUpsertWithoutCreated_leadsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreated_leadsInput, Prisma.UserUncheckedUpdateWithoutCreated_leadsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreated_leadsInput, Prisma.UserUncheckedCreateWithoutCreated_leadsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreated_leadsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreated_leadsInput, Prisma.UserUncheckedUpdateWithoutCreated_leadsInput>
+}
+
+export type UserUpdateWithoutCreated_leadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreated_leadsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutLead_activity_timelinesInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreated_by_userInput
+}
+
+export type UserUncheckedCreateWithoutLead_activity_timelinesInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreated_by_userInput
+}
+
+export type UserCreateOrConnectWithoutLead_activity_timelinesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutLead_activity_timelinesInput, Prisma.UserUncheckedCreateWithoutLead_activity_timelinesInput>
+}
+
+export type UserUpsertWithoutLead_activity_timelinesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutLead_activity_timelinesInput, Prisma.UserUncheckedUpdateWithoutLead_activity_timelinesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutLead_activity_timelinesInput, Prisma.UserUncheckedCreateWithoutLead_activity_timelinesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutLead_activity_timelinesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutLead_activity_timelinesInput, Prisma.UserUncheckedUpdateWithoutLead_activity_timelinesInput>
+}
+
+export type UserUpdateWithoutLead_activity_timelinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreated_by_userNestedInput
+}
+
+export type UserUncheckedUpdateWithoutLead_activity_timelinesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreated_by_userNestedInput
 }
 
 
@@ -2749,6 +3259,8 @@ export type UserCountOutputType = {
   conversations_as_participant: number
   roleUsers: number
   activityLogs: number
+  lead_activity_timelines: number
+  created_leads: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2760,6 +3272,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   conversations_as_participant?: boolean | UserCountOutputTypeCountConversations_as_participantArgs
   roleUsers?: boolean | UserCountOutputTypeCountRoleUsersArgs
   activityLogs?: boolean | UserCountOutputTypeCountActivityLogsArgs
+  lead_activity_timelines?: boolean | UserCountOutputTypeCountLead_activity_timelinesArgs
+  created_leads?: boolean | UserCountOutputTypeCountCreated_leadsArgs
 }
 
 /**
@@ -2828,6 +3342,20 @@ export type UserCountOutputTypeCountActivityLogsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.ActivityLogWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountLead_activity_timelinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LeadActivityTimelineWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreated_leadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LeadWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2872,6 +3400,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   conversations_as_participant?: boolean | Prisma.User$conversations_as_participantArgs<ExtArgs>
   roleUsers?: boolean | Prisma.User$roleUsersArgs<ExtArgs>
   activityLogs?: boolean | Prisma.User$activityLogsArgs<ExtArgs>
+  lead_activity_timelines?: boolean | Prisma.User$lead_activity_timelinesArgs<ExtArgs>
+  created_leads?: boolean | Prisma.User$created_leadsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2996,6 +3526,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   conversations_as_participant?: boolean | Prisma.User$conversations_as_participantArgs<ExtArgs>
   roleUsers?: boolean | Prisma.User$roleUsersArgs<ExtArgs>
   activityLogs?: boolean | Prisma.User$activityLogsArgs<ExtArgs>
+  lead_activity_timelines?: boolean | Prisma.User$lead_activity_timelinesArgs<ExtArgs>
+  created_leads?: boolean | Prisma.User$created_leadsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3012,6 +3544,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     conversations_as_participant: Prisma.$ConversationPayload<ExtArgs>[]
     roleUsers: Prisma.$RoleUserPayload<ExtArgs>[]
     activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
+    lead_activity_timelines: Prisma.$LeadActivityTimelinePayload<ExtArgs>[]
+    created_leads: Prisma.$LeadPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3450,6 +3984,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   conversations_as_participant<T extends Prisma.User$conversations_as_participantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversations_as_participantArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   roleUsers<T extends Prisma.User$roleUsersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$roleUsersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RoleUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activityLogs<T extends Prisma.User$activityLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  lead_activity_timelines<T extends Prisma.User$lead_activity_timelinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$lead_activity_timelinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadActivityTimelinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  created_leads<T extends Prisma.User$created_leadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$created_leadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4090,6 +4626,54 @@ export type User$activityLogsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ActivityLogScalarFieldEnum | Prisma.ActivityLogScalarFieldEnum[]
+}
+
+/**
+ * User.lead_activity_timelines
+ */
+export type User$lead_activity_timelinesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LeadActivityTimeline
+   */
+  select?: Prisma.LeadActivityTimelineSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LeadActivityTimeline
+   */
+  omit?: Prisma.LeadActivityTimelineOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeadActivityTimelineInclude<ExtArgs> | null
+  where?: Prisma.LeadActivityTimelineWhereInput
+  orderBy?: Prisma.LeadActivityTimelineOrderByWithRelationInput | Prisma.LeadActivityTimelineOrderByWithRelationInput[]
+  cursor?: Prisma.LeadActivityTimelineWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LeadActivityTimelineScalarFieldEnum | Prisma.LeadActivityTimelineScalarFieldEnum[]
+}
+
+/**
+ * User.created_leads
+ */
+export type User$created_leadsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Lead
+   */
+  select?: Prisma.LeadSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Lead
+   */
+  omit?: Prisma.LeadOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeadInclude<ExtArgs> | null
+  where?: Prisma.LeadWhereInput
+  orderBy?: Prisma.LeadOrderByWithRelationInput | Prisma.LeadOrderByWithRelationInput[]
+  cursor?: Prisma.LeadWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LeadScalarFieldEnum | Prisma.LeadScalarFieldEnum[]
 }
 
 /**

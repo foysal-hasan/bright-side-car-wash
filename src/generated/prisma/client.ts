@@ -112,3 +112,8 @@ export type Stage = Prisma.StageModel
  * 
  */
 export type Lead = Prisma.LeadModel
+/**
+ * Model LeadActivityTimeline
+ * 
+ */
+export type LeadActivityTimeline = Prisma.LeadActivityTimelineModel
