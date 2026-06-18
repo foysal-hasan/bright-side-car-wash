@@ -28,10 +28,11 @@ export class LeadService {
         service: createLeadDto.service,
         vehicle: createLeadDto.vehicle,
         source: createLeadDto.source || 'Website',
-        deposit_status: createLeadDto.deposit_status,
+        deposit_status: createLeadDto.deposit_status || DepositStatus.PENDING,
+        priority: createLeadDto.priority || LeadPriority.LOW,
         notes: createLeadDto.notes || [],
         stage_id: createLeadDto.stage_id,
-        created_by_user_id: createLeadDto.created_by || null,
+        created_by_id: createLeadDto.created_by || null,
       },
     });
 
@@ -47,7 +48,7 @@ export class LeadService {
     return lead;
   }
 
-// ============ MAIN FIND ALL METHOD ============
+  // ============ MAIN FIND ALL METHOD ============
   async findAll(query: QueryLeadDto) {
     const {
       // Pagination
@@ -56,7 +57,7 @@ export class LeadService {
       limit = 10,
       take = 10,
       cursor,
-      
+
       // Exact match filters
       stage_id,
       stage_name,
@@ -64,14 +65,14 @@ export class LeadService {
       source,
       assigned_to_id,
       priority,
-      
+
       // Search
       search,
-      
+
       // Date range
       date_from,
       date_to,
-      
+
       // Sorting
       sort_by = LeadSortField.CREATED_AT,
       sort_order = SortOrder.DESC,
@@ -343,44 +344,44 @@ export class LeadService {
     return where;
   }
 
-// ============ ORDER BY BUILDER ============
-private buildOrderBy(
-  sortBy: LeadSortField,
-  sortOrder: SortOrder,
-): Prisma.LeadOrderByWithRelationInput[] { 
-  const order: Prisma.LeadOrderByWithRelationInput[] = [];
+  // ============ ORDER BY BUILDER ============
+  private buildOrderBy(
+    sortBy: LeadSortField,
+    sortOrder: SortOrder,
+  ): Prisma.LeadOrderByWithRelationInput[] {
+    const order: Prisma.LeadOrderByWithRelationInput[] = [];
 
-  // Push the primary sort criteria
-  switch (sortBy) {
-    case LeadSortField.CREATED_AT:
-      order.push({ created_at: sortOrder });
-      break;
-    case LeadSortField.UPDATED_AT:
-      order.push({ updated_at: sortOrder });
-      break;
-    case LeadSortField.NAME:
-      order.push({ name: sortOrder });
-      break;
-    case LeadSortField.EMAIL:
-      order.push({ email: sortOrder });
-      break;
-    case LeadSortField.DEPOSIT_STATUS:
-      order.push({ deposit_status: sortOrder });
-      break;
-    case LeadSortField.SOURCE:
-      order.push({ source: sortOrder });
-      break;
-    default:
+    // Push the primary sort criteria
+    switch (sortBy) {
+      case LeadSortField.CREATED_AT:
+        order.push({ created_at: sortOrder });
+        break;
+      case LeadSortField.UPDATED_AT:
+        order.push({ updated_at: sortOrder });
+        break;
+      case LeadSortField.NAME:
+        order.push({ name: sortOrder });
+        break;
+      case LeadSortField.EMAIL:
+        order.push({ email: sortOrder });
+        break;
+      case LeadSortField.DEPOSIT_STATUS:
+        order.push({ deposit_status: sortOrder });
+        break;
+      case LeadSortField.SOURCE:
+        order.push({ source: sortOrder });
+        break;
+      default:
+        order.push({ created_at: 'desc' });
+    }
+
+    // Add secondary sort for consistency if it's not already the primary
+    if (sortBy !== LeadSortField.CREATED_AT) {
       order.push({ created_at: 'desc' });
-  }
+    }
 
-  // Add secondary sort for consistency if it's not already the primary
-  if (sortBy !== LeadSortField.CREATED_AT) {
-    order.push({ created_at: 'desc' });
+    return order;
   }
-
-  return order;
-}
 
   // ============ SELECT CLAUSE BUILDER ============
   private buildSelectClause(select?: string[]): Prisma.LeadSelect | undefined {
@@ -418,10 +419,10 @@ private buildOrderBy(
   // ============ INCLUDE CLAUSE BUILDER ============
   private buildIncludeClause(): Prisma.LeadInclude | undefined {
     const includeObj: Prisma.LeadInclude = {
-        stage: {
-          select: {
-            id: true,
-            name: true,
+      stage: {
+        select: {
+          id: true,
+          name: true,
         },
       },
       creator: {
@@ -512,17 +513,24 @@ private buildOrderBy(
     }));
   }
 
-
-
   async findOne(id: string) {
     const lead = await this.prisma.lead.findUnique({
       where: { id },
       include: {
-        created_by_user: {
+        creator: {
           select: {
             id: true,
             first_name: true,
             last_name: true,
+            email: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
           },
         },
         stage: {
@@ -551,6 +559,7 @@ private buildOrderBy(
         },
       },
     });
+
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} does not exist`);
     }
@@ -561,6 +570,7 @@ private buildOrderBy(
     const lead = await this.prisma.lead.update({
       where: { id },
       data: updateLeadDto,
+      select: { id: true },
     });
 
     return lead;
@@ -578,9 +588,9 @@ private buildOrderBy(
   }
 
   async remove(id: string) {
-    const lead = await this.prisma.lead.delete({
+    await this.prisma.lead.delete({
       where: { id },
     });
-    return lead;
+    return null;
   }
 }

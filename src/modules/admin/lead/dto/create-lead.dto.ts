@@ -1,11 +1,11 @@
 // leads/dto/create-lead.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { 
-  IsString, 
-  IsEmail, 
-  IsOptional, 
-  IsArray, 
-  IsEnum, 
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  IsArray,
+  IsEnum,
   IsUUID,
   MaxLength,
   ArrayMaxSize,
@@ -13,7 +13,7 @@ import {
   IsPhoneNumber
 } from 'class-validator';
 import { IsCuid } from 'src/common/validators/is-cuid.validator';
-import { DepositStatus } from 'src/generated/prisma/enums';
+import { DepositStatus, LeadPriority } from 'src/generated/prisma/enums';
 
 
 export class CreateLeadDto {
@@ -67,21 +67,40 @@ export class CreateLeadDto {
   @MaxLength(100, { message: 'Vehicle info must not exceed 100 characters' })
   vehicle: string;
 
-  
-  
+  @ApiPropertyOptional({
+    description: 'Updated source of the lead',
+    example: 'Admin Panel',
+    maxLength: 100,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100, { message: 'Source must not exceed 100 characters' })
   source?: string;
+
+
+  @ApiPropertyOptional({
+    description: 'Filter by priority (exact match)',
+    enum: LeadPriority,
+    example: LeadPriority.HIGH,
+  })
+  @IsOptional()
+  @IsEnum(LeadPriority, {
+    message: 'Invalid priority. Must be one of: LOW, MEDIUM, HIGH, URGENT',
+  })
+  priority?: LeadPriority;
 
   @ApiPropertyOptional({
     description: 'Current deposit status of the lead',
     enum: DepositStatus,
     enumName: 'DepositStatus',
-    example: 'PENDING',
-    default: 'PENDING',
+    example: DepositStatus.PENDING,
+    default: DepositStatus.PENDING,
     required: false,
   })
   @IsOptional()
-  @IsEnum(DepositStatus, { 
-    message: 'Deposit status must be one of: PENDING, PAID, REFUNDED, FAILED' 
+  @IsEnum(DepositStatus, {
+    message: 'Deposit status must be one of: PENDING, PAID, REFUNDED, FAILED'
   })
   deposit_status?: DepositStatus;
 
@@ -100,7 +119,7 @@ export class CreateLeadDto {
   @ArrayMaxSize(50, { message: 'Maximum 50 notes allowed' })
   notes?: string[];
 
- @ApiProperty({
+  @ApiProperty({
     description: 'Stage ID to assign the lead to (CUID format)',
     example: 'ck7x8y9z0a1b2c3d4e5f6g7h',
     format: 'cuid',

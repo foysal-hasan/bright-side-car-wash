@@ -27,7 +27,7 @@ export class LeadController {
   async create(@Body() createLeadDto: CreateLeadDto, @Req() req: Request) {
     createLeadDto.created_by = req.user?.userId;
     createLeadDto.created_source = 'user';
-    createLeadDto.source = "Admin Panel";
+    createLeadDto.source = createLeadDto.source || 'Admin Panel';
     const result = await this.leadService.create(createLeadDto);
     return {
       success: true,

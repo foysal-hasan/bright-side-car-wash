@@ -79,7 +79,7 @@ async function bootstrap() {
 
   // swagger
   const options = new DocumentBuilder()
-    .setTitle(`${process.env.APP_NAME} api`)
+    .setTitle(`${process.env.APP_NAME} API`)
     .setDescription(`${process.env.APP_NAME} api docs`)
     .setVersion('1.0')
     .addTag(`${process.env.APP_NAME}`)
