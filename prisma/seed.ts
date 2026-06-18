@@ -107,7 +107,7 @@ async function seedUsers() {
   async function seedRoleAndPermission() {
     const RESOURCES = ['user', 'billing', 'conversation', 'lead', 'stage'];
     const ACTIONS = ['create', 'read', 'update', 'delete'];
-    const SPECIAL_PERMISSIONS = ['admin_override:delete', 'system:maintenance', 'staff:invite'];
+    const SPECIAL_PERMISSIONS = ['admin_override:delete', 'system:maintenance', 'staff:invite', 'lead:assign', 'conversation:assign', 'conversation:close'];
 
     console.log('🔄 Starting permission seeding with ioredis...');
 

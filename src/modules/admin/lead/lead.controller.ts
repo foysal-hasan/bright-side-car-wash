@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterc
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
@@ -10,13 +10,14 @@ import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-lo
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { Request } from 'express';
 import { QueryLeadDto } from './dto/query-lead.dto';
+import { AssignLeadDto } from './dto/assign-lead.dto';
 
-@ApiTags('Lead Management')
+@ApiTags('Admin Lead Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @RequirePermission('lead')
 @UseInterceptors(ActivityLogInterceptor)
-@Controller('lead')
+@Controller('admin/lead')
 export class LeadController {
   constructor(private readonly leadService: LeadService) { }
 
@@ -35,7 +36,9 @@ export class LeadController {
     }
   }
 
-@Get()
+  
+
+  @Get()
   @ApiOperation({
     summary: 'Retrieve all leads with filtering, search, and pagination',
     description: `
@@ -65,6 +68,8 @@ export class LeadController {
         meta: result.meta,
       };
   }
+
+  
 
   @Get('filter-options')
   @ApiOperation({
@@ -112,6 +117,39 @@ export class LeadController {
       data: result,
     };
   }
+
+  // Asign lead to a user and log the activity
+  @Patch(':id/assign')
+  @ApiBody({ type: AssignLeadDto })
+  @ApiOperation({ summary: 'Assign a lead to a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lead assigned successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid user ID format',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Lead not found',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden. You do not have permission to assign leads.',
+  })
+  @RequirePermission('lead:assign')
+  @LogActivity({ action: 'assign', entity: 'lead' })
+  async assignLead(@Param('id') id: string, @Body() assignLeadDto: AssignLeadDto, @Req() req: Request) {
+    const result = await this.leadService.assignLead(id, assignLeadDto);
+    return {
+      success: true,
+      message: 'Lead assigned successfully',
+      data: result,
+    };
+  }
+
+
 
   @ApiOperation({ summary: 'Delete a lead by ID' })
   @LogActivity({ action: 'delete', entity: 'lead' })

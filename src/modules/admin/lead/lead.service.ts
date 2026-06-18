@@ -4,6 +4,7 @@ import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
 import { DepositStatus, LeadPriority, Prisma } from 'src/generated/prisma/browser';
+import { AssignLeadDto } from './dto/assign-lead.dto';
 
 @Injectable()
 export class LeadService {
@@ -563,6 +564,17 @@ private buildOrderBy(
     });
 
     return lead;
+  }
+
+  async assignLead(id: string, assignLeadDto: AssignLeadDto) {
+    await this.prisma.lead.update({
+      where: { id },
+      data: {
+        assigned_to_id: assignLeadDto.assigned_to_id,
+      },
+      select: { id: true },
+    });
+    return null;
   }
 
   async remove(id: string) {
