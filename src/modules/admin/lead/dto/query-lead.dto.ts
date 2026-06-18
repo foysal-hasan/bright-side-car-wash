@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsCuid } from 'src/common/validators/is-cuid.validator';
-import { DepositStatus } from 'src/generated/prisma/browser';
+import { DepositStatus, LeadPriority } from 'src/generated/prisma/browser';
 
 
 export enum LeadSortField {
@@ -23,7 +23,6 @@ export enum LeadSortField {
   NAME = 'name',
   EMAIL = 'email',
   DEPOSIT_STATUS = 'deposit_status',
-  STAGE = 'stage_id',
   SOURCE = 'source',
 }
 
@@ -129,18 +128,18 @@ export class QueryLeadDto {
   })
   @IsOptional()
   @IsCuid({ message: 'Invalid user ID format' })
-  assigned_to?: string;
+  assigned_to_id?: string;
 
   @ApiPropertyOptional({
     description: 'Filter by priority (exact match)',
-    enum: ['LOW', 'MEDIUM', 'HIGH', 'URGENT'],
-    example: 'HIGH',
+    enum: LeadPriority,
+    example: LeadPriority.HIGH,
   })
   @IsOptional()
-  @IsEnum(['LOW', 'MEDIUM', 'HIGH', 'URGENT'], {
+  @IsEnum(LeadPriority, {
     message: 'Invalid priority. Must be one of: LOW, MEDIUM, HIGH, URGENT',
   })
-  priority?: string;
+  priority?: LeadPriority;
 
   @ApiPropertyOptional({
     description: 'Filter by stage name (exact match)',

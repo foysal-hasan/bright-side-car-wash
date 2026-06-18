@@ -40,7 +40,7 @@ export class LeadController {
     summary: 'Retrieve all leads with filtering, search, and pagination',
     description: `
       Supports:
-      - **Exact match filters**: stage_id, deposit_status, source, assigned_to, priority
+      - **Exact match filters**: stage_id, deposit_status, source, assigned_to
       - **Search**: Partial text search across name, email, phone, service, vehicle, and notes
       - **Pagination**: Both offset and cursor-based pagination
       - **Sorting**: Multiple sort fields with asc/desc order

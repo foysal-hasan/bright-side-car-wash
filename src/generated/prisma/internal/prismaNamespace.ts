@@ -1872,9 +1872,11 @@ export const LeadScalarFieldEnum = {
   vehicle: 'vehicle',
   source: 'source',
   deposit_status: 'deposit_status',
+  priority: 'priority',
   notes: 'notes',
   stage_id: 'stage_id',
-  created_by_user_id: 'created_by_user_id'
+  created_by_id: 'created_by_id',
+  assigned_to_id: 'assigned_to_id'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
@@ -2029,6 +2031,20 @@ export type EnumDepositStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'DepositStatus[]'
  */
 export type ListEnumDepositStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DepositStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'LeadPriority'
+ */
+export type EnumLeadPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadPriority'>
+    
+
+
+/**
+ * Reference to a field of type 'LeadPriority[]'
+ */
+export type ListEnumLeadPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadPriority[]'>
     
 
 

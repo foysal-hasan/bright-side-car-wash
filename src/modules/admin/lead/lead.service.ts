@@ -3,7 +3,7 @@ import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
-import { DepositStatus, Prisma } from 'src/generated/prisma/browser';
+import { DepositStatus, LeadPriority, Prisma } from 'src/generated/prisma/browser';
 
 @Injectable()
 export class LeadService {
@@ -61,7 +61,7 @@ export class LeadService {
       stage_name,
       deposit_status,
       source,
-      assigned_to,
+      assigned_to_id,
       priority,
       
       // Search
@@ -82,7 +82,7 @@ export class LeadService {
       stage_name,
       deposit_status,
       source,
-      assigned_to,
+      assigned_to_id,
       priority,
       search,
       date_from,
@@ -91,6 +91,7 @@ export class LeadService {
 
     // Build order by
     const orderBy = this.buildOrderBy(sort_by, sort_order);
+    const includeClause = this.buildIncludeClause();
 
     // Choose pagination type
     if (pagination_type === 'cursor') {
@@ -99,6 +100,7 @@ export class LeadService {
         orderBy,
         take: Math.min(take || 10, 100),
         cursor,
+        includeClause,
       });
     }
 
@@ -106,6 +108,7 @@ export class LeadService {
     return this.findWithOffsetPagination({
       where,
       orderBy,
+      includeClause,
       page: Math.max(page || 1, 1),
       limit: Math.min(limit || 10, 100),
     });
@@ -117,9 +120,11 @@ export class LeadService {
     orderBy,
     page,
     limit,
+    selectClause,
+    includeClause,
   }: {
     where: Prisma.LeadWhereInput;
-    orderBy: Prisma.LeadOrderByWithRelationInput;
+    orderBy: Prisma.LeadOrderByWithRelationInput[];
     page: number;
     limit: number;
     selectClause?: Prisma.LeadSelect;
@@ -131,6 +136,7 @@ export class LeadService {
       this.prisma.lead.findMany({
         where,
         orderBy,
+        include: includeClause,
         skip,
         take: limit,
       }),
@@ -164,7 +170,7 @@ export class LeadService {
     includeClause,
   }: {
     where: Prisma.LeadWhereInput;
-    orderBy: Prisma.LeadOrderByWithRelationInput;
+    orderBy: Prisma.LeadOrderByWithRelationInput[];
     take: number;
     cursor?: string;
     selectClause?: Prisma.LeadSelect;
@@ -188,6 +194,7 @@ export class LeadService {
     let data = await this.prisma.lead.findMany({
       where,
       orderBy,
+      include: includeClause,
       take: take + 1, // Get one extra to check for next page
       ...(cursorObj && { cursor: cursorObj }),
       skip: cursorObj ? 1 : 0, // Skip the cursor item itself
@@ -209,7 +216,7 @@ export class LeadService {
         take: 1,
         cursor: cursorObj,
         skip: 0,
-        ...(selectClause && { select: { id: true } }),
+        select: { id: true },
       });
 
       if (prevItem) {
@@ -241,8 +248,8 @@ export class LeadService {
     stage_name?: string;
     deposit_status?: DepositStatus;
     source?: string;
-    assigned_to?: string;
-    priority?: string;
+    assigned_to_id?: string;
+    priority?: LeadPriority;
     search?: string;
     date_from?: string;
     date_to?: string;
@@ -283,17 +290,17 @@ export class LeadService {
       };
     }
 
-    // TODO: Implement assigned_to and priority filters if needed
-    // // Assigned To (exact match)
-    // if (filters.assigned_to) {
-    //   where.assigned_to = filters.assigned_to;
-    // }
 
-    // TODO: Implement priority filter if needed
-    // // Priority (exact match)
-    // if (filters.priority) {
-    //   where.priority = filters.priority;
-    // }
+    // Assigned To (exact match)
+    if (filters.assigned_to_id) {
+      where.assigned_to_id = filters.assigned_to_id;
+    }
+
+
+    // Priority (exact match)
+    if (filters.priority) {
+      where.priority = filters.priority;
+    }
 
     // Search (partial match across multiple fields)
     if (filters.search && filters.search.trim()) {
@@ -335,46 +342,44 @@ export class LeadService {
     return where;
   }
 
-  // ============ ORDER BY BUILDER ============
-  private buildOrderBy(
-    sortBy: LeadSortField,
-    sortOrder: SortOrder,
-  ): Prisma.LeadOrderByWithRelationInput {
-    const order: Prisma.LeadOrderByWithRelationInput = {};
+// ============ ORDER BY BUILDER ============
+private buildOrderBy(
+  sortBy: LeadSortField,
+  sortOrder: SortOrder,
+): Prisma.LeadOrderByWithRelationInput[] { 
+  const order: Prisma.LeadOrderByWithRelationInput[] = [];
 
-    switch (sortBy) {
-      case LeadSortField.CREATED_AT:
-        order.created_at = sortOrder;
-        break;
-      case LeadSortField.UPDATED_AT:
-        order.updated_at = sortOrder;
-        break;
-      case LeadSortField.NAME:
-        order.name = sortOrder;
-        break;
-      case LeadSortField.EMAIL:
-        order.email = sortOrder;
-        break;
-      case LeadSortField.DEPOSIT_STATUS:
-        order.deposit_status = sortOrder;
-        break;
-      case LeadSortField.STAGE:
-        order.stage_id = sortOrder;
-        break;
-      case LeadSortField.SOURCE:
-        order.source = sortOrder;
-        break;
-      default:
-        order.created_at = 'desc';
-    }
-
-    // Add secondary sort for consistency
-    if (sortBy !== LeadSortField.CREATED_AT) {
-      order.created_at = 'desc';
-    }
-
-    return order;
+  // Push the primary sort criteria
+  switch (sortBy) {
+    case LeadSortField.CREATED_AT:
+      order.push({ created_at: sortOrder });
+      break;
+    case LeadSortField.UPDATED_AT:
+      order.push({ updated_at: sortOrder });
+      break;
+    case LeadSortField.NAME:
+      order.push({ name: sortOrder });
+      break;
+    case LeadSortField.EMAIL:
+      order.push({ email: sortOrder });
+      break;
+    case LeadSortField.DEPOSIT_STATUS:
+      order.push({ deposit_status: sortOrder });
+      break;
+    case LeadSortField.SOURCE:
+      order.push({ source: sortOrder });
+      break;
+    default:
+      order.push({ created_at: 'desc' });
   }
+
+  // Add secondary sort for consistency if it's not already the primary
+  if (sortBy !== LeadSortField.CREATED_AT) {
+    order.push({ created_at: 'desc' });
+  }
+
+  return order;
+}
 
   // ============ SELECT CLAUSE BUILDER ============
   private buildSelectClause(select?: string[]): Prisma.LeadSelect | undefined {
@@ -410,36 +415,32 @@ export class LeadService {
   }
 
   // ============ INCLUDE CLAUSE BUILDER ============
-  private buildIncludeClause(include?: string[]): Prisma.LeadInclude | undefined {
-    if (!include || include.length === 0) return undefined;
+  private buildIncludeClause(): Prisma.LeadInclude | undefined {
+    const includeObj: Prisma.LeadInclude = {
+        stage: {
+          select: {
+            id: true,
+            name: true,
+        },
+      },
+      creator: {
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+        },
+      },
+      assignee: {
+        select: {
+          id: true,
+          first_name: true,
+          last_name: true,
+          email: true,
+        },
+      },
 
-    const includeObj: Prisma.LeadInclude = {};
-
-    if (include.includes('stage')) {
-      includeObj.stage = true;
-    }
-
-    // if (include.includes('activities')) {
-    //   includeObj.activities = {
-    //     orderBy: { created_at: 'desc' },
-    //     take: 10,
-    //   };
-    // }
-
-    // if (include.includes('assigned_to') || include.includes('user')) {
-    //   includeObj.assigned_to_user = {
-    //     select: {
-    //       id: true,
-    //       name: true,
-    //       email: true,
-    //     },
-    //   };
-    // }
-
-    if (include.includes('notes')) {
-      // Notes are already included by default
-    }
-
+    };
     return Object.keys(includeObj).length > 0 ? includeObj : undefined;
   }
 

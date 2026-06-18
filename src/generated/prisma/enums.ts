@@ -27,3 +27,13 @@ export const DepositStatus = {
 } as const
 
 export type DepositStatus = (typeof DepositStatus)[keyof typeof DepositStatus]
+
+
+export const LeadPriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type LeadPriority = (typeof LeadPriority)[keyof typeof LeadPriority]

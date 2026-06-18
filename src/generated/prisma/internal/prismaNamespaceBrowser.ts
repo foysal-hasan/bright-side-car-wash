@@ -315,9 +315,11 @@ export const LeadScalarFieldEnum = {
   vehicle: 'vehicle',
   source: 'source',
   deposit_status: 'deposit_status',
+  priority: 'priority',
   notes: 'notes',
   stage_id: 'stage_id',
-  created_by_user_id: 'created_by_user_id'
+  created_by_id: 'created_by_id',
+  assigned_to_id: 'assigned_to_id'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
