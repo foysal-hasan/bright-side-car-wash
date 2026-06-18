@@ -9,7 +9,7 @@ import { RequirePermission } from 'src/modules/auth/decorators/require-permissio
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { Request } from 'express';
-import { QueryLeadDto } from './dto/query-lead.dto';
+import { MyQueryLeadDto, QueryLeadDto } from './dto/query-lead.dto';
 import { AssignLeadDto } from './dto/assign-lead.dto';
 
 @ApiTags('Admin Lead Management')
@@ -60,6 +60,39 @@ export class LeadController {
   })
   @LogActivity({ action: 'read', entity: 'lead' })
   async findAll(@Query() query: QueryLeadDto) {
+      const result = await this.leadService.findAll(query);
+      return {
+        success: true,
+        message: 'Leads retrieved successfully',
+        data: result.data,
+        meta: result.meta,
+      };
+  }
+
+
+  @Get('assigned-to-me')
+  @ApiOperation({
+    summary: 'Retrieve all leads assigned to the current user with filtering, search, and pagination',
+    description: `
+      Supports:
+      - **Exact match filters**: stage_id, deposit_status, source
+      - **Search**: Partial text search across name, email, phone, service, vehicle, and notes
+      - **Pagination**: Both offset and cursor-based pagination
+      - **Sorting**: Multiple sort fields with asc/desc order
+      - **Date range filtering**: Filter by created_at date range
+    `,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Leads retrieved successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid query parameters',
+  })
+  @LogActivity({ action: 'read', entity: 'lead' })
+  async findAllAssignedToMe(@Query() query: MyQueryLeadDto, @Req() req: Request) {
+      query.assigned_to_id = req.user?.userId;
       const result = await this.leadService.findAll(query);
       return {
         success: true,

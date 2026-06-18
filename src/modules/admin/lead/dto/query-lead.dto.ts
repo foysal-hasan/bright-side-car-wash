@@ -1,4 +1,4 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { 
   IsOptional, 
   IsEnum, 
@@ -201,6 +201,8 @@ export class QueryLeadDto {
     message: 'Invalid sort order. Must be asc or desc',
   })
   sort_order?: SortOrder = SortOrder.DESC;
+}
 
-
+export class MyQueryLeadDto extends OmitType(QueryLeadDto, ['assigned_to_id'] as const) {
+  assigned_to_id?: string;
 }
