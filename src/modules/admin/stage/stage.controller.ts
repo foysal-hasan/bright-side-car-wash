@@ -9,12 +9,12 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Stage Management')
+@ApiTags('Admin Stage Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @RequirePermission('stage')
 @UseInterceptors(ActivityLogInterceptor)
-@Controller('stage')
+@Controller('admin/stage')
 export class StageController {
   constructor(private readonly stageService: StageService) {}
 
