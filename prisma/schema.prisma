@@ -305,6 +305,7 @@ model Stage {
   name       String
   sort_order Int?    @default(0)
   color      String?
+  icon      String?
 
   // Add a relation to Lead
   leads Lead[]

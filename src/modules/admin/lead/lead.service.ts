@@ -463,7 +463,7 @@ export class LeadService {
 
   // ============ GET FILTER OPTIONS ============
   async getFilterOptions() {
-    const [stages, depositStatuses, sources] = await Promise.all([
+    const [stages, depositStatuses, sources, priorities] = await Promise.all([
       this.prisma.stage.findMany({
         select: {
           id: true,
@@ -481,6 +481,11 @@ export class LeadService {
         _count: true,
         where: { deleted_at: null },
       }),
+      this.prisma.lead.groupBy({
+        by: ['priority'],
+        _count: true,
+        where: { deleted_at: null },
+      }),
     ]);
 
     return {
@@ -491,6 +496,10 @@ export class LeadService {
       })),
       sources: sources.map((item) => ({
         source: item.source,
+        count: item._count,
+      })),
+      priorities: priorities.map((item) => ({
+        priority: item.priority,
         count: item._count,
       })),
     };

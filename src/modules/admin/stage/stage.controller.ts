@@ -8,6 +8,8 @@ import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-lo
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @ApiTags('Admin Stage Management')
 @ApiBearerAuth()
@@ -16,18 +18,32 @@ import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swag
 @UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/stage')
 export class StageController {
-  constructor(private readonly stageService: StageService) {}
+  constructor(private readonly stageService: StageService) { }
 
   @ApiOperation({ summary: 'Create a new stage' })
   @LogActivity({ action: 'create', entity: 'stage' })
+  @UseInterceptors(
+    FileInterceptor('icon', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+    }),
+  )
   @Post()
   async create(@Body() createStageDto: CreateStageDto) {
-    const result = await this.stageService.create(createStageDto);
-    return {
-      success: true,
-      message: 'Stage created successfully',
-      data: result,
+    try {
+      const result = await this.stageService.create(createStageDto);
+      return {
+        success: true,
+        message: 'Stage created successfully',
+        data: result,
+      }
+    } catch (error) {
+      // delete the uploaded file if any error occurs
+      throw error;
     }
+
   }
 
   @ApiOperation({ summary: 'Retrieve all stages' })

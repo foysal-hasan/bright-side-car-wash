@@ -47,17 +47,21 @@ export class AuthService {
         },
         select: {
           id: true,
-          name: true,
+          first_name: true,
+          last_name: true,
           email: true,
           avatar: true,
-          address: true,
-          phone_number: true,
-          type: true,
-          gender: true,
-          date_of_birth: true,
-          isPhoneVerified: true,
-          onboardingCompleted: true,
           created_at: true,
+          updated_at: true,          
+          roleUsers: {
+            select: {
+              role: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
       });
 
