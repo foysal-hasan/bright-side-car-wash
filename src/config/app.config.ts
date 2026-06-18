@@ -97,6 +97,9 @@ export default () => ({
     // chat
     attachment: '/attachment',
     portfolio: '/portfolio',
+
+    // stage icon
+    stage: '/stage/',
   },
 
   defaultUser: {

@@ -297,7 +297,8 @@ export const StageScalarFieldEnum = {
   deleted_at: 'deleted_at',
   name: 'name',
   sort_order: 'sort_order',
-  color: 'color'
+  color: 'color',
+  icon: 'icon'
 } as const
 
 export type StageScalarFieldEnum = (typeof StageScalarFieldEnum)[keyof typeof StageScalarFieldEnum]

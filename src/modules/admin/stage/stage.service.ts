@@ -2,24 +2,27 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { CreateStageDto } from './dto/create-stage.dto';
 import { UpdateStageDto } from './dto/update-stage.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class StageService {
   constructor(private prisma: PrismaService) { }
 
   async create(createStageDto: CreateStageDto) {
-    const { name, color, sort_order } = createStageDto;
+    const { name, color, sort_order, icon } = createStageDto;
     const stage = await this.prisma.stage.create({
       data: {
         name,
         color,
         sort_order,
+        icon,
       },
       select: {
         id: true,
         name: true,
         color: true,
         sort_order: true,
+        icon: true,
       },
     });
     return stage;
@@ -32,6 +35,7 @@ export class StageService {
         name: true,
         color: true,
         sort_order: true,
+        icon: true,
       },
       orderBy: {
         sort_order: 'asc',
@@ -48,6 +52,7 @@ export class StageService {
         name: true,
         color: true,
         sort_order: true,
+        icon: true,
       },
     });
 
@@ -58,19 +63,23 @@ export class StageService {
   }
 
   async update(id: string, updateStageDto: UpdateStageDto) {
-    const { name, color, sort_order } = updateStageDto;
+    const { name, color, sort_order, icon } = updateStageDto;
+
+    const updateData: Prisma.StageUpdateInput = {};
+    if (name !== undefined) updateData.name = name;
+    if (color !== undefined) updateData.color = color;
+    if (sort_order !== undefined) updateData.sort_order = sort_order;
+    if (icon !== undefined) updateData.icon = icon;
+
     const stage = await this.prisma.stage.update({
       where: { id },
-      data: {
-        name,
-        color,
-        sort_order,
-      },
+      data: updateData,
       select: {
         id: true,
         name: true,
         color: true,
         sort_order: true,
+        icon: true,
       },
     });
     return stage;

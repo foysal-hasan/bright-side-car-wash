@@ -42,6 +42,7 @@ export type StageMinAggregateOutputType = {
   name: string | null
   sort_order: number | null
   color: string | null
+  icon: string | null
 }
 
 export type StageMaxAggregateOutputType = {
@@ -52,6 +53,7 @@ export type StageMaxAggregateOutputType = {
   name: string | null
   sort_order: number | null
   color: string | null
+  icon: string | null
 }
 
 export type StageCountAggregateOutputType = {
@@ -62,6 +64,7 @@ export type StageCountAggregateOutputType = {
   name: number
   sort_order: number
   color: number
+  icon: number
   _all: number
 }
 
@@ -82,6 +85,7 @@ export type StageMinAggregateInputType = {
   name?: true
   sort_order?: true
   color?: true
+  icon?: true
 }
 
 export type StageMaxAggregateInputType = {
@@ -92,6 +96,7 @@ export type StageMaxAggregateInputType = {
   name?: true
   sort_order?: true
   color?: true
+  icon?: true
 }
 
 export type StageCountAggregateInputType = {
@@ -102,6 +107,7 @@ export type StageCountAggregateInputType = {
   name?: true
   sort_order?: true
   color?: true
+  icon?: true
   _all?: true
 }
 
@@ -199,6 +205,7 @@ export type StageGroupByOutputType = {
   name: string
   sort_order: number | null
   color: string | null
+  icon: string | null
   _count: StageCountAggregateOutputType | null
   _avg: StageAvgAggregateOutputType | null
   _sum: StageSumAggregateOutputType | null
@@ -232,6 +239,7 @@ export type StageWhereInput = {
   name?: Prisma.StringFilter<"Stage"> | string
   sort_order?: Prisma.IntNullableFilter<"Stage"> | number | null
   color?: Prisma.StringNullableFilter<"Stage"> | string | null
+  icon?: Prisma.StringNullableFilter<"Stage"> | string | null
   leads?: Prisma.LeadListRelationFilter
 }
 
@@ -243,6 +251,7 @@ export type StageOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   sort_order?: Prisma.SortOrderInput | Prisma.SortOrder
   color?: Prisma.SortOrderInput | Prisma.SortOrder
+  icon?: Prisma.SortOrderInput | Prisma.SortOrder
   leads?: Prisma.LeadOrderByRelationAggregateInput
 }
 
@@ -257,6 +266,7 @@ export type StageWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Stage"> | string
   sort_order?: Prisma.IntNullableFilter<"Stage"> | number | null
   color?: Prisma.StringNullableFilter<"Stage"> | string | null
+  icon?: Prisma.StringNullableFilter<"Stage"> | string | null
   leads?: Prisma.LeadListRelationFilter
 }, "id">
 
@@ -268,6 +278,7 @@ export type StageOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   sort_order?: Prisma.SortOrderInput | Prisma.SortOrder
   color?: Prisma.SortOrderInput | Prisma.SortOrder
+  icon?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.StageCountOrderByAggregateInput
   _avg?: Prisma.StageAvgOrderByAggregateInput
   _max?: Prisma.StageMaxOrderByAggregateInput
@@ -286,6 +297,7 @@ export type StageScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Stage"> | string
   sort_order?: Prisma.IntNullableWithAggregatesFilter<"Stage"> | number | null
   color?: Prisma.StringNullableWithAggregatesFilter<"Stage"> | string | null
+  icon?: Prisma.StringNullableWithAggregatesFilter<"Stage"> | string | null
 }
 
 export type StageCreateInput = {
@@ -296,6 +308,7 @@ export type StageCreateInput = {
   name: string
   sort_order?: number | null
   color?: string | null
+  icon?: string | null
   leads?: Prisma.LeadCreateNestedManyWithoutStageInput
 }
 
@@ -307,6 +320,7 @@ export type StageUncheckedCreateInput = {
   name: string
   sort_order?: number | null
   color?: string | null
+  icon?: string | null
   leads?: Prisma.LeadUncheckedCreateNestedManyWithoutStageInput
 }
 
@@ -318,6 +332,7 @@ export type StageUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sort_order?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   leads?: Prisma.LeadUpdateManyWithoutStageNestedInput
 }
 
@@ -329,6 +344,7 @@ export type StageUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sort_order?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   leads?: Prisma.LeadUncheckedUpdateManyWithoutStageNestedInput
 }
 
@@ -340,6 +356,7 @@ export type StageCreateManyInput = {
   name: string
   sort_order?: number | null
   color?: string | null
+  icon?: string | null
 }
 
 export type StageUpdateManyMutationInput = {
@@ -350,6 +367,7 @@ export type StageUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sort_order?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StageUncheckedUpdateManyInput = {
@@ -360,6 +378,7 @@ export type StageUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sort_order?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StageCountOrderByAggregateInput = {
@@ -370,6 +389,7 @@ export type StageCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   color?: Prisma.SortOrder
+  icon?: Prisma.SortOrder
 }
 
 export type StageAvgOrderByAggregateInput = {
@@ -384,6 +404,7 @@ export type StageMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   color?: Prisma.SortOrder
+  icon?: Prisma.SortOrder
 }
 
 export type StageMinOrderByAggregateInput = {
@@ -394,6 +415,7 @@ export type StageMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   sort_order?: Prisma.SortOrder
   color?: Prisma.SortOrder
+  icon?: Prisma.SortOrder
 }
 
 export type StageSumOrderByAggregateInput = {
@@ -429,6 +451,7 @@ export type StageCreateWithoutLeadsInput = {
   name: string
   sort_order?: number | null
   color?: string | null
+  icon?: string | null
 }
 
 export type StageUncheckedCreateWithoutLeadsInput = {
@@ -439,6 +462,7 @@ export type StageUncheckedCreateWithoutLeadsInput = {
   name: string
   sort_order?: number | null
   color?: string | null
+  icon?: string | null
 }
 
 export type StageCreateOrConnectWithoutLeadsInput = {
@@ -465,6 +489,7 @@ export type StageUpdateWithoutLeadsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sort_order?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type StageUncheckedUpdateWithoutLeadsInput = {
@@ -475,6 +500,7 @@ export type StageUncheckedUpdateWithoutLeadsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   sort_order?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  icon?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -516,6 +542,7 @@ export type StageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   name?: boolean
   sort_order?: boolean
   color?: boolean
+  icon?: boolean
   leads?: boolean | Prisma.Stage$leadsArgs<ExtArgs>
   _count?: boolean | Prisma.StageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stage"]>
@@ -528,6 +555,7 @@ export type StageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   sort_order?: boolean
   color?: boolean
+  icon?: boolean
 }, ExtArgs["result"]["stage"]>
 
 export type StageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -538,6 +566,7 @@ export type StageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   name?: boolean
   sort_order?: boolean
   color?: boolean
+  icon?: boolean
 }, ExtArgs["result"]["stage"]>
 
 export type StageSelectScalar = {
@@ -548,9 +577,10 @@ export type StageSelectScalar = {
   name?: boolean
   sort_order?: boolean
   color?: boolean
+  icon?: boolean
 }
 
-export type StageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "sort_order" | "color", ExtArgs["result"]["stage"]>
+export type StageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "sort_order" | "color" | "icon", ExtArgs["result"]["stage"]>
 export type StageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   leads?: boolean | Prisma.Stage$leadsArgs<ExtArgs>
   _count?: boolean | Prisma.StageCountOutputTypeDefaultArgs<ExtArgs>
@@ -571,6 +601,7 @@ export type $StagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     name: string
     sort_order: number | null
     color: string | null
+    icon: string | null
   }, ExtArgs["result"]["stage"]>
   composites: {}
 }
@@ -1002,6 +1033,7 @@ export interface StageFieldRefs {
   readonly name: Prisma.FieldRef<"Stage", 'String'>
   readonly sort_order: Prisma.FieldRef<"Stage", 'Int'>
   readonly color: Prisma.FieldRef<"Stage", 'String'>
+  readonly icon: Prisma.FieldRef<"Stage", 'String'>
 }
     
 
