@@ -110,8 +110,9 @@ export default () => ({
     },
   },
 
-  defaultPackagePricing: {
-    minPrice: parseFloat(process.env.DEFAULT_PACKAGE_PRICING_MIN_PRICE || '0'),
-    maxPrice: parseFloat(process.env.DEFAULT_PACKAGE_PRICING_MAX_PRICE || '999'),
-  },
+  campaign: {
+    brevo: {
+      apiKey: process.env.BREVO_API_KEY,
+    },
+  }
 });

@@ -26,6 +26,7 @@
   "dependencies": {
     "@casl/ability": "6.7.3",
     "@casl/prisma": "1.5.1",
+    "@getbrevo/brevo": "^5.0.4",
     "@google-cloud/storage": "^7.16.0",
     "@googlemaps/google-maps-services-js": "^3.4.2",
     "@googlemaps/routing": "^2.1.1",
