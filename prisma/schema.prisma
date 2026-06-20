@@ -100,6 +100,9 @@ model User {
   created_leads                Lead[]                 @relation("CreatedLeads")
   assigned_leads               Lead[]                 @relation("AssignedLeads")
 
+  assignment_history           LeadAssignmentHistory[] @relation("LeadAssignee")
+  assignment_history_as_assigner LeadAssignmentHistory[] @relation("LeadAssigner")
+
   @@index([email])
   @@index([phone_number])
   @@map("users")
@@ -357,6 +360,9 @@ model Lead {
   priority       LeadPriority?  @default(LOW)
   notes          String[]       @default([])
 
+  // attachments 
+  attachments String[]       @default([])
+
   // Relation to Stage
   stage_id String?
   stage    Stage?  @relation(fields: [stage_id], references: [id])
@@ -372,8 +378,31 @@ model Lead {
   assigned_to_id String?
   assignee       User?   @relation("AssignedLeads", fields: [assigned_to_id], references: [id], onDelete: SetNull)
 
+  // Relation to LeadAssignmentHistory
+  assignment_history LeadAssignmentHistory[]
+
   @@index([email])
   @@map("leads")
+}
+
+model LeadAssignmentHistory {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now()) @updatedAt 
+  deleted_at DateTime?
+
+  lead_id String
+  lead    Lead   @relation(fields: [lead_id], references: [id], onDelete: Cascade)
+
+  // Added distinct relation names "LeadAssignee" and "LeadAssigner"
+  assigned_to_id String?
+  assignee       User?   @relation("LeadAssignee", fields: [assigned_to_id], references: [id], onDelete: SetNull)
+
+  assigned_by_id String?
+  assigner       User?   @relation("LeadAssigner", fields: [assigned_by_id], references: [id], onDelete: SetNull)
+
+  @@index([lead_id])
+  @@map("lead_assignment_history")
 }
 
 model LeadActivityTimeline {

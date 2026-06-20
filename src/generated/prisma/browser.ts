@@ -98,6 +98,11 @@ export type Stage = Prisma.StageModel
  */
 export type Lead = Prisma.LeadModel
 /**
+ * Model LeadAssignmentHistory
+ * 
+ */
+export type LeadAssignmentHistory = Prisma.LeadAssignmentHistoryModel
+/**
  * Model LeadActivityTimeline
  * 
  */

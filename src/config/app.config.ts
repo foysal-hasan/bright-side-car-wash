@@ -102,6 +102,9 @@ export default () => ({
 
     // stage icon
     stage: '/stage/',
+
+    // lead attachments
+    lead: '/lead/',
   },
 
   defaultUser: {

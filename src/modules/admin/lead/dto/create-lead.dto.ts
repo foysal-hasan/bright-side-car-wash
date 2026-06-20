@@ -134,4 +134,17 @@ export class CreateLeadDto {
 
   @IsOptional()
   created_source?: string;
+
+  @ApiPropertyOptional({
+    description: 'Array of attachment files (max 10 files, each up to 25MB)',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
+    required: false,
+  })
+  files?: Express.Multer.File[];
+
+  attachments?: string[];
 }

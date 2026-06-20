@@ -13,7 +13,7 @@ export class LeadService {
     // check if the stage_id exists in the stage table
     const stage = await this.prisma.stage.findUnique({
       where: { id: createLeadDto.stage_id },
-      select: { id: true },
+      select: { id: true, name: true },
     });
 
     if (!stage) {
@@ -33,7 +33,18 @@ export class LeadService {
         notes: createLeadDto.notes || [],
         stage_id: createLeadDto.stage_id,
         created_by_id: createLeadDto.created_by || null,
+        attachments: createLeadDto.attachments || [],
       },
+      include: {
+        assignee: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        }
+      }
     });
 
     await this.prisma.leadActivityTimeline.create({
@@ -44,6 +55,17 @@ export class LeadService {
         source: createLeadDto.created_source || 'Website',
       },
     });
+
+    if (lead.assigned_to_id) {
+      await this.prisma.leadAssignmentHistory.create({
+        data: {
+          lead_id: lead.id,
+          description: `Lead created and Assigned to ${lead.assignee.first_name} ${lead.assignee.last_name}`,
+          user_id: createLeadDto.created_by || null,
+          source: createLeadDto.created_source || 'Website',
+        },
+      });
+    }
 
     return lead;
   }
@@ -566,6 +588,31 @@ export class LeadService {
             source: true,
           },
         },
+        assignment_history: {
+          select: {
+            id: true,
+            description: true,
+            source: true,
+            assigned_to_id: true,
+            assigned_to: {
+              select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+              },
+            },
+            assigned_by_id: true,
+            assigned_by: {
+              select: {
+                id: true,
+                first_name: true,
+                last_name: true,
+                email: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -576,24 +623,196 @@ export class LeadService {
   }
 
   async update(id: string, updateLeadDto: UpdateLeadDto) {
-    const lead = await this.prisma.lead.update({
+    // 1. Verify the lead exists and fetch current values for comparison
+    const existingLead = await this.prisma.lead.findUnique({
       where: { id },
-      data: updateLeadDto,
-      select: { id: true },
+      select: {
+        id: true,
+        name: true,
+        stage_id: true,
+        assigned_to_id: true,
+        email: true,
+        phone: true,
+        service: true,
+        vehicle: true,
+        source: true,
+        deposit_status: true,
+        priority: true,
+      },
     });
 
-    return lead;
+    if (!existingLead) {
+      throw new NotFoundException(`Lead with ID ${id} not found`);
+    }
+
+    // Common metadata for timeline entries
+    const userId = updateLeadDto.updated_by || null;
+    const updateSource = updateLeadDto.updated_source || 'Admin Panel';
+
+    // 2. Execute everything atomically in a transaction
+    return await this.prisma.$transaction(async (tx) => {
+      const data: Prisma.LeadUpdateInput = {};
+      const timelinePayloads: Prisma.LeadActivityTimelineCreateManyInput[] = [];
+      const minorFieldsChanged: string[] = [];
+
+      // --- CRITICAL FIELD: Name Change ---
+      if (updateLeadDto.name !== undefined && updateLeadDto.name !== existingLead.name) {
+        data.name = updateLeadDto.name;
+        timelinePayloads.push({
+          lead_id: id,
+          description: `Name changed from "${existingLead.name}" to "${updateLeadDto.name}"`,
+          user_id: userId,
+          source: updateSource,
+        });
+      }
+
+      // --- CRITICAL FIELD: Stage Change ---
+      if (updateLeadDto.stage_id !== undefined && updateLeadDto.stage_id !== existingLead.stage_id) {
+        const stage = await tx.stage.findUnique({
+          where: { id: updateLeadDto.stage_id },
+          select: { name: true },
+        });
+        if (!stage) {
+          throw new NotFoundException(`Stage with ID ${updateLeadDto.stage_id} does not exist`);
+        }
+
+        data.stage = { connect: { id: updateLeadDto.stage_id } };
+        const formattedStageName = stage.name.charAt(0).toUpperCase() + stage.name.slice(1).toLowerCase();
+
+        timelinePayloads.push({
+          lead_id: id,
+          description: `Stage updated to: ${formattedStageName}`,
+          user_id: userId,
+          source: updateSource,
+        });
+      }
+
+      // --- QUIET / STRUCTURAL FIELDS: Track changes but group them together ---
+      if (updateLeadDto.email !== undefined && updateLeadDto.email !== existingLead.email) {
+        data.email = updateLeadDto.email;
+        minorFieldsChanged.push('email');
+      }
+      if (updateLeadDto.phone !== undefined && updateLeadDto.phone !== existingLead.phone) {
+        data.phone = updateLeadDto.phone;
+        minorFieldsChanged.push('phone');
+      }
+      if (updateLeadDto.service !== undefined && updateLeadDto.service !== existingLead.service) {
+        data.service = updateLeadDto.service;
+        minorFieldsChanged.push('service');
+      }
+      if (updateLeadDto.vehicle !== undefined && updateLeadDto.vehicle !== existingLead.vehicle) {
+        data.vehicle = updateLeadDto.vehicle;
+        minorFieldsChanged.push('vehicle');
+      }
+      if (updateLeadDto.source !== undefined && updateLeadDto.source !== existingLead.source) {
+        data.source = updateLeadDto.source;
+        minorFieldsChanged.push('source');
+      }
+      if (updateLeadDto.deposit_status !== undefined && updateLeadDto.deposit_status !== existingLead.deposit_status) {
+        data.deposit_status = updateLeadDto.deposit_status;
+        minorFieldsChanged.push('deposit status');
+      }
+      if (updateLeadDto.priority !== undefined && updateLeadDto.priority !== existingLead.priority) {
+        data.priority = updateLeadDto.priority;
+        minorFieldsChanged.push('priority');
+      }
+      if (updateLeadDto.notes !== undefined) {
+        data.notes = updateLeadDto.notes;
+        minorFieldsChanged.push('notes');
+      }
+      if (updateLeadDto.attachments !== undefined) {
+        data.attachments = updateLeadDto.attachments;
+        minorFieldsChanged.push('attachments');
+      }
+
+      // If any of the structural fields changed, push ONE summarized timeline log
+      if (minorFieldsChanged.length > 0) {
+        timelinePayloads.push({
+          lead_id: id,
+          description: `Updated profile details (${minorFieldsChanged.join(', ')})`,
+          user_id: userId,
+          source: updateSource,
+        });
+      }
+
+      // 3. Performance boost: Batch insert all collected timeline items at once
+      if (timelinePayloads.length > 0) {
+        await tx.leadActivityTimeline.createMany({
+          data: timelinePayloads,
+        });
+      }
+
+      // 4. Update and return the final Lead record
+      return await tx.lead.update({
+        where: { id },
+        data: data,
+      });
+    });
   }
 
   async assignLead(id: string, assignLeadDto: AssignLeadDto) {
-    await this.prisma.lead.update({
+    // 1. Fetch current assignment status to prevent duplicate log actions
+    const existingLead = await this.prisma.lead.findUnique({
       where: { id },
-      data: {
-        assigned_to_id: assignLeadDto.assigned_to_id,
-      },
-      select: { id: true },
+      select: { id: true, assigned_to_id: true },
     });
-    return null;
+
+    if (!existingLead) {
+      throw new NotFoundException(`Lead with ID ${id} not found`);
+    }
+
+
+    if (existingLead.assigned_to_id === assignLeadDto.assigned_to_id) {
+      throw new BadRequestException(`Lead is already assigned to the specified user`);
+    }
+
+
+    const updateSource = assignLeadDto.assignment_source || 'Admin Panel';
+
+    // 2. Wrap operations in an atomic transaction
+    return await this.prisma.$transaction(async (tx) => {
+      // Update the main Lead record
+      const updatedLead = await tx.lead.update({
+        where: { id },
+        data: {
+          assigned_to_id: assignLeadDto.assigned_to_id,
+        },
+        select: { 
+          id: true,
+          assignee: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              email: true,
+            },
+          }
+         },
+      });
+
+      // Log to dedicated LeadAssignmentHistory table
+      await tx.leadAssignmentHistory.create({
+        data: {
+          lead_id: id,
+          description: `Lead ${assignLeadDto.assigned_to_id ? 'assigned' : 'unassigned'} to ${updatedLead.assignee ? `${updatedLead.assignee.first_name} ${updatedLead.assignee.last_name}` : 'N/A'}`,
+          assigned_to_id: assignLeadDto.assigned_to_id || null,
+          assigned_by_id: assignLeadDto.assigned_by_id || null,
+        },
+      });
+
+      // Log to general LeadActivityTimeline
+      await tx.leadActivityTimeline.create({
+        data: {
+          lead_id: id,
+          description: assignLeadDto.assigned_to_id
+            ? `Lead assigned`
+            : `Lead unassigned`,
+          user_id: assignLeadDto.assigned_to_id || null,
+          source: updateSource,
+        },
+      });
+      return updatedLead;
+    });
   }
 
   async remove(id: string) {

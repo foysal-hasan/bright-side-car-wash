@@ -400,6 +400,7 @@ export const ModelName = {
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
   Lead: 'Lead',
+  LeadAssignmentHistory: 'LeadAssignmentHistory',
   LeadActivityTimeline: 'LeadActivityTimeline',
   Campaign: 'Campaign',
   EmailConfig: 'EmailConfig',
@@ -421,7 +422,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadActivityTimeline" | "campaign" | "emailConfig" | "deliveryLog" | "template" | "emailTemplate"
+    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "campaign" | "emailConfig" | "deliveryLog" | "template" | "emailTemplate"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1609,6 +1610,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LeadAssignmentHistory: {
+      payload: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>
+      fields: Prisma.LeadAssignmentHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LeadAssignmentHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LeadAssignmentHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.LeadAssignmentHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LeadAssignmentHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.LeadAssignmentHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.LeadAssignmentHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.LeadAssignmentHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LeadAssignmentHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.LeadAssignmentHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>
+        }
+        update: {
+          args: Prisma.LeadAssignmentHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.LeadAssignmentHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LeadAssignmentHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LeadAssignmentHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.LeadAssignmentHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadAssignmentHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.LeadAssignmentHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLeadAssignmentHistory>
+        }
+        groupBy: {
+          args: Prisma.LeadAssignmentHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadAssignmentHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LeadAssignmentHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadAssignmentHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
     LeadActivityTimeline: {
       payload: Prisma.$LeadActivityTimelinePayload<ExtArgs>
       fields: Prisma.LeadActivityTimelineFieldRefs
@@ -2338,12 +2413,26 @@ export const LeadScalarFieldEnum = {
   deposit_status: 'deposit_status',
   priority: 'priority',
   notes: 'notes',
+  attachments: 'attachments',
   stage_id: 'stage_id',
   created_by_id: 'created_by_id',
   assigned_to_id: 'assigned_to_id'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
+
+
+export const LeadAssignmentHistoryScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at',
+  lead_id: 'lead_id',
+  assigned_to_id: 'assigned_to_id',
+  assigned_by_id: 'assigned_by_id'
+} as const
+
+export type LeadAssignmentHistoryScalarFieldEnum = (typeof LeadAssignmentHistoryScalarFieldEnum)[keyof typeof LeadAssignmentHistoryScalarFieldEnum]
 
 
 export const LeadActivityTimelineScalarFieldEnum = {
@@ -2758,6 +2847,7 @@ export type GlobalOmitConfig = {
   activityLog?: Prisma.ActivityLogOmit
   stage?: Prisma.StageOmit
   lead?: Prisma.LeadOmit
+  leadAssignmentHistory?: Prisma.LeadAssignmentHistoryOmit
   leadActivityTimeline?: Prisma.LeadActivityTimelineOmit
   campaign?: Prisma.CampaignOmit
   emailConfig?: Prisma.EmailConfigOmit

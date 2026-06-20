@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
@@ -11,6 +11,12 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { Request } from 'express';
 import { MyQueryLeadDto, QueryLeadDto } from './dto/query-lead.dto';
 import { AssignLeadDto } from './dto/assign-lead.dto';
+import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
+import { extname } from 'path/win32';
+import appConfig from 'src/config/app.config';
+import { files } from 'node_modules/@getbrevo/brevo/dist/cjs/api/resources';
 
 @ApiTags('Admin Lead Management')
 @ApiBearerAuth()
@@ -22,21 +28,73 @@ export class LeadController {
   constructor(private readonly leadService: LeadService) { }
 
   @ApiOperation({ summary: 'Create a new lead' })
+  @ApiBody({ type: CreateLeadDto })
+  @ApiConsumes('multipart/form-data')
   @LogActivity({ action: 'create', entity: 'lead' })
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'files', maxCount: 10 },
+      ],
+      {
+        storage: memoryStorage(),
+        fileFilter: (req, file, cb) => {
+          if (
+            file.fieldname === 'files' &&
+            (!file.mimetype.startsWith('image/') && file.mimetype !== 'application/pdf')
+          ) {
+            return cb(new Error('Files should be images or PDFs'), false);
+          }
+
+          // check file size (max 25MB)
+          if (file.size > 25 * 1024 * 1024) {
+            return cb(new Error('File size should not exceed 25MB'), false);
+          }
+          cb(null, true);
+        },
+      },
+    ),
+  )
   @Post()
-  async create(@Body() createLeadDto: CreateLeadDto, @Req() req: Request) {
-    createLeadDto.created_by = req.user?.userId;
-    createLeadDto.created_source = 'user';
-    createLeadDto.source = createLeadDto.source || 'Admin Panel';
-    const result = await this.leadService.create(createLeadDto);
-    return {
-      success: true,
-      message: 'Lead created successfully',
-      data: result,
+  async create(@Body() createLeadDto: CreateLeadDto, @Req() req: Request, @UploadedFiles() files: { files?: Express.Multer.File[] }) {
+    try {
+      // Handle file uploads and store file paths in the database
+      files.files?.forEach(async file => {
+        const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+        const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
+        await SojebStorage.put(key, file.buffer);
+        createLeadDto.attachments.push(generatedFilename);
+      });
+
+
+      createLeadDto.created_by = req.user?.userId;
+      createLeadDto.created_source = 'user';
+      createLeadDto.source = createLeadDto.source || 'Admin Panel';
+      const result = await this.leadService.create(createLeadDto);
+
+      result.attachments = result.attachments?.map(filename => {
+        const key = `${appConfig().storageUrl.lead}${filename}`;
+        return SojebStorage.url(key);
+      });
+
+      return {
+        success: true,
+        message: 'Lead created successfully',
+        data: result,
+      }
+    } catch (error) {
+      // Clean up any uploaded files if an error occurs
+      if (createLeadDto.attachments) {
+        for (const filename of createLeadDto.attachments) {
+          const key = `${appConfig().storageUrl.lead}${filename}`;
+          await SojebStorage.delete(key);
+        }
+      }
+      throw error;
     }
   }
 
-  
+
 
   @Get()
   @ApiOperation({
@@ -60,13 +118,20 @@ export class LeadController {
   })
   @LogActivity({ action: 'read', entity: 'lead' })
   async findAll(@Query() query: QueryLeadDto) {
-      const result = await this.leadService.findAll(query);
-      return {
-        success: true,
-        message: 'Leads retrieved successfully',
-        data: result.data,
-        meta: result.meta,
-      };
+    const result = await this.leadService.findAll(query);
+
+    result.data.forEach(lead => {
+      lead.attachments = lead.attachments?.map(filename => {
+        const key = `${appConfig().storageUrl.lead}${filename}`;
+        return SojebStorage.url(key);
+      });
+    });
+    return {
+      success: true,
+      message: 'Leads retrieved successfully',
+      data: result.data,
+      meta: result.meta,
+    };
   }
 
 
@@ -92,17 +157,25 @@ export class LeadController {
   })
   @LogActivity({ action: 'read', entity: 'lead' })
   async findAllAssignedToMe(@Query() query: MyQueryLeadDto, @Req() req: Request) {
-      query.assigned_to_id = req.user?.userId;
-      const result = await this.leadService.findAll(query);
-      return {
-        success: true,
-        message: 'Leads retrieved successfully',
-        data: result.data,
-        meta: result.meta,
-      };
+    query.assigned_to_id = req.user?.userId;
+    const result = await this.leadService.findAll(query);
+
+    result.data.forEach(lead => {
+      lead.attachments = lead.attachments?.map(filename => {
+        const key = `${appConfig().storageUrl.lead}${filename}`;
+        return SojebStorage.url(key);
+      });
+    });
+
+    return {
+      success: true,
+      message: 'Leads retrieved successfully',
+      data: result.data,
+      meta: result.meta,
+    };
   }
 
-  
+
 
   @Get('filter-options')
   @ApiOperation({
@@ -132,6 +205,10 @@ export class LeadController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const lead = await this.leadService.findOne(id);
+    lead.attachments = lead.attachments?.map(filename => {
+      const key = `${appConfig().storageUrl.lead}${filename}`;
+      return SojebStorage.url(key);
+    }); 
     return {
       success: true,
       message: 'Lead retrieved successfully',
@@ -140,15 +217,69 @@ export class LeadController {
   }
 
   @ApiOperation({ summary: 'Update a lead by ID' })
+  @ApiBody({ type: UpdateLeadDto })
+  @ApiConsumes('multipart/form-data')
   @LogActivity({ action: 'update', entity: 'lead' })
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'files', maxCount: 10 },
+      ],
+      {
+        storage: memoryStorage(),
+        fileFilter: (req, file, cb) => {
+          if (
+            file.fieldname === 'files' &&
+            (!file.mimetype.startsWith('image/') && file.mimetype !== 'application/pdf')
+          ) {
+            return cb(new Error('Files should be images or PDFs'), false);
+          }
+
+          // check file size (max 25MB)
+          if (file.size > 25 * 1024 * 1024) {
+            return cb(new Error('File size should not exceed 25MB'), false);
+          }
+          cb(null, true);
+        },
+      },
+    ),
+  )
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
-    const result = await this.leadService.update(id, updateLeadDto);
-    return {
-      success: true,
-      message: 'Lead updated successfully',
-      data: result,
-    };
+  async update(@Param('id') id: string, @Req() req: Request, @Body() updateLeadDto: UpdateLeadDto, @UploadedFiles() files: { files?: Express.Multer.File[] }) {
+    try {
+      // Handle file uploads and store file paths in the database
+      files.files?.forEach(async file => {
+        const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+        const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
+        await SojebStorage.put(key, file.buffer);
+        updateLeadDto.attachments?.push(generatedFilename);
+      });
+
+      updateLeadDto.updated_by = req?.user?.userId; 
+      updateLeadDto.updated_source = 'Admin Panel';
+
+      const result = await this.leadService.update(id, updateLeadDto);
+
+      result.attachments = result.attachments?.map(filename => {
+        const key = `${appConfig().storageUrl.lead}${filename}`;
+        return SojebStorage.url(key);
+      });
+      return {
+        success: true,
+        message: 'Lead updated successfully',
+        data: result,
+      };
+
+    } catch (error) {
+      // Clean up any uploaded files if an error occurs
+      if (updateLeadDto.attachments) {
+        for (const filename of updateLeadDto.attachments) {
+          const key = `${appConfig().storageUrl.lead}${filename}`;
+          await SojebStorage.delete(key);
+        }
+      }
+      throw error;
+    }
   }
 
   // Asign lead to a user and log the activity
@@ -174,6 +305,7 @@ export class LeadController {
   @RequirePermission('lead:assign')
   @LogActivity({ action: 'assign', entity: 'lead' })
   async assignLead(@Param('id') id: string, @Body() assignLeadDto: AssignLeadDto, @Req() req: Request) {
+    assignLeadDto.assigned_by_id = req?.user?.userId;
     const result = await this.leadService.assignLead(id, assignLeadDto);
     return {
       success: true,

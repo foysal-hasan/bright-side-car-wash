@@ -67,6 +67,7 @@ export const ModelName = {
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
   Lead: 'Lead',
+  LeadAssignmentHistory: 'LeadAssignmentHistory',
   LeadActivityTimeline: 'LeadActivityTimeline',
   Campaign: 'Campaign',
   EmailConfig: 'EmailConfig',
@@ -337,12 +338,26 @@ export const LeadScalarFieldEnum = {
   deposit_status: 'deposit_status',
   priority: 'priority',
   notes: 'notes',
+  attachments: 'attachments',
   stage_id: 'stage_id',
   created_by_id: 'created_by_id',
   assigned_to_id: 'assigned_to_id'
 } as const
 
 export type LeadScalarFieldEnum = (typeof LeadScalarFieldEnum)[keyof typeof LeadScalarFieldEnum]
+
+
+export const LeadAssignmentHistoryScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  deleted_at: 'deleted_at',
+  lead_id: 'lead_id',
+  assigned_to_id: 'assigned_to_id',
+  assigned_by_id: 'assigned_by_id'
+} as const
+
+export type LeadAssignmentHistoryScalarFieldEnum = (typeof LeadAssignmentHistoryScalarFieldEnum)[keyof typeof LeadAssignmentHistoryScalarFieldEnum]
 
 
 export const LeadActivityTimelineScalarFieldEnum = {

@@ -23,6 +23,7 @@ import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 export class StageController {
   constructor(private readonly stageService: StageService) { }
 
+  
   @ApiOperation({ summary: 'Create a new stage' })
   @ApiConsumes('multipart/form-data')
   @LogActivity({ action: 'create', entity: 'stage' })
