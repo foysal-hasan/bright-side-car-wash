@@ -11,13 +11,13 @@ export class LeadService {
   constructor(private prisma: PrismaService) { }
   async create(createLeadDto: CreateLeadDto) {
     // check if the stage_id exists in the stage table
-    const stage = await this.prisma.stage.findUnique({
-      where: { id: createLeadDto.stage_id },
+    const stage = await this.prisma.stage.findFirst({
+      where: { name: createLeadDto.stage_name },
       select: { id: true, name: true },
     });
 
     if (!stage) {
-      throw new NotFoundException(`Stage with ID ${createLeadDto.stage_id} does not exist`);
+      throw new NotFoundException(`Stage with name ${createLeadDto.stage_name} does not exist`);
     }
 
     const lead = await this.prisma.lead.create({
@@ -31,8 +31,13 @@ export class LeadService {
         deposit_status: createLeadDto.deposit_status || DepositStatus.PENDING,
         priority: createLeadDto.priority || LeadPriority.LOW,
         notes: createLeadDto.notes || [],
-        stage_id: createLeadDto.stage_id,
-        created_by_id: createLeadDto.created_by || null,
+        // ...(createLeadDto.created_by && { created_by_id: createLeadDto.created_by }),
+        stage: {
+          connect: { id: stage.id },
+        },
+        creator: {
+          connect: createLeadDto.created_by ? { id: createLeadDto.created_by } : undefined,
+        },
         attachments: createLeadDto.attachments || [],
       },
       include: {
@@ -667,16 +672,16 @@ export class LeadService {
       }
 
       // --- CRITICAL FIELD: Stage Change ---
-      if (updateLeadDto.stage_id !== undefined && updateLeadDto.stage_id !== existingLead.stage_id) {
-        const stage = await tx.stage.findUnique({
-          where: { id: updateLeadDto.stage_id },
-          select: { name: true },
+      if (updateLeadDto.stage_name !== undefined && updateLeadDto.stage_name !== existingLead.name) {
+        const stage = await tx.stage.findFirst({
+          where: { name: updateLeadDto.stage_name },
+          select: { id: true, name: true },
         });
         if (!stage) {
-          throw new NotFoundException(`Stage with ID ${updateLeadDto.stage_id} does not exist`);
+          throw new NotFoundException(`Stage with name ${updateLeadDto.stage_name} does not exist`);
         }
 
-        data.stage = { connect: { id: updateLeadDto.stage_id } };
+        data.stage = { connect: { id: stage.id } };
         const formattedStageName = stage.name.charAt(0).toUpperCase() + stage.name.slice(1).toLowerCase();
 
         timelinePayloads.push({

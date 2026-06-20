@@ -1,5 +1,6 @@
 // leads/dto/create-lead.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsEmail,
@@ -113,6 +114,23 @@ export class CreateLeadDto {
     required: false,
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      // Handles JSON-stringified arrays like '["note1", "note2"]'
+      if (value.startsWith('[') && value.endsWith(']')) {
+        try {
+          return JSON.parse(value);
+        } catch {
+          return [value];
+        }
+      }
+      // Handles comma-separated values like "note1,note2"
+      return value.split(',').map((item) => item.trim());
+    }
+    return [value];
+  })
   @IsArray()
   @IsString({ each: true })
   @MaxLength(500, { each: true, message: 'Each note must not exceed 500 characters' })
@@ -120,14 +138,14 @@ export class CreateLeadDto {
   notes?: string[];
 
   @ApiProperty({
-    description: 'Stage ID to assign the lead to (CUID format)',
-    example: 'ck7x8y9z0a1b2c3d4e5f6g7h',
-    format: 'cuid',
-    pattern: '^c[a-z0-9]{24}$',
+    description: 'Name of the stage the lead is in',
+    example: 'New Lead',
+    maxLength: 100,
     required: true,
   })
-  @IsCuid({ message: 'Stage ID must be a valid CUID (e.g., ck7x8y9z0a1b2c3d4e5f6g7h)' })
-  stage_id: string;
+  @IsString()
+  @MaxLength(100, { message: 'Stage name must not exceed 100 characters' })
+  stage_name: string;
 
   @IsOptional()
   created_by?: string;
@@ -146,5 +164,5 @@ export class CreateLeadDto {
   })
   files?: Express.Multer.File[];
 
-  attachments?: string[];
+  attachments?: string[] = [];
 }

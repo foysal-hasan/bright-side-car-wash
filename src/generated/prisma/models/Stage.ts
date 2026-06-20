@@ -257,18 +257,18 @@ export type StageOrderByWithRelationInput = {
 
 export type StageWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  name?: string
   AND?: Prisma.StageWhereInput | Prisma.StageWhereInput[]
   OR?: Prisma.StageWhereInput[]
   NOT?: Prisma.StageWhereInput | Prisma.StageWhereInput[]
   created_at?: Prisma.DateTimeFilter<"Stage"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Stage"> | Date | string
   deleted_at?: Prisma.DateTimeNullableFilter<"Stage"> | Date | string | null
-  name?: Prisma.StringFilter<"Stage"> | string
   sort_order?: Prisma.IntNullableFilter<"Stage"> | number | null
   color?: Prisma.StringNullableFilter<"Stage"> | string | null
   icon?: Prisma.StringNullableFilter<"Stage"> | string | null
   leads?: Prisma.LeadListRelationFilter
-}, "id">
+}, "id" | "name">
 
 export type StageOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
