@@ -28,6 +28,11 @@ export type Account = Prisma.AccountModel
  */
 export type User = Prisma.UserModel
 /**
+ * Model UserSession
+ * 
+ */
+export type UserSession = Prisma.UserSessionModel
+/**
  * Model Ucode
  * 
  */
@@ -97,3 +102,28 @@ export type Lead = Prisma.LeadModel
  * 
  */
 export type LeadActivityTimeline = Prisma.LeadActivityTimelineModel
+/**
+ * Model Campaign
+ * 
+ */
+export type Campaign = Prisma.CampaignModel
+/**
+ * Model EmailConfig
+ * 
+ */
+export type EmailConfig = Prisma.EmailConfigModel
+/**
+ * Model DeliveryLog
+ * 
+ */
+export type DeliveryLog = Prisma.DeliveryLogModel
+/**
+ * Model Template
+ * 
+ */
+export type Template = Prisma.TemplateModel
+/**
+ * Model EmailTemplate
+ * 
+ */
+export type EmailTemplate = Prisma.EmailTemplateModel

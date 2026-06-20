@@ -18,6 +18,8 @@ async function bootstrap() {
     rawBody: true,
   });
 
+  app.getHttpAdapter().getInstance().set('trust proxy', true);
+
   // Handle raw body for Stripe webhooks (must be before any JSON body parsing)
   // app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }));
   // app.use('/api/payment/stripe/webhook', express.raw({ type: 'application/json' }));

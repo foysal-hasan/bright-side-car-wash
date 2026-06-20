@@ -43,8 +43,10 @@ export default () => ({
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET,
-    expiry: process.env.JWT_EXPIRY,
+    access_token_secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+    refresh_token_secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+    access_token_expiry: process.env.JWT_ACCESS_TOKEN_EXPIRY,
+    refresh_token_expiry: process.env.JWT_REFRESH_TOKEN_EXPIRY,
   },
 
   mail: {

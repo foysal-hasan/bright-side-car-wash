@@ -1,6 +1,4 @@
-//internal imports
-// external imports
-import { randomInt } from 'crypto';
+import { randomInt, createHash } from 'crypto';
 import { BadRequestException, ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedis } from '@nestjs-modules/ioredis';
@@ -19,6 +17,7 @@ import { randomBytes } from 'crypto';
 // import {decodeJWT} from '../../common/lib/JWT/jwt.service'
 import * as bcrypt from 'bcrypt';
 import { CreateStaffDto } from './dto/create-staff.dto';
+import { DeviceInfo } from 'src/common/decorator/get-device-info.decorator';
 
 @Injectable()
 export class AuthService {
@@ -52,7 +51,7 @@ export class AuthService {
           email: true,
           avatar: true,
           created_at: true,
-          updated_at: true,          
+          updated_at: true,
           roleUsers: {
             select: {
               role: {
@@ -206,7 +205,7 @@ export class AuthService {
                 name: true,
               },
             },
-          },  
+          },
         },
       },
     });
@@ -256,21 +255,44 @@ export class AuthService {
     }
   }
 
-  async login({ email, userId, roles }: { email: string; userId: string; roles: string[] }) {
+
+  async login({ email, userId, roles }: { email: string; userId: string; roles: string[] }, deviceInfo: DeviceInfo) {
     try {
-      const payload = { email: email, sub: userId, roles: roles };
+      // delete any existing session for the same device and user
+      await this.prisma.userSession.deleteMany({
+        where: {
+          userId: userId,
+          deviceName: deviceInfo.deviceName,
+          ipAddress: deviceInfo.ip,
+        },
+      });
 
-      const accessToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-      const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+      const userSession = await this.prisma.userSession.create({
+        data: {
+          userId: userId,
+          deviceName: deviceInfo.deviceName,
+          ipAddress: deviceInfo.ip,
+          expiresAt: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').date,
+        },
+      });
 
-      const user = await this.userRepository.getUserDetails(userId);
+      const accessTokenPayload = { email: email, sub: userId, sessionId: userSession.id, roles: roles };
+      const refreshTokenPayload = { sessionId: userSession.id, sub: userId };
+
+      // log access token expiry for debugging
+      console.log("Access token expiry:", appConfig().jwt.access_token_expiry);
+      console.log("Refresh token expiry:", appConfig().jwt.refresh_token_expiry);
+
+      const accessToken = this.jwtService.sign(accessTokenPayload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').unixSeconds, secret: appConfig().jwt.access_token_secret });
+      const refreshToken = this.jwtService.sign(refreshTokenPayload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').unixSeconds, secret: appConfig().jwt.refresh_token_secret });
+
 
       // store refreshToken
       await this.redis.set(
-        `refresh_token:${user.id}`,
+        `refresh_token:${userSession.id}`,
         refreshToken,
         'EX',
-        60 * 60 * 24 * 7, // 7 days in seconds
+        DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').date.getTime() - new Date().getTime()
       );
 
       return {
@@ -284,80 +306,115 @@ export class AuthService {
         roles: roles,
       };
     } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+      console.log('Login error:', error);
     }
+
   }
 
-  async refreshToken(user_id: string, refreshToken: string) {
-    try {
-      const storedToken = await this.redis.get(`refresh_token:${user_id}`);
 
-      if (!storedToken || storedToken != refreshToken) {
-        return {
-          success: false,
-          message: 'Refresh token is required',
-        };
-      }
-
-      if (!user_id) {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
-
-      const userDetails = await this.userRepository.getUserDetails(user_id);
-      if (!userDetails) {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
-
-      const payload = { email: userDetails.email, sub: userDetails.id, roles: userDetails.roleUsers.map(item => item.role.name) };
-      const accessToken = this.jwtService.sign(payload, { expiresIn: '7d' });
-
-      return {
-        success: true,
-        authorization: {
-          type: 'bearer',
-          access_token: accessToken,
-        },
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+  private async invalidateSession(sessionId: string, ttlSeconds: number) {
+    // Flag this session ID as dead in Redis for the remainder of the access token's life
+    await this.redis.set(
+      `blacklist:${sessionId}`,
+      'true',
+      'EX',
+      ttlSeconds
+    );
   }
 
-  async revokeRefreshToken(user_id: string) {
-    try {
-      const storedToken = await this.redis.get(`refresh_token:${user_id}`);
-      if (!storedToken) {
-        return {
-          success: false,
-          message: 'Refresh token not found',
-        };
-      }
+  
 
-      await this.redis.del(`refresh_token:${user_id}`);
+  async refreshToken(user_id: string, sessionId: string, refreshToken: string, deviceInfo: DeviceInfo) {
+    const storedToken = await this.redis.get(`refresh_token:${sessionId}`);
 
-      return {
-        success: true,
-        message: 'Refresh token revoked successfully',
-      };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
+    if (!storedToken || storedToken != refreshToken) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
+
+    if (!user_id) {
+      throw new UnauthorizedException('User not found');
+    }
+
+
+    // update device info of the session
+    await this.prisma.userSession.delete({
+      where: { id: sessionId }
+    });
+
+    await this.prisma.userSession.create({
+      data: {
+        userId: user_id,
+        deviceName: deviceInfo.deviceName,
+        ipAddress: deviceInfo.ip,
+        expiresAt: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').date,
+      }
+    });
+
+    const userDetails = await this.userRepository.getUserDetails(user_id);
+    if (!userDetails) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // delete old refresh token
+    await this.redis.del(`refresh_token:${sessionId}`);
+ 
+    const payload = { email: userDetails.email, sub: userDetails.id, sessionId: sessionId, roles: userDetails.roleUsers.map(item => item.role.name) };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').unixSeconds, secret: appConfig().jwt.access_token_secret });
+
+    const newRefreshTokenPayload = { sessionId: sessionId, sub: user_id };
+    const newRefreshToken = this.jwtService.sign(newRefreshTokenPayload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').unixSeconds, secret: appConfig().jwt.refresh_token_secret });
+
+    await this.redis.set(
+      `refresh_token:${sessionId}`,
+      newRefreshToken,
+      'EX',
+      DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').date.getTime() - new Date().getTime()
+    );
+
+
+    return {
+      success: true,
+      authorization: {
+        type: 'bearer',
+        access_token: accessToken,
+        refresh_token: newRefreshToken,
+      },
+      roles: userDetails.roleUsers.map(item => item.role.name),
+    };
   }
+
+  async revokeRefreshToken(userId: string, sessionId: string) {
+    const storedToken = await this.redis.get(`refresh_token:${sessionId}`);
+    if (!storedToken) {
+      throw new UnauthorizedException('Invalid session');
+    }
+
+    await this.invalidateSession(sessionId, DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').date.getTime() - new Date().getTime());
+    await this.redis.del(`refresh_token:${sessionId}`);
+
+    await this.prisma.userSession.delete({
+      where: { id: sessionId, userId: userId }
+    });
+
+    return null;
+  }
+
+  async deviceSessions(userId: string) {
+    const sessions = await this.prisma.userSession.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        deviceName: true,
+        ipAddress: true,
+        expiresAt: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return sessions;
+  }
+
+
 
   async createStaff(createStaffDto: CreateStaffDto) {
     const { email, role, firstName, lastName } = createStaffDto;
@@ -476,7 +533,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update user
-   this.prisma.user.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         password: hashedPassword,

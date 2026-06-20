@@ -89,6 +89,7 @@ model User {
   // Other relations
   accounts                     Account[]
   ucodes                       Ucode[]
+  userSessions                 UserSession[]
   messages                     Message[]              @relation("receiver")
   sent_messages                Message[]              @relation("sender")
   conversations_created        Conversation[]         @relation("creator")
@@ -102,6 +103,18 @@ model User {
   @@index([email])
   @@index([phone_number])
   @@map("users")
+}
+
+model UserSession {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceName   String
+  ipAddress    String
+  expiresAt    DateTime
 }
 
 model Ucode {

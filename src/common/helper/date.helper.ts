@@ -158,6 +158,34 @@ export class DateHelper {
       .toDate();
   }
 
+  static generateFutureDate(timeStr: string): { date: Date; unixSeconds: number } {
+  // Extract the numeric value and the unit character
+  const amount = parseInt(timeStr.slice(0, -1), 10);
+  const unit = timeStr.slice(-1);
+
+  // Define multipliers to convert units to milliseconds
+  const msMultipliers = {
+    's': 1000,                  // Second
+    'm': 60 * 1000,             // Minute
+    'h': 60 * 60 * 1000,        // Hour
+    'd': 24 * 60 * 60 * 1000,   // Day
+    'y': 365 * 24 * 60 * 60 * 1000 // Year (Standard)
+  };
+
+  const multiplier = msMultipliers[unit];
+  if (!multiplier || isNaN(amount)) {
+    throw new Error("Invalid time format. Use variations like 1s, 1m, 1h, 1d, 1y");
+  }
+
+  const futureMs = Date.now() + (amount * multiplier);
+  const futureDate = new Date(futureMs);
+
+  return {
+    date: futureDate,
+    unixSeconds: Math.floor(futureMs / 1000) // Perfect for JWT 'exp'
+  };
+}
+
 
   /**
  * Check if a datetime is in the past (compared to now)

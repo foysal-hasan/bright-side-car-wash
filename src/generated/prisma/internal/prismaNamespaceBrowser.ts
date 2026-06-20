@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Account: 'Account',
   User: 'User',
+  UserSession: 'UserSession',
   Ucode: 'Ucode',
   Role: 'Role',
   Permission: 'Permission',
@@ -66,7 +67,12 @@ export const ModelName = {
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
   Lead: 'Lead',
-  LeadActivityTimeline: 'LeadActivityTimeline'
+  LeadActivityTimeline: 'LeadActivityTimeline',
+  Campaign: 'Campaign',
+  EmailConfig: 'EmailConfig',
+  DeliveryLog: 'DeliveryLog',
+  Template: 'Template',
+  EmailTemplate: 'EmailTemplate'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -143,6 +149,19 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const UserSessionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId',
+  deviceName: 'deviceName',
+  ipAddress: 'ipAddress',
+  expiresAt: 'expiresAt'
+} as const
+
+export type UserSessionScalarFieldEnum = (typeof UserSessionScalarFieldEnum)[keyof typeof UserSessionScalarFieldEnum]
 
 
 export const UcodeScalarFieldEnum = {
@@ -338,6 +357,74 @@ export const LeadActivityTimelineScalarFieldEnum = {
 } as const
 
 export type LeadActivityTimelineScalarFieldEnum = (typeof LeadActivityTimelineScalarFieldEnum)[keyof typeof LeadActivityTimelineScalarFieldEnum]
+
+
+export const CampaignScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  status: 'status',
+  channelType: 'channelType',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  scheduledAt: 'scheduledAt'
+} as const
+
+export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
+
+
+export const EmailConfigScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  subject: 'subject',
+  htmlContent: 'htmlContent',
+  senderName: 'senderName',
+  senderEmail: 'senderEmail',
+  targetListIds: 'targetListIds',
+  providerCampaignId: 'providerCampaignId',
+  templateId: 'templateId'
+} as const
+
+export type EmailConfigScalarFieldEnum = (typeof EmailConfigScalarFieldEnum)[keyof typeof EmailConfigScalarFieldEnum]
+
+
+export const DeliveryLogScalarFieldEnum = {
+  id: 'id',
+  campaignId: 'campaignId',
+  recipient: 'recipient',
+  status: 'status',
+  providerEventId: 'providerEventId',
+  metaData: 'metaData',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeliveryLogScalarFieldEnum = (typeof DeliveryLogScalarFieldEnum)[keyof typeof DeliveryLogScalarFieldEnum]
+
+
+export const TemplateScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  editorType: 'editorType',
+  userId: 'userId',
+  isArchived: 'isArchived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TemplateScalarFieldEnum = (typeof TemplateScalarFieldEnum)[keyof typeof TemplateScalarFieldEnum]
+
+
+export const EmailTemplateScalarFieldEnum = {
+  id: 'id',
+  templateId: 'templateId',
+  subject: 'subject',
+  htmlContent: 'htmlContent',
+  designJson: 'designJson'
+} as const
+
+export type EmailTemplateScalarFieldEnum = (typeof EmailTemplateScalarFieldEnum)[keyof typeof EmailTemplateScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -454,6 +454,7 @@ export type UserWhereInput = {
   inviteTokenExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   accounts?: Prisma.AccountListRelationFilter
   ucodes?: Prisma.UcodeListRelationFilter
+  userSessions?: Prisma.UserSessionListRelationFilter
   messages?: Prisma.MessageListRelationFilter
   sent_messages?: Prisma.MessageListRelationFilter
   conversations_created?: Prisma.ConversationListRelationFilter
@@ -502,6 +503,7 @@ export type UserOrderByWithRelationInput = {
   inviteTokenExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   ucodes?: Prisma.UcodeOrderByRelationAggregateInput
+  userSessions?: Prisma.UserSessionOrderByRelationAggregateInput
   messages?: Prisma.MessageOrderByRelationAggregateInput
   sent_messages?: Prisma.MessageOrderByRelationAggregateInput
   conversations_created?: Prisma.ConversationOrderByRelationAggregateInput
@@ -553,6 +555,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   inviteTokenExpiry?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   accounts?: Prisma.AccountListRelationFilter
   ucodes?: Prisma.UcodeListRelationFilter
+  userSessions?: Prisma.UserSessionListRelationFilter
   messages?: Prisma.MessageListRelationFilter
   sent_messages?: Prisma.MessageListRelationFilter
   conversations_created?: Prisma.ConversationListRelationFilter
@@ -683,6 +686,7 @@ export type UserCreateInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -731,6 +735,7 @@ export type UserUncheckedCreateInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -779,6 +784,7 @@ export type UserUpdateInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -827,6 +833,7 @@ export type UserUncheckedUpdateInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1110,6 +1117,20 @@ export type NullableBoolFieldUpdateOperationsInput = {
   set?: boolean | null
 }
 
+export type UserCreateNestedOneWithoutUserSessionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUserSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserSessionsInput
+  upsert?: Prisma.UserUpsertWithoutUserSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserSessionsInput, Prisma.UserUpdateWithoutUserSessionsInput>, Prisma.UserUncheckedUpdateWithoutUserSessionsInput>
+}
+
 export type UserCreateNestedOneWithoutUcodesInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutUcodesInput, Prisma.UserUncheckedCreateWithoutUcodesInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutUcodesInput
@@ -1304,6 +1325,7 @@ export type UserCreateWithoutAccountsInput = {
   inviteToken?: string | null
   inviteTokenExpiry?: Date | string | null
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -1351,6 +1373,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   inviteToken?: string | null
   inviteTokenExpiry?: Date | string | null
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -1414,6 +1437,7 @@ export type UserUpdateWithoutAccountsInput = {
   inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -1460,6 +1484,215 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
+  assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+}
+
+export type UserCreateWithoutUserSessionsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
+  assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+}
+
+export type UserUncheckedCreateWithoutUserSessionsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
+  assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+}
+
+export type UserCreateOrConnectWithoutUserSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+}
+
+export type UserUpsertWithoutUserSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUserSessionsInput, Prisma.UserUncheckedUpdateWithoutUserSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserSessionsInput, Prisma.UserUncheckedCreateWithoutUserSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUserSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUserSessionsInput, Prisma.UserUncheckedUpdateWithoutUserSessionsInput>
+}
+
+export type UserUpdateWithoutUserSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
+  assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUserSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
@@ -1508,6 +1741,7 @@ export type UserCreateWithoutUcodesInput = {
   inviteToken?: string | null
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -1555,6 +1789,7 @@ export type UserUncheckedCreateWithoutUcodesInput = {
   inviteToken?: string | null
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -1618,6 +1853,7 @@ export type UserUpdateWithoutUcodesInput = {
   inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -1665,6 +1901,7 @@ export type UserUncheckedUpdateWithoutUcodesInput = {
   inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1713,6 +1950,7 @@ export type UserCreateWithoutRoleUsersInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -1760,6 +1998,7 @@ export type UserUncheckedCreateWithoutRoleUsersInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -1823,6 +2062,7 @@ export type UserUpdateWithoutRoleUsersInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -1870,6 +2110,7 @@ export type UserUncheckedUpdateWithoutRoleUsersInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1917,6 +2158,7 @@ export type UserCreateWithoutSent_messagesInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
@@ -1964,6 +2206,7 @@ export type UserUncheckedCreateWithoutSent_messagesInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
@@ -2016,6 +2259,7 @@ export type UserCreateWithoutMessagesInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
@@ -2063,6 +2307,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
@@ -2126,6 +2371,7 @@ export type UserUpdateWithoutSent_messagesInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
@@ -2173,6 +2419,7 @@ export type UserUncheckedUpdateWithoutSent_messagesInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
@@ -2231,6 +2478,7 @@ export type UserUpdateWithoutMessagesInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
@@ -2278,6 +2526,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
@@ -2325,6 +2574,7 @@ export type UserCreateWithoutConversations_createdInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
@@ -2372,6 +2622,7 @@ export type UserUncheckedCreateWithoutConversations_createdInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
@@ -2424,6 +2675,7 @@ export type UserCreateWithoutConversations_as_participantInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -2471,6 +2723,7 @@ export type UserUncheckedCreateWithoutConversations_as_participantInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -2534,6 +2787,7 @@ export type UserUpdateWithoutConversations_createdInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
@@ -2581,6 +2835,7 @@ export type UserUncheckedUpdateWithoutConversations_createdInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
@@ -2639,6 +2894,7 @@ export type UserUpdateWithoutConversations_as_participantInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -2686,6 +2942,7 @@ export type UserUncheckedUpdateWithoutConversations_as_participantInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2733,6 +2990,7 @@ export type UserCreateWithoutActivityLogsInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -2780,6 +3038,7 @@ export type UserUncheckedCreateWithoutActivityLogsInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -2843,6 +3102,7 @@ export type UserUpdateWithoutActivityLogsInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -2890,6 +3150,7 @@ export type UserUncheckedUpdateWithoutActivityLogsInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2937,6 +3198,7 @@ export type UserCreateWithoutCreated_leadsInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -2984,6 +3246,7 @@ export type UserUncheckedCreateWithoutCreated_leadsInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -3036,6 +3299,7 @@ export type UserCreateWithoutAssigned_leadsInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -3083,6 +3347,7 @@ export type UserUncheckedCreateWithoutAssigned_leadsInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -3146,6 +3411,7 @@ export type UserUpdateWithoutCreated_leadsInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -3193,6 +3459,7 @@ export type UserUncheckedUpdateWithoutCreated_leadsInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3251,6 +3518,7 @@ export type UserUpdateWithoutAssigned_leadsInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -3298,6 +3566,7 @@ export type UserUncheckedUpdateWithoutAssigned_leadsInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3345,6 +3614,7 @@ export type UserCreateWithoutLead_activity_timelinesInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
@@ -3392,6 +3662,7 @@ export type UserUncheckedCreateWithoutLead_activity_timelinesInput = {
   inviteTokenExpiry?: Date | string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
   sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
@@ -3455,6 +3726,7 @@ export type UserUpdateWithoutLead_activity_timelinesInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
@@ -3502,6 +3774,7 @@ export type UserUncheckedUpdateWithoutLead_activity_timelinesInput = {
   inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
   sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3520,6 +3793,7 @@ export type UserUncheckedUpdateWithoutLead_activity_timelinesInput = {
 export type UserCountOutputType = {
   accounts: number
   ucodes: number
+  userSessions: number
   messages: number
   sent_messages: number
   conversations_created: number
@@ -3534,6 +3808,7 @@ export type UserCountOutputType = {
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   ucodes?: boolean | UserCountOutputTypeCountUcodesArgs
+  userSessions?: boolean | UserCountOutputTypeCountUserSessionsArgs
   messages?: boolean | UserCountOutputTypeCountMessagesArgs
   sent_messages?: boolean | UserCountOutputTypeCountSent_messagesArgs
   conversations_created?: boolean | UserCountOutputTypeCountConversations_createdArgs
@@ -3567,6 +3842,13 @@ export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.E
  */
 export type UserCountOutputTypeCountUcodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.UcodeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUserSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserSessionWhereInput
 }
 
 /**
@@ -3670,6 +3952,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   inviteTokenExpiry?: boolean
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   ucodes?: boolean | Prisma.User$ucodesArgs<ExtArgs>
+  userSessions?: boolean | Prisma.User$userSessionsArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
   sent_messages?: boolean | Prisma.User$sent_messagesArgs<ExtArgs>
   conversations_created?: boolean | Prisma.User$conversations_createdArgs<ExtArgs>
@@ -3797,6 +4080,7 @@ export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = run
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   ucodes?: boolean | Prisma.User$ucodesArgs<ExtArgs>
+  userSessions?: boolean | Prisma.User$userSessionsArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
   sent_messages?: boolean | Prisma.User$sent_messagesArgs<ExtArgs>
   conversations_created?: boolean | Prisma.User$conversations_createdArgs<ExtArgs>
@@ -3816,6 +4100,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     ucodes: Prisma.$UcodePayload<ExtArgs>[]
+    userSessions: Prisma.$UserSessionPayload<ExtArgs>[]
     messages: Prisma.$MessagePayload<ExtArgs>[]
     sent_messages: Prisma.$MessagePayload<ExtArgs>[]
     conversations_created: Prisma.$ConversationPayload<ExtArgs>[]
@@ -4257,6 +4542,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ucodes<T extends Prisma.User$ucodesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ucodesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UcodePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userSessions<T extends Prisma.User$userSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sent_messages<T extends Prisma.User$sent_messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sent_messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   conversations_created<T extends Prisma.User$conversations_createdArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversations_createdArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4762,6 +5048,30 @@ export type User$ucodesArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   distinct?: Prisma.UcodeScalarFieldEnum | Prisma.UcodeScalarFieldEnum[]
+}
+
+/**
+ * User.userSessions
+ */
+export type User$userSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserSession
+   */
+  select?: Prisma.UserSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserSession
+   */
+  omit?: Prisma.UserSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserSessionInclude<ExtArgs> | null
+  where?: Prisma.UserSessionWhereInput
+  orderBy?: Prisma.UserSessionOrderByWithRelationInput | Prisma.UserSessionOrderByWithRelationInput[]
+  cursor?: Prisma.UserSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserSessionScalarFieldEnum | Prisma.UserSessionScalarFieldEnum[]
 }
 
 /**

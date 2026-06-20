@@ -37,3 +37,50 @@ export const LeadPriority = {
 } as const
 
 export type LeadPriority = (typeof LeadPriority)[keyof typeof LeadPriority]
+
+
+export const CampaignStatus = {
+  DRAFT: 'DRAFT',
+  SCHEDULED: 'SCHEDULED',
+  SENDING: 'SENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus]
+
+
+export const ChannelType = {
+  EMAIL: 'EMAIL'
+} as const
+
+export type ChannelType = (typeof ChannelType)[keyof typeof ChannelType]
+
+
+export const DeliveryStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  DELIVERED: 'DELIVERED',
+  OPENED: 'OPENED',
+  CLICKED: 'CLICKED',
+  BOUNCED: 'BOUNCED',
+  FAILED: 'FAILED'
+} as const
+
+export type DeliveryStatus = (typeof DeliveryStatus)[keyof typeof DeliveryStatus]
+
+
+export const TemplateType = {
+  EMAIL: 'EMAIL'
+} as const
+
+export type TemplateType = (typeof TemplateType)[keyof typeof TemplateType]
+
+
+export const EditorType = {
+  VISUAL_DRAG_DROP: 'VISUAL_DRAG_DROP',
+  RAW_HTML: 'RAW_HTML',
+  PLAIN_TEXT: 'PLAIN_TEXT'
+} as const
+
+export type EditorType = (typeof EditorType)[keyof typeof EditorType]
