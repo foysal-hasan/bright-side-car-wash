@@ -44,7 +44,8 @@ export const CampaignStatus = {
   SCHEDULED: 'SCHEDULED',
   SENDING: 'SENDING',
   COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED'
+  FAILED: 'FAILED',
+  SUSPENDED: 'SUSPENDED'
 } as const
 
 export type CampaignStatus = (typeof CampaignStatus)[keyof typeof CampaignStatus]

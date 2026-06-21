@@ -434,6 +434,7 @@ enum CampaignStatus {
   SENDING
   COMPLETED
   FAILED
+  SUSPENDED
 }
 
 enum ChannelType {

@@ -14,6 +14,16 @@ export interface IEmailProvider {
     senderEmail: string;
     brevoListId: number;
     scheduledAt?: Date;}): Promise<string>;
+  updateMarketingCampaign(providerCampaignId: string, payload: { name?: string;
+    subject?: string;
+    htmlContent?: string;
+    senderName?: string;
+    senderEmail?: string;
+    brevoListId?: number;
+    scheduledAt?: Date;}): Promise<void>;
+
+  updateRemoteCampaignStatus(providerCampaignId: string, status: 'suspended' | 'queued' | 'canceled'): Promise<void>;
+
 
   launchCampaign(providerCampaignId: string, scheduledAt?: Date): Promise<boolean>;
 

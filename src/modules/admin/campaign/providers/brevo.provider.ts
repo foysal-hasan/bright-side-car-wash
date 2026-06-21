@@ -180,11 +180,66 @@ export class BrevoProvider implements IEmailProvider {
     return response.id.toString();
   }
 
+  async updateMarketingCampaign(
+    providerCampaignId: string,
+    payload: {
+      name?: string;
+      subject?: string;
+      htmlContent?: string;
+      senderName?: string;
+      senderEmail?: string;
+      brevoListId?: number;
+      scheduledAt?: Date;
+    }
+  ): Promise<void> {
+    const campaignConfig: any = {};
+
+    if (payload.name) campaignConfig.name = payload.name;
+    if (payload.subject) campaignConfig.subject = payload.subject;
+    if (payload.htmlContent) campaignConfig.htmlContent = payload.htmlContent;
+
+    if (payload.senderName || payload.senderEmail) {
+      campaignConfig.sender = {};
+      if (payload.senderName) campaignConfig.sender.name = payload.senderName;
+      if (payload.senderEmail) campaignConfig.sender.email = payload.senderEmail;
+    }
+
+    if (payload.brevoListId) {
+      campaignConfig.recipients = { listIds: [Number(payload.brevoListId)] };
+    }
+
+    if (payload.scheduledAt) {
+      campaignConfig.scheduledAt = payload.scheduledAt.toISOString();
+    }
+
+    await this.client.emailCampaigns.updateEmailCampaign({
+      campaignId: Number(providerCampaignId),
+      requestBody: campaignConfig
+    });
+  }
+
+  async updateRemoteCampaignStatus(
+    providerCampaignId: string,
+    status: 'suspended' | 'queued' | 'canceled'
+  ): Promise<void> {
+    try {
+      await this.client.emailCampaigns.updateCampaignStatus({
+        campaignId: Number(providerCampaignId),
+        requestBody: {
+          status: status,
+        },
+      });
+    } catch (err) {
+      console.error(`Failed to update Brevo campaign status to ${status}:`, err);
+      throw err;
+    }
+  }
+
   async launchCampaign(providerCampaignId: string, scheduledAt?: Date): Promise<boolean> {
-      if (!scheduledAt) {
-        await this.client.emailCampaigns.sendEmailCampaignNow({ campaignId: Number(providerCampaignId) });
-      }
-      return true;
+    if (!scheduledAt) {
+      await this.client.emailCampaigns.sendEmailCampaignNow({ campaignId: Number(providerCampaignId) });
+    }
+    return true;
   }
 
 
