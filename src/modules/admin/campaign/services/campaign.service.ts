@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateCampaignDto } from './dto/create-campaign.dto';
-import { UpdateCampaignDto } from './dto/update-campaign.dto';
-import { IEmailProvider } from './interfaces/email-provider.interface';
-import { EMAIL_PROVIDER_TOKEN } from './constants';
+import { EMAIL_PROVIDER_TOKEN } from '../constants';
+import { IEmailProvider } from '../interfaces/email-provider.interface';
+import { CreateCampaignDto } from '../dto/create-campaign.dto';
+import { UpdateCampaignDto } from '../dto/update-campaign.dto';
 
 @Injectable()
 export class CampaignService {

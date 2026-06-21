@@ -7,6 +7,8 @@ import { CampaignModule } from './campaign/campaign.module';
 import { RoleModule } from './role/role.module';
 import { TeamModule } from './team/team.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
+import { TemplateModule } from './template/template.module';
+
 
 @Module({
   imports: [
@@ -16,7 +18,8 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
     CampaignModule,
     RoleModule,
     TeamModule,
-    ActivityLogModule
+    ActivityLogModule,
+    TemplateModule
   ],
 })
 export class AdminModule {}

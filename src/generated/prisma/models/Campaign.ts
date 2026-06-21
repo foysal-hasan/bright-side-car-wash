@@ -26,31 +26,31 @@ export type AggregateCampaign = {
 
 export type CampaignMinAggregateOutputType = {
   id: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
   name: string | null
   status: $Enums.CampaignStatus | null
   channelType: $Enums.ChannelType | null
-  createdAt: Date | null
-  updatedAt: Date | null
   scheduledAt: Date | null
 }
 
 export type CampaignMaxAggregateOutputType = {
   id: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
   name: string | null
   status: $Enums.CampaignStatus | null
   channelType: $Enums.ChannelType | null
-  createdAt: Date | null
-  updatedAt: Date | null
   scheduledAt: Date | null
 }
 
 export type CampaignCountAggregateOutputType = {
   id: number
+  createdAt: number
+  updatedAt: number
   name: number
   status: number
   channelType: number
-  createdAt: number
-  updatedAt: number
   scheduledAt: number
   _all: number
 }
@@ -58,31 +58,31 @@ export type CampaignCountAggregateOutputType = {
 
 export type CampaignMinAggregateInputType = {
   id?: true
+  createdAt?: true
+  updatedAt?: true
   name?: true
   status?: true
   channelType?: true
-  createdAt?: true
-  updatedAt?: true
   scheduledAt?: true
 }
 
 export type CampaignMaxAggregateInputType = {
   id?: true
+  createdAt?: true
+  updatedAt?: true
   name?: true
   status?: true
   channelType?: true
-  createdAt?: true
-  updatedAt?: true
   scheduledAt?: true
 }
 
 export type CampaignCountAggregateInputType = {
   id?: true
+  createdAt?: true
+  updatedAt?: true
   name?: true
   status?: true
   channelType?: true
-  createdAt?: true
-  updatedAt?: true
   scheduledAt?: true
   _all?: true
 }
@@ -161,11 +161,11 @@ export type CampaignGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 
 export type CampaignGroupByOutputType = {
   id: string
+  createdAt: Date
+  updatedAt: Date
   name: string
   status: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt: Date
-  updatedAt: Date
   scheduledAt: Date | null
   _count: CampaignCountAggregateOutputType | null
   _min: CampaignMinAggregateOutputType | null
@@ -192,11 +192,11 @@ export type CampaignWhereInput = {
   OR?: Prisma.CampaignWhereInput[]
   NOT?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
   id?: Prisma.StringFilter<"Campaign"> | string
+  createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   name?: Prisma.StringFilter<"Campaign"> | string
   status?: Prisma.EnumCampaignStatusFilter<"Campaign"> | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFilter<"Campaign"> | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   scheduledAt?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
   emailConfig?: Prisma.XOR<Prisma.EmailConfigNullableScalarRelationFilter, Prisma.EmailConfigWhereInput> | null
   deliveryLogs?: Prisma.DeliveryLogListRelationFilter
@@ -204,11 +204,11 @@ export type CampaignWhereInput = {
 
 export type CampaignOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   status?: Prisma.SortOrder
   channelType?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   emailConfig?: Prisma.EmailConfigOrderByWithRelationInput
   deliveryLogs?: Prisma.DeliveryLogOrderByRelationAggregateInput
@@ -219,11 +219,11 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
   OR?: Prisma.CampaignWhereInput[]
   NOT?: Prisma.CampaignWhereInput | Prisma.CampaignWhereInput[]
+  createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   name?: Prisma.StringFilter<"Campaign"> | string
   status?: Prisma.EnumCampaignStatusFilter<"Campaign"> | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFilter<"Campaign"> | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Campaign"> | Date | string
   scheduledAt?: Prisma.DateTimeNullableFilter<"Campaign"> | Date | string | null
   emailConfig?: Prisma.XOR<Prisma.EmailConfigNullableScalarRelationFilter, Prisma.EmailConfigWhereInput> | null
   deliveryLogs?: Prisma.DeliveryLogListRelationFilter
@@ -231,11 +231,11 @@ export type CampaignWhereUniqueInput = Prisma.AtLeast<{
 
 export type CampaignOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   status?: Prisma.SortOrder
   channelType?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.CampaignCountOrderByAggregateInput
   _max?: Prisma.CampaignMaxOrderByAggregateInput
@@ -247,21 +247,21 @@ export type CampaignScalarWhereWithAggregatesInput = {
   OR?: Prisma.CampaignScalarWhereWithAggregatesInput[]
   NOT?: Prisma.CampaignScalarWhereWithAggregatesInput | Prisma.CampaignScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Campaign"> | string
+  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Campaign"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Campaign"> | Date | string
   name?: Prisma.StringWithAggregatesFilter<"Campaign"> | string
   status?: Prisma.EnumCampaignStatusWithAggregatesFilter<"Campaign"> | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeWithAggregatesFilter<"Campaign"> | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeWithAggregatesFilter<"Campaign"> | Date | string
-  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Campaign"> | Date | string
   scheduledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Campaign"> | Date | string | null
 }
 
 export type CampaignCreateInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
   emailConfig?: Prisma.EmailConfigCreateNestedOneWithoutCampaignInput
   deliveryLogs?: Prisma.DeliveryLogCreateNestedManyWithoutCampaignInput
@@ -269,11 +269,11 @@ export type CampaignCreateInput = {
 
 export type CampaignUncheckedCreateInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
   emailConfig?: Prisma.EmailConfigUncheckedCreateNestedOneWithoutCampaignInput
   deliveryLogs?: Prisma.DeliveryLogUncheckedCreateNestedManyWithoutCampaignInput
@@ -281,11 +281,11 @@ export type CampaignUncheckedCreateInput = {
 
 export type CampaignUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailConfig?: Prisma.EmailConfigUpdateOneWithoutCampaignNestedInput
   deliveryLogs?: Prisma.DeliveryLogUpdateManyWithoutCampaignNestedInput
@@ -293,11 +293,11 @@ export type CampaignUpdateInput = {
 
 export type CampaignUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailConfig?: Prisma.EmailConfigUncheckedUpdateOneWithoutCampaignNestedInput
   deliveryLogs?: Prisma.DeliveryLogUncheckedUpdateManyWithoutCampaignNestedInput
@@ -305,61 +305,61 @@ export type CampaignUncheckedUpdateInput = {
 
 export type CampaignCreateManyInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
 }
 
 export type CampaignUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CampaignUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type CampaignCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   status?: Prisma.SortOrder
   channelType?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
 }
 
 export type CampaignMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   status?: Prisma.SortOrder
   channelType?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
 }
 
 export type CampaignMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
   status?: Prisma.SortOrder
   channelType?: Prisma.SortOrder
-  createdAt?: Prisma.SortOrder
-  updatedAt?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
 }
 
@@ -406,22 +406,22 @@ export type CampaignUpdateOneRequiredWithoutDeliveryLogsNestedInput = {
 
 export type CampaignCreateWithoutEmailConfigInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
   deliveryLogs?: Prisma.DeliveryLogCreateNestedManyWithoutCampaignInput
 }
 
 export type CampaignUncheckedCreateWithoutEmailConfigInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
   deliveryLogs?: Prisma.DeliveryLogUncheckedCreateNestedManyWithoutCampaignInput
 }
@@ -444,44 +444,44 @@ export type CampaignUpdateToOneWithWhereWithoutEmailConfigInput = {
 
 export type CampaignUpdateWithoutEmailConfigInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveryLogs?: Prisma.DeliveryLogUpdateManyWithoutCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutEmailConfigInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   deliveryLogs?: Prisma.DeliveryLogUncheckedUpdateManyWithoutCampaignNestedInput
 }
 
 export type CampaignCreateWithoutDeliveryLogsInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
   emailConfig?: Prisma.EmailConfigCreateNestedOneWithoutCampaignInput
 }
 
 export type CampaignUncheckedCreateWithoutDeliveryLogsInput = {
   id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
   name: string
   status?: $Enums.CampaignStatus
   channelType: $Enums.ChannelType
-  createdAt?: Date | string
-  updatedAt?: Date | string
   scheduledAt?: Date | string | null
   emailConfig?: Prisma.EmailConfigUncheckedCreateNestedOneWithoutCampaignInput
 }
@@ -504,22 +504,22 @@ export type CampaignUpdateToOneWithWhereWithoutDeliveryLogsInput = {
 
 export type CampaignUpdateWithoutDeliveryLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailConfig?: Prisma.EmailConfigUpdateOneWithoutCampaignNestedInput
 }
 
 export type CampaignUncheckedUpdateWithoutDeliveryLogsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumCampaignStatusFieldUpdateOperationsInput | $Enums.CampaignStatus
   channelType?: Prisma.EnumChannelTypeFieldUpdateOperationsInput | $Enums.ChannelType
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   emailConfig?: Prisma.EmailConfigUncheckedUpdateOneWithoutCampaignNestedInput
 }
@@ -557,11 +557,11 @@ export type CampaignCountOutputTypeCountDeliveryLogsArgs<ExtArgs extends runtime
 
 export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   name?: boolean
   status?: boolean
   channelType?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   scheduledAt?: boolean
   emailConfig?: boolean | Prisma.Campaign$emailConfigArgs<ExtArgs>
   deliveryLogs?: boolean | Prisma.Campaign$deliveryLogsArgs<ExtArgs>
@@ -570,35 +570,35 @@ export type CampaignSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type CampaignSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   name?: boolean
   status?: boolean
   channelType?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   scheduledAt?: boolean
 }, ExtArgs["result"]["campaign"]>
 
 export type CampaignSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   name?: boolean
   status?: boolean
   channelType?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   scheduledAt?: boolean
 }, ExtArgs["result"]["campaign"]>
 
 export type CampaignSelectScalar = {
   id?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
   name?: boolean
   status?: boolean
   channelType?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
   scheduledAt?: boolean
 }
 
-export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "status" | "channelType" | "createdAt" | "updatedAt" | "scheduledAt", ExtArgs["result"]["campaign"]>
+export type CampaignOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "status" | "channelType" | "scheduledAt", ExtArgs["result"]["campaign"]>
 export type CampaignInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   emailConfig?: boolean | Prisma.Campaign$emailConfigArgs<ExtArgs>
   deliveryLogs?: boolean | Prisma.Campaign$deliveryLogsArgs<ExtArgs>
@@ -615,11 +615,11 @@ export type $CampaignPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    createdAt: Date
+    updatedAt: Date
     name: string
     status: $Enums.CampaignStatus
     channelType: $Enums.ChannelType
-    createdAt: Date
-    updatedAt: Date
     scheduledAt: Date | null
   }, ExtArgs["result"]["campaign"]>
   composites: {}
@@ -1047,11 +1047,11 @@ export interface Prisma__CampaignClient<T, Null = never, ExtArgs extends runtime
  */
 export interface CampaignFieldRefs {
   readonly id: Prisma.FieldRef<"Campaign", 'String'>
+  readonly createdAt: Prisma.FieldRef<"Campaign", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Campaign", 'DateTime'>
   readonly name: Prisma.FieldRef<"Campaign", 'String'>
   readonly status: Prisma.FieldRef<"Campaign", 'CampaignStatus'>
   readonly channelType: Prisma.FieldRef<"Campaign", 'ChannelType'>
-  readonly createdAt: Prisma.FieldRef<"Campaign", 'DateTime'>
-  readonly updatedAt: Prisma.FieldRef<"Campaign", 'DateTime'>
   readonly scheduledAt: Prisma.FieldRef<"Campaign", 'DateTime'>
 }
     

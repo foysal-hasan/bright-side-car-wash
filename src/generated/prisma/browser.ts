@@ -123,6 +123,11 @@ export type EmailConfig = Prisma.EmailConfigModel
  */
 export type DeliveryLog = Prisma.DeliveryLogModel
 /**
+ * Model LeadGroup
+ * 
+ */
+export type LeadGroup = Prisma.LeadGroupModel
+/**
  * Model Template
  * 
  */

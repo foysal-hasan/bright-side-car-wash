@@ -275,6 +275,7 @@ export type LeadWhereInput = {
   creator?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assignee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
+  leadGroups?: Prisma.LeadGroupListRelationFilter
 }
 
 export type LeadOrderByWithRelationInput = {
@@ -300,6 +301,7 @@ export type LeadOrderByWithRelationInput = {
   creator?: Prisma.UserOrderByWithRelationInput
   assignee?: Prisma.UserOrderByWithRelationInput
   assignment_history?: Prisma.LeadAssignmentHistoryOrderByRelationAggregateInput
+  leadGroups?: Prisma.LeadGroupOrderByRelationAggregateInput
 }
 
 export type LeadWhereUniqueInput = Prisma.AtLeast<{
@@ -328,6 +330,7 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   creator?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assignee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
+  leadGroups?: Prisma.LeadGroupListRelationFilter
 }, "id">
 
 export type LeadOrderByWithAggregationInput = {
@@ -396,6 +399,7 @@ export type LeadCreateInput = {
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUncheckedCreateInput = {
@@ -418,6 +422,7 @@ export type LeadUncheckedCreateInput = {
   assigned_to_id?: string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUpdateInput = {
@@ -440,6 +445,7 @@ export type LeadUpdateInput = {
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateInput = {
@@ -462,6 +468,7 @@ export type LeadUncheckedUpdateInput = {
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadCreateManyInput = {
@@ -780,6 +787,44 @@ export type LeadUpdateOneRequiredWithoutActivity_timelinesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutActivity_timelinesInput, Prisma.LeadUpdateWithoutActivity_timelinesInput>, Prisma.LeadUncheckedUpdateWithoutActivity_timelinesInput>
 }
 
+export type LeadCreateNestedManyWithoutLeadGroupsInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutLeadGroupsInput, Prisma.LeadUncheckedCreateWithoutLeadGroupsInput> | Prisma.LeadCreateWithoutLeadGroupsInput[] | Prisma.LeadUncheckedCreateWithoutLeadGroupsInput[]
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutLeadGroupsInput | Prisma.LeadCreateOrConnectWithoutLeadGroupsInput[]
+  connect?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+}
+
+export type LeadUncheckedCreateNestedManyWithoutLeadGroupsInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutLeadGroupsInput, Prisma.LeadUncheckedCreateWithoutLeadGroupsInput> | Prisma.LeadCreateWithoutLeadGroupsInput[] | Prisma.LeadUncheckedCreateWithoutLeadGroupsInput[]
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutLeadGroupsInput | Prisma.LeadCreateOrConnectWithoutLeadGroupsInput[]
+  connect?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+}
+
+export type LeadUpdateManyWithoutLeadGroupsNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutLeadGroupsInput, Prisma.LeadUncheckedCreateWithoutLeadGroupsInput> | Prisma.LeadCreateWithoutLeadGroupsInput[] | Prisma.LeadUncheckedCreateWithoutLeadGroupsInput[]
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutLeadGroupsInput | Prisma.LeadCreateOrConnectWithoutLeadGroupsInput[]
+  upsert?: Prisma.LeadUpsertWithWhereUniqueWithoutLeadGroupsInput | Prisma.LeadUpsertWithWhereUniqueWithoutLeadGroupsInput[]
+  set?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  disconnect?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  delete?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  connect?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  update?: Prisma.LeadUpdateWithWhereUniqueWithoutLeadGroupsInput | Prisma.LeadUpdateWithWhereUniqueWithoutLeadGroupsInput[]
+  updateMany?: Prisma.LeadUpdateManyWithWhereWithoutLeadGroupsInput | Prisma.LeadUpdateManyWithWhereWithoutLeadGroupsInput[]
+  deleteMany?: Prisma.LeadScalarWhereInput | Prisma.LeadScalarWhereInput[]
+}
+
+export type LeadUncheckedUpdateManyWithoutLeadGroupsNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutLeadGroupsInput, Prisma.LeadUncheckedCreateWithoutLeadGroupsInput> | Prisma.LeadCreateWithoutLeadGroupsInput[] | Prisma.LeadUncheckedCreateWithoutLeadGroupsInput[]
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutLeadGroupsInput | Prisma.LeadCreateOrConnectWithoutLeadGroupsInput[]
+  upsert?: Prisma.LeadUpsertWithWhereUniqueWithoutLeadGroupsInput | Prisma.LeadUpsertWithWhereUniqueWithoutLeadGroupsInput[]
+  set?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  disconnect?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  delete?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  connect?: Prisma.LeadWhereUniqueInput | Prisma.LeadWhereUniqueInput[]
+  update?: Prisma.LeadUpdateWithWhereUniqueWithoutLeadGroupsInput | Prisma.LeadUpdateWithWhereUniqueWithoutLeadGroupsInput[]
+  updateMany?: Prisma.LeadUpdateManyWithWhereWithoutLeadGroupsInput | Prisma.LeadUpdateManyWithWhereWithoutLeadGroupsInput[]
+  deleteMany?: Prisma.LeadScalarWhereInput | Prisma.LeadScalarWhereInput[]
+}
+
 export type LeadCreateWithoutCreatorInput = {
   id?: string
   created_at?: Date | string
@@ -799,6 +844,7 @@ export type LeadCreateWithoutCreatorInput = {
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUncheckedCreateWithoutCreatorInput = {
@@ -820,6 +866,7 @@ export type LeadUncheckedCreateWithoutCreatorInput = {
   assigned_to_id?: string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadCreateOrConnectWithoutCreatorInput = {
@@ -851,6 +898,7 @@ export type LeadCreateWithoutAssigneeInput = {
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUncheckedCreateWithoutAssigneeInput = {
@@ -872,6 +920,7 @@ export type LeadUncheckedCreateWithoutAssigneeInput = {
   created_by_id?: string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadCreateOrConnectWithoutAssigneeInput = {
@@ -958,6 +1007,7 @@ export type LeadCreateWithoutStageInput = {
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUncheckedCreateWithoutStageInput = {
@@ -979,6 +1029,7 @@ export type LeadUncheckedCreateWithoutStageInput = {
   assigned_to_id?: string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadCreateOrConnectWithoutStageInput = {
@@ -1026,6 +1077,7 @@ export type LeadCreateWithoutAssignment_historyInput = {
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUncheckedCreateWithoutAssignment_historyInput = {
@@ -1047,6 +1099,7 @@ export type LeadUncheckedCreateWithoutAssignment_historyInput = {
   created_by_id?: string | null
   assigned_to_id?: string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadCreateOrConnectWithoutAssignment_historyInput = {
@@ -1084,6 +1137,7 @@ export type LeadUpdateWithoutAssignment_historyInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutAssignment_historyInput = {
@@ -1105,6 +1159,7 @@ export type LeadUncheckedUpdateWithoutAssignment_historyInput = {
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadCreateWithoutActivity_timelinesInput = {
@@ -1126,6 +1181,7 @@ export type LeadCreateWithoutActivity_timelinesInput = {
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadUncheckedCreateWithoutActivity_timelinesInput = {
@@ -1147,6 +1203,7 @@ export type LeadUncheckedCreateWithoutActivity_timelinesInput = {
   created_by_id?: string | null
   assigned_to_id?: string | null
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
 }
 
 export type LeadCreateOrConnectWithoutActivity_timelinesInput = {
@@ -1184,6 +1241,7 @@ export type LeadUpdateWithoutActivity_timelinesInput = {
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutActivity_timelinesInput = {
@@ -1205,6 +1263,72 @@ export type LeadUncheckedUpdateWithoutActivity_timelinesInput = {
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
+}
+
+export type LeadCreateWithoutLeadGroupsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  service?: string | null
+  vehicle?: string | null
+  source?: string | null
+  deposit_status?: $Enums.DepositStatus | null
+  priority?: $Enums.LeadPriority | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
+  attachments?: Prisma.LeadCreateattachmentsInput | string[]
+  stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
+  activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
+  creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
+  assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+}
+
+export type LeadUncheckedCreateWithoutLeadGroupsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  service?: string | null
+  vehicle?: string | null
+  source?: string | null
+  deposit_status?: $Enums.DepositStatus | null
+  priority?: $Enums.LeadPriority | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
+  attachments?: Prisma.LeadCreateattachmentsInput | string[]
+  stage_id?: string | null
+  created_by_id?: string | null
+  assigned_to_id?: string | null
+  activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+}
+
+export type LeadCreateOrConnectWithoutLeadGroupsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeadCreateWithoutLeadGroupsInput, Prisma.LeadUncheckedCreateWithoutLeadGroupsInput>
+}
+
+export type LeadUpsertWithWhereUniqueWithoutLeadGroupsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  update: Prisma.XOR<Prisma.LeadUpdateWithoutLeadGroupsInput, Prisma.LeadUncheckedUpdateWithoutLeadGroupsInput>
+  create: Prisma.XOR<Prisma.LeadCreateWithoutLeadGroupsInput, Prisma.LeadUncheckedCreateWithoutLeadGroupsInput>
+}
+
+export type LeadUpdateWithWhereUniqueWithoutLeadGroupsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  data: Prisma.XOR<Prisma.LeadUpdateWithoutLeadGroupsInput, Prisma.LeadUncheckedUpdateWithoutLeadGroupsInput>
+}
+
+export type LeadUpdateManyWithWhereWithoutLeadGroupsInput = {
+  where: Prisma.LeadScalarWhereInput
+  data: Prisma.XOR<Prisma.LeadUpdateManyMutationInput, Prisma.LeadUncheckedUpdateManyWithoutLeadGroupsInput>
 }
 
 export type LeadCreateManyCreatorInput = {
@@ -1264,6 +1388,7 @@ export type LeadUpdateWithoutCreatorInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutCreatorInput = {
@@ -1285,6 +1410,7 @@ export type LeadUncheckedUpdateWithoutCreatorInput = {
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutCreatorInput = {
@@ -1325,6 +1451,7 @@ export type LeadUpdateWithoutAssigneeInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutAssigneeInput = {
@@ -1346,6 +1473,7 @@ export type LeadUncheckedUpdateWithoutAssigneeInput = {
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutAssigneeInput = {
@@ -1405,6 +1533,7 @@ export type LeadUpdateWithoutStageInput = {
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutStageInput = {
@@ -1426,6 +1555,7 @@ export type LeadUncheckedUpdateWithoutStageInput = {
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutStageInput = {
@@ -1447,6 +1577,70 @@ export type LeadUncheckedUpdateManyWithoutStageInput = {
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
+export type LeadUpdateWithoutLeadGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
+  priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
+  attachments?: Prisma.LeadUpdateattachmentsInput | string[]
+  stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
+  activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
+  creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadUncheckedUpdateWithoutLeadGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
+  priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
+  attachments?: Prisma.LeadUpdateattachmentsInput | string[]
+  stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadUncheckedUpdateManyWithoutLeadGroupsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
+  priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
+  attachments?: Prisma.LeadUpdateattachmentsInput | string[]
+  stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
 
 /**
  * Count Type LeadCountOutputType
@@ -1455,11 +1649,13 @@ export type LeadUncheckedUpdateManyWithoutStageInput = {
 export type LeadCountOutputType = {
   activity_timelines: number
   assignment_history: number
+  leadGroups: number
 }
 
 export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   activity_timelines?: boolean | LeadCountOutputTypeCountActivity_timelinesArgs
   assignment_history?: boolean | LeadCountOutputTypeCountAssignment_historyArgs
+  leadGroups?: boolean | LeadCountOutputTypeCountLeadGroupsArgs
 }
 
 /**
@@ -1486,6 +1682,13 @@ export type LeadCountOutputTypeCountAssignment_historyArgs<ExtArgs extends runti
   where?: Prisma.LeadAssignmentHistoryWhereInput
 }
 
+/**
+ * LeadCountOutputType without action
+ */
+export type LeadCountOutputTypeCountLeadGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.LeadGroupWhereInput
+}
+
 
 export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1510,6 +1713,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   creator?: boolean | Prisma.Lead$creatorArgs<ExtArgs>
   assignee?: boolean | Prisma.Lead$assigneeArgs<ExtArgs>
   assignment_history?: boolean | Prisma.Lead$assignment_historyArgs<ExtArgs>
+  leadGroups?: boolean | Prisma.Lead$leadGroupsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
 
@@ -1586,6 +1790,7 @@ export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   creator?: boolean | Prisma.Lead$creatorArgs<ExtArgs>
   assignee?: boolean | Prisma.Lead$assigneeArgs<ExtArgs>
   assignment_history?: boolean | Prisma.Lead$assignment_historyArgs<ExtArgs>
+  leadGroups?: boolean | Prisma.Lead$leadGroupsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LeadIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1607,6 +1812,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     creator: Prisma.$UserPayload<ExtArgs> | null
     assignee: Prisma.$UserPayload<ExtArgs> | null
     assignment_history: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>[]
+    leadGroups: Prisma.$LeadGroupPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2025,6 +2231,7 @@ export interface Prisma__LeadClient<T, Null = never, ExtArgs extends runtime.Typ
   creator<T extends Prisma.Lead$creatorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$creatorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assignee<T extends Prisma.Lead$assigneeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$assigneeArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   assignment_history<T extends Prisma.Lead$assignment_historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$assignment_historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadAssignmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  leadGroups<T extends Prisma.Lead$leadGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$leadGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2569,6 +2776,30 @@ export type Lead$assignment_historyArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.LeadAssignmentHistoryScalarFieldEnum | Prisma.LeadAssignmentHistoryScalarFieldEnum[]
+}
+
+/**
+ * Lead.leadGroups
+ */
+export type Lead$leadGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LeadGroup
+   */
+  select?: Prisma.LeadGroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the LeadGroup
+   */
+  omit?: Prisma.LeadGroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeadGroupInclude<ExtArgs> | null
+  where?: Prisma.LeadGroupWhereInput
+  orderBy?: Prisma.LeadGroupOrderByWithRelationInput | Prisma.LeadGroupOrderByWithRelationInput[]
+  cursor?: Prisma.LeadGroupWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.LeadGroupScalarFieldEnum | Prisma.LeadGroupScalarFieldEnum[]
 }
 
 /**

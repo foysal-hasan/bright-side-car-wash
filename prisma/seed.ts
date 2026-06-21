@@ -105,9 +105,16 @@ async function seedUsers() {
 }
 
   async function seedRoleAndPermission() {
-    const RESOURCES = ['user', 'billing', 'conversation', 'lead', 'stage', 'campaign', 'activity-log'];
+    const RESOURCES = ['user', 'billing', 'lead', 'stage', 'campaign', 'activity-log', 'template', 'lead_group'];
     const ACTIONS = ['create', 'read', 'update', 'delete'];
-    const SPECIAL_PERMISSIONS = ['admin_override:delete', 'system:maintenance', 'staff:invite', 'lead:assign', 'conversation:assign', 'conversation:close'];
+    const SPECIAL_PERMISSIONS = [
+      'admin_override:delete', 
+      'system:maintenance', 
+      'staff:invite', 
+      'lead:assign',
+      'lead_group:connect',
+      'lead_group:disconnect',
+    ];
 
     console.log('🔄 Starting permission seeding with ioredis...');
 
@@ -155,7 +162,7 @@ async function seedUsers() {
     });
 
     const managerAllowedPerms = upsertedPermissions.filter(
-      (p) => p.name.startsWith('lead:') || p.name.startsWith('conversation:')
+      (p) => p.name.startsWith('lead:') || p.name.startsWith('lead_group:')
     );
     await prisma.rolePermission.createMany({
       data: managerAllowedPerms.map((p) => ({ role_id: managerRole.id, permission_id: p.id })),

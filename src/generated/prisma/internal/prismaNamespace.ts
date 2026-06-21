@@ -405,6 +405,7 @@ export const ModelName = {
   Campaign: 'Campaign',
   EmailConfig: 'EmailConfig',
   DeliveryLog: 'DeliveryLog',
+  LeadGroup: 'LeadGroup',
   Template: 'Template',
   EmailTemplate: 'EmailTemplate'
 } as const
@@ -422,7 +423,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "campaign" | "emailConfig" | "deliveryLog" | "template" | "emailTemplate"
+    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1980,6 +1981,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    LeadGroup: {
+      payload: Prisma.$LeadGroupPayload<ExtArgs>
+      fields: Prisma.LeadGroupFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.LeadGroupFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.LeadGroupFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>
+        }
+        findFirst: {
+          args: Prisma.LeadGroupFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.LeadGroupFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>
+        }
+        findMany: {
+          args: Prisma.LeadGroupFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>[]
+        }
+        create: {
+          args: Prisma.LeadGroupCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>
+        }
+        createMany: {
+          args: Prisma.LeadGroupCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.LeadGroupCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>[]
+        }
+        delete: {
+          args: Prisma.LeadGroupDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>
+        }
+        update: {
+          args: Prisma.LeadGroupUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>
+        }
+        deleteMany: {
+          args: Prisma.LeadGroupDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.LeadGroupUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.LeadGroupUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>[]
+        }
+        upsert: {
+          args: Prisma.LeadGroupUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$LeadGroupPayload>
+        }
+        aggregate: {
+          args: Prisma.LeadGroupAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateLeadGroup>
+        }
+        groupBy: {
+          args: Prisma.LeadGroupGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadGroupGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.LeadGroupCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.LeadGroupCountAggregateOutputType> | number
+        }
+      }
+    }
     Template: {
       payload: Prisma.$TemplatePayload<ExtArgs>
       fields: Prisma.TemplateFieldRefs
@@ -2451,11 +2526,11 @@ export type LeadActivityTimelineScalarFieldEnum = (typeof LeadActivityTimelineSc
 
 export const CampaignScalarFieldEnum = {
   id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   name: 'name',
   status: 'status',
   channelType: 'channelType',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
   scheduledAt: 'scheduledAt'
 } as const
 
@@ -2471,7 +2546,8 @@ export const EmailConfigScalarFieldEnum = {
   senderEmail: 'senderEmail',
   targetListIds: 'targetListIds',
   providerCampaignId: 'providerCampaignId',
-  templateId: 'templateId'
+  templateId: 'templateId',
+  leadGroupId: 'leadGroupId'
 } as const
 
 export type EmailConfigScalarFieldEnum = (typeof EmailConfigScalarFieldEnum)[keyof typeof EmailConfigScalarFieldEnum]
@@ -2489,6 +2565,18 @@ export const DeliveryLogScalarFieldEnum = {
 } as const
 
 export type DeliveryLogScalarFieldEnum = (typeof DeliveryLogScalarFieldEnum)[keyof typeof DeliveryLogScalarFieldEnum]
+
+
+export const LeadGroupScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  description: 'description',
+  brevoListId: 'brevoListId'
+} as const
+
+export type LeadGroupScalarFieldEnum = (typeof LeadGroupScalarFieldEnum)[keyof typeof LeadGroupScalarFieldEnum]
 
 
 export const TemplateScalarFieldEnum = {
@@ -2852,6 +2940,7 @@ export type GlobalOmitConfig = {
   campaign?: Prisma.CampaignOmit
   emailConfig?: Prisma.EmailConfigOmit
   deliveryLog?: Prisma.DeliveryLogOmit
+  leadGroup?: Prisma.LeadGroupOmit
   template?: Prisma.TemplateOmit
   emailTemplate?: Prisma.EmailTemplateOmit
 }

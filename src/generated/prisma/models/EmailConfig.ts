@@ -43,6 +43,7 @@ export type EmailConfigMinAggregateOutputType = {
   senderEmail: string | null
   providerCampaignId: string | null
   templateId: string | null
+  leadGroupId: string | null
 }
 
 export type EmailConfigMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type EmailConfigMaxAggregateOutputType = {
   senderEmail: string | null
   providerCampaignId: string | null
   templateId: string | null
+  leadGroupId: string | null
 }
 
 export type EmailConfigCountAggregateOutputType = {
@@ -66,6 +68,7 @@ export type EmailConfigCountAggregateOutputType = {
   targetListIds: number
   providerCampaignId: number
   templateId: number
+  leadGroupId: number
   _all: number
 }
 
@@ -87,6 +90,7 @@ export type EmailConfigMinAggregateInputType = {
   senderEmail?: true
   providerCampaignId?: true
   templateId?: true
+  leadGroupId?: true
 }
 
 export type EmailConfigMaxAggregateInputType = {
@@ -98,6 +102,7 @@ export type EmailConfigMaxAggregateInputType = {
   senderEmail?: true
   providerCampaignId?: true
   templateId?: true
+  leadGroupId?: true
 }
 
 export type EmailConfigCountAggregateInputType = {
@@ -110,6 +115,7 @@ export type EmailConfigCountAggregateInputType = {
   targetListIds?: true
   providerCampaignId?: true
   templateId?: true
+  leadGroupId?: true
   _all?: true
 }
 
@@ -209,6 +215,7 @@ export type EmailConfigGroupByOutputType = {
   targetListIds: number[]
   providerCampaignId: string | null
   templateId: string | null
+  leadGroupId: string
   _count: EmailConfigCountAggregateOutputType | null
   _avg: EmailConfigAvgAggregateOutputType | null
   _sum: EmailConfigSumAggregateOutputType | null
@@ -244,8 +251,10 @@ export type EmailConfigWhereInput = {
   targetListIds?: Prisma.IntNullableListFilter<"EmailConfig">
   providerCampaignId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
   templateId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
+  leadGroupId?: Prisma.StringFilter<"EmailConfig"> | string
   campaign?: Prisma.XOR<Prisma.CampaignScalarRelationFilter, Prisma.CampaignWhereInput>
   template?: Prisma.XOR<Prisma.TemplateNullableScalarRelationFilter, Prisma.TemplateWhereInput> | null
+  leadGroup?: Prisma.XOR<Prisma.LeadGroupScalarRelationFilter, Prisma.LeadGroupWhereInput>
 }
 
 export type EmailConfigOrderByWithRelationInput = {
@@ -258,8 +267,10 @@ export type EmailConfigOrderByWithRelationInput = {
   targetListIds?: Prisma.SortOrder
   providerCampaignId?: Prisma.SortOrderInput | Prisma.SortOrder
   templateId?: Prisma.SortOrderInput | Prisma.SortOrder
+  leadGroupId?: Prisma.SortOrder
   campaign?: Prisma.CampaignOrderByWithRelationInput
   template?: Prisma.TemplateOrderByWithRelationInput
+  leadGroup?: Prisma.LeadGroupOrderByWithRelationInput
 }
 
 export type EmailConfigWhereUniqueInput = Prisma.AtLeast<{
@@ -275,8 +286,10 @@ export type EmailConfigWhereUniqueInput = Prisma.AtLeast<{
   senderEmail?: Prisma.StringFilter<"EmailConfig"> | string
   targetListIds?: Prisma.IntNullableListFilter<"EmailConfig">
   templateId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
+  leadGroupId?: Prisma.StringFilter<"EmailConfig"> | string
   campaign?: Prisma.XOR<Prisma.CampaignScalarRelationFilter, Prisma.CampaignWhereInput>
   template?: Prisma.XOR<Prisma.TemplateNullableScalarRelationFilter, Prisma.TemplateWhereInput> | null
+  leadGroup?: Prisma.XOR<Prisma.LeadGroupScalarRelationFilter, Prisma.LeadGroupWhereInput>
 }, "id" | "campaignId" | "providerCampaignId">
 
 export type EmailConfigOrderByWithAggregationInput = {
@@ -289,6 +302,7 @@ export type EmailConfigOrderByWithAggregationInput = {
   targetListIds?: Prisma.SortOrder
   providerCampaignId?: Prisma.SortOrderInput | Prisma.SortOrder
   templateId?: Prisma.SortOrderInput | Prisma.SortOrder
+  leadGroupId?: Prisma.SortOrder
   _count?: Prisma.EmailConfigCountOrderByAggregateInput
   _avg?: Prisma.EmailConfigAvgOrderByAggregateInput
   _max?: Prisma.EmailConfigMaxOrderByAggregateInput
@@ -309,6 +323,7 @@ export type EmailConfigScalarWhereWithAggregatesInput = {
   targetListIds?: Prisma.IntNullableListFilter<"EmailConfig">
   providerCampaignId?: Prisma.StringNullableWithAggregatesFilter<"EmailConfig"> | string | null
   templateId?: Prisma.StringNullableWithAggregatesFilter<"EmailConfig"> | string | null
+  leadGroupId?: Prisma.StringWithAggregatesFilter<"EmailConfig"> | string
 }
 
 export type EmailConfigCreateInput = {
@@ -321,6 +336,7 @@ export type EmailConfigCreateInput = {
   providerCampaignId?: string | null
   campaign: Prisma.CampaignCreateNestedOneWithoutEmailConfigInput
   template?: Prisma.TemplateCreateNestedOneWithoutEmailCampaignsInput
+  leadGroup: Prisma.LeadGroupCreateNestedOneWithoutEmailCampaignsInput
 }
 
 export type EmailConfigUncheckedCreateInput = {
@@ -333,6 +349,7 @@ export type EmailConfigUncheckedCreateInput = {
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
   templateId?: string | null
+  leadGroupId: string
 }
 
 export type EmailConfigUpdateInput = {
@@ -345,6 +362,7 @@ export type EmailConfigUpdateInput = {
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaign?: Prisma.CampaignUpdateOneRequiredWithoutEmailConfigNestedInput
   template?: Prisma.TemplateUpdateOneWithoutEmailCampaignsNestedInput
+  leadGroup?: Prisma.LeadGroupUpdateOneRequiredWithoutEmailCampaignsNestedInput
 }
 
 export type EmailConfigUncheckedUpdateInput = {
@@ -357,6 +375,7 @@ export type EmailConfigUncheckedUpdateInput = {
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leadGroupId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EmailConfigCreateManyInput = {
@@ -369,6 +388,7 @@ export type EmailConfigCreateManyInput = {
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
   templateId?: string | null
+  leadGroupId: string
 }
 
 export type EmailConfigUpdateManyMutationInput = {
@@ -391,6 +411,7 @@ export type EmailConfigUncheckedUpdateManyInput = {
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leadGroupId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EmailConfigNullableScalarRelationFilter = {
@@ -416,6 +437,7 @@ export type EmailConfigCountOrderByAggregateInput = {
   targetListIds?: Prisma.SortOrder
   providerCampaignId?: Prisma.SortOrder
   templateId?: Prisma.SortOrder
+  leadGroupId?: Prisma.SortOrder
 }
 
 export type EmailConfigAvgOrderByAggregateInput = {
@@ -431,6 +453,7 @@ export type EmailConfigMaxOrderByAggregateInput = {
   senderEmail?: Prisma.SortOrder
   providerCampaignId?: Prisma.SortOrder
   templateId?: Prisma.SortOrder
+  leadGroupId?: Prisma.SortOrder
 }
 
 export type EmailConfigMinOrderByAggregateInput = {
@@ -442,6 +465,7 @@ export type EmailConfigMinOrderByAggregateInput = {
   senderEmail?: Prisma.SortOrder
   providerCampaignId?: Prisma.SortOrder
   templateId?: Prisma.SortOrder
+  leadGroupId?: Prisma.SortOrder
 }
 
 export type EmailConfigSumOrderByAggregateInput = {
@@ -499,6 +523,48 @@ export type EmailConfigUpdatetargetListIdsInput = {
   push?: number | number[]
 }
 
+export type EmailConfigCreateNestedManyWithoutLeadGroupInput = {
+  create?: Prisma.XOR<Prisma.EmailConfigCreateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput> | Prisma.EmailConfigCreateWithoutLeadGroupInput[] | Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput[]
+  connectOrCreate?: Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput | Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput[]
+  createMany?: Prisma.EmailConfigCreateManyLeadGroupInputEnvelope
+  connect?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+}
+
+export type EmailConfigUncheckedCreateNestedManyWithoutLeadGroupInput = {
+  create?: Prisma.XOR<Prisma.EmailConfigCreateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput> | Prisma.EmailConfigCreateWithoutLeadGroupInput[] | Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput[]
+  connectOrCreate?: Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput | Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput[]
+  createMany?: Prisma.EmailConfigCreateManyLeadGroupInputEnvelope
+  connect?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+}
+
+export type EmailConfigUpdateManyWithoutLeadGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.EmailConfigCreateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput> | Prisma.EmailConfigCreateWithoutLeadGroupInput[] | Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput[]
+  connectOrCreate?: Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput | Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput[]
+  upsert?: Prisma.EmailConfigUpsertWithWhereUniqueWithoutLeadGroupInput | Prisma.EmailConfigUpsertWithWhereUniqueWithoutLeadGroupInput[]
+  createMany?: Prisma.EmailConfigCreateManyLeadGroupInputEnvelope
+  set?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  disconnect?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  delete?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  connect?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  update?: Prisma.EmailConfigUpdateWithWhereUniqueWithoutLeadGroupInput | Prisma.EmailConfigUpdateWithWhereUniqueWithoutLeadGroupInput[]
+  updateMany?: Prisma.EmailConfigUpdateManyWithWhereWithoutLeadGroupInput | Prisma.EmailConfigUpdateManyWithWhereWithoutLeadGroupInput[]
+  deleteMany?: Prisma.EmailConfigScalarWhereInput | Prisma.EmailConfigScalarWhereInput[]
+}
+
+export type EmailConfigUncheckedUpdateManyWithoutLeadGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.EmailConfigCreateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput> | Prisma.EmailConfigCreateWithoutLeadGroupInput[] | Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput[]
+  connectOrCreate?: Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput | Prisma.EmailConfigCreateOrConnectWithoutLeadGroupInput[]
+  upsert?: Prisma.EmailConfigUpsertWithWhereUniqueWithoutLeadGroupInput | Prisma.EmailConfigUpsertWithWhereUniqueWithoutLeadGroupInput[]
+  createMany?: Prisma.EmailConfigCreateManyLeadGroupInputEnvelope
+  set?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  disconnect?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  delete?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  connect?: Prisma.EmailConfigWhereUniqueInput | Prisma.EmailConfigWhereUniqueInput[]
+  update?: Prisma.EmailConfigUpdateWithWhereUniqueWithoutLeadGroupInput | Prisma.EmailConfigUpdateWithWhereUniqueWithoutLeadGroupInput[]
+  updateMany?: Prisma.EmailConfigUpdateManyWithWhereWithoutLeadGroupInput | Prisma.EmailConfigUpdateManyWithWhereWithoutLeadGroupInput[]
+  deleteMany?: Prisma.EmailConfigScalarWhereInput | Prisma.EmailConfigScalarWhereInput[]
+}
+
 export type EmailConfigCreateNestedManyWithoutTemplateInput = {
   create?: Prisma.XOR<Prisma.EmailConfigCreateWithoutTemplateInput, Prisma.EmailConfigUncheckedCreateWithoutTemplateInput> | Prisma.EmailConfigCreateWithoutTemplateInput[] | Prisma.EmailConfigUncheckedCreateWithoutTemplateInput[]
   connectOrCreate?: Prisma.EmailConfigCreateOrConnectWithoutTemplateInput | Prisma.EmailConfigCreateOrConnectWithoutTemplateInput[]
@@ -550,6 +616,7 @@ export type EmailConfigCreateWithoutCampaignInput = {
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
   template?: Prisma.TemplateCreateNestedOneWithoutEmailCampaignsInput
+  leadGroup: Prisma.LeadGroupCreateNestedOneWithoutEmailCampaignsInput
 }
 
 export type EmailConfigUncheckedCreateWithoutCampaignInput = {
@@ -561,6 +628,7 @@ export type EmailConfigUncheckedCreateWithoutCampaignInput = {
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
   templateId?: string | null
+  leadGroupId: string
 }
 
 export type EmailConfigCreateOrConnectWithoutCampaignInput = {
@@ -588,6 +656,7 @@ export type EmailConfigUpdateWithoutCampaignInput = {
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   template?: Prisma.TemplateUpdateOneWithoutEmailCampaignsNestedInput
+  leadGroup?: Prisma.LeadGroupUpdateOneRequiredWithoutEmailCampaignsNestedInput
 }
 
 export type EmailConfigUncheckedUpdateWithoutCampaignInput = {
@@ -599,6 +668,73 @@ export type EmailConfigUncheckedUpdateWithoutCampaignInput = {
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leadGroupId?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type EmailConfigCreateWithoutLeadGroupInput = {
+  id?: string
+  subject: string
+  htmlContent: string
+  senderName: string
+  senderEmail: string
+  targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
+  providerCampaignId?: string | null
+  campaign: Prisma.CampaignCreateNestedOneWithoutEmailConfigInput
+  template?: Prisma.TemplateCreateNestedOneWithoutEmailCampaignsInput
+}
+
+export type EmailConfigUncheckedCreateWithoutLeadGroupInput = {
+  id?: string
+  campaignId: string
+  subject: string
+  htmlContent: string
+  senderName: string
+  senderEmail: string
+  targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
+  providerCampaignId?: string | null
+  templateId?: string | null
+}
+
+export type EmailConfigCreateOrConnectWithoutLeadGroupInput = {
+  where: Prisma.EmailConfigWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmailConfigCreateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput>
+}
+
+export type EmailConfigCreateManyLeadGroupInputEnvelope = {
+  data: Prisma.EmailConfigCreateManyLeadGroupInput | Prisma.EmailConfigCreateManyLeadGroupInput[]
+  skipDuplicates?: boolean
+}
+
+export type EmailConfigUpsertWithWhereUniqueWithoutLeadGroupInput = {
+  where: Prisma.EmailConfigWhereUniqueInput
+  update: Prisma.XOR<Prisma.EmailConfigUpdateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedUpdateWithoutLeadGroupInput>
+  create: Prisma.XOR<Prisma.EmailConfigCreateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedCreateWithoutLeadGroupInput>
+}
+
+export type EmailConfigUpdateWithWhereUniqueWithoutLeadGroupInput = {
+  where: Prisma.EmailConfigWhereUniqueInput
+  data: Prisma.XOR<Prisma.EmailConfigUpdateWithoutLeadGroupInput, Prisma.EmailConfigUncheckedUpdateWithoutLeadGroupInput>
+}
+
+export type EmailConfigUpdateManyWithWhereWithoutLeadGroupInput = {
+  where: Prisma.EmailConfigScalarWhereInput
+  data: Prisma.XOR<Prisma.EmailConfigUpdateManyMutationInput, Prisma.EmailConfigUncheckedUpdateManyWithoutLeadGroupInput>
+}
+
+export type EmailConfigScalarWhereInput = {
+  AND?: Prisma.EmailConfigScalarWhereInput | Prisma.EmailConfigScalarWhereInput[]
+  OR?: Prisma.EmailConfigScalarWhereInput[]
+  NOT?: Prisma.EmailConfigScalarWhereInput | Prisma.EmailConfigScalarWhereInput[]
+  id?: Prisma.StringFilter<"EmailConfig"> | string
+  campaignId?: Prisma.StringFilter<"EmailConfig"> | string
+  subject?: Prisma.StringFilter<"EmailConfig"> | string
+  htmlContent?: Prisma.StringFilter<"EmailConfig"> | string
+  senderName?: Prisma.StringFilter<"EmailConfig"> | string
+  senderEmail?: Prisma.StringFilter<"EmailConfig"> | string
+  targetListIds?: Prisma.IntNullableListFilter<"EmailConfig">
+  providerCampaignId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
+  templateId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
+  leadGroupId?: Prisma.StringFilter<"EmailConfig"> | string
 }
 
 export type EmailConfigCreateWithoutTemplateInput = {
@@ -610,6 +746,7 @@ export type EmailConfigCreateWithoutTemplateInput = {
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
   campaign: Prisma.CampaignCreateNestedOneWithoutEmailConfigInput
+  leadGroup: Prisma.LeadGroupCreateNestedOneWithoutEmailCampaignsInput
 }
 
 export type EmailConfigUncheckedCreateWithoutTemplateInput = {
@@ -621,6 +758,7 @@ export type EmailConfigUncheckedCreateWithoutTemplateInput = {
   senderEmail: string
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
+  leadGroupId: string
 }
 
 export type EmailConfigCreateOrConnectWithoutTemplateInput = {
@@ -649,19 +787,52 @@ export type EmailConfigUpdateManyWithWhereWithoutTemplateInput = {
   data: Prisma.XOR<Prisma.EmailConfigUpdateManyMutationInput, Prisma.EmailConfigUncheckedUpdateManyWithoutTemplateInput>
 }
 
-export type EmailConfigScalarWhereInput = {
-  AND?: Prisma.EmailConfigScalarWhereInput | Prisma.EmailConfigScalarWhereInput[]
-  OR?: Prisma.EmailConfigScalarWhereInput[]
-  NOT?: Prisma.EmailConfigScalarWhereInput | Prisma.EmailConfigScalarWhereInput[]
-  id?: Prisma.StringFilter<"EmailConfig"> | string
-  campaignId?: Prisma.StringFilter<"EmailConfig"> | string
-  subject?: Prisma.StringFilter<"EmailConfig"> | string
-  htmlContent?: Prisma.StringFilter<"EmailConfig"> | string
-  senderName?: Prisma.StringFilter<"EmailConfig"> | string
-  senderEmail?: Prisma.StringFilter<"EmailConfig"> | string
-  targetListIds?: Prisma.IntNullableListFilter<"EmailConfig">
-  providerCampaignId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
-  templateId?: Prisma.StringNullableFilter<"EmailConfig"> | string | null
+export type EmailConfigCreateManyLeadGroupInput = {
+  id?: string
+  campaignId: string
+  subject: string
+  htmlContent: string
+  senderName: string
+  senderEmail: string
+  targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
+  providerCampaignId?: string | null
+  templateId?: string | null
+}
+
+export type EmailConfigUpdateWithoutLeadGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlContent?: Prisma.StringFieldUpdateOperationsInput | string
+  senderName?: Prisma.StringFieldUpdateOperationsInput | string
+  senderEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
+  providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaign?: Prisma.CampaignUpdateOneRequiredWithoutEmailConfigNestedInput
+  template?: Prisma.TemplateUpdateOneWithoutEmailCampaignsNestedInput
+}
+
+export type EmailConfigUncheckedUpdateWithoutLeadGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlContent?: Prisma.StringFieldUpdateOperationsInput | string
+  senderName?: Prisma.StringFieldUpdateOperationsInput | string
+  senderEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
+  providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EmailConfigUncheckedUpdateManyWithoutLeadGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  campaignId?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  htmlContent?: Prisma.StringFieldUpdateOperationsInput | string
+  senderName?: Prisma.StringFieldUpdateOperationsInput | string
+  senderEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
+  providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  templateId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EmailConfigCreateManyTemplateInput = {
@@ -673,6 +844,7 @@ export type EmailConfigCreateManyTemplateInput = {
   senderEmail: string
   targetListIds?: Prisma.EmailConfigCreatetargetListIdsInput | number[]
   providerCampaignId?: string | null
+  leadGroupId: string
 }
 
 export type EmailConfigUpdateWithoutTemplateInput = {
@@ -684,6 +856,7 @@ export type EmailConfigUpdateWithoutTemplateInput = {
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   campaign?: Prisma.CampaignUpdateOneRequiredWithoutEmailConfigNestedInput
+  leadGroup?: Prisma.LeadGroupUpdateOneRequiredWithoutEmailCampaignsNestedInput
 }
 
 export type EmailConfigUncheckedUpdateWithoutTemplateInput = {
@@ -695,6 +868,7 @@ export type EmailConfigUncheckedUpdateWithoutTemplateInput = {
   senderEmail?: Prisma.StringFieldUpdateOperationsInput | string
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leadGroupId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type EmailConfigUncheckedUpdateManyWithoutTemplateInput = {
@@ -706,6 +880,7 @@ export type EmailConfigUncheckedUpdateManyWithoutTemplateInput = {
   senderEmail?: Prisma.StringFieldUpdateOperationsInput | string
   targetListIds?: Prisma.EmailConfigUpdatetargetListIdsInput | number[]
   providerCampaignId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  leadGroupId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -720,8 +895,10 @@ export type EmailConfigSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   targetListIds?: boolean
   providerCampaignId?: boolean
   templateId?: boolean
+  leadGroupId?: boolean
   campaign?: boolean | Prisma.CampaignDefaultArgs<ExtArgs>
   template?: boolean | Prisma.EmailConfig$templateArgs<ExtArgs>
+  leadGroup?: boolean | Prisma.LeadGroupDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["emailConfig"]>
 
 export type EmailConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -734,8 +911,10 @@ export type EmailConfigSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   targetListIds?: boolean
   providerCampaignId?: boolean
   templateId?: boolean
+  leadGroupId?: boolean
   campaign?: boolean | Prisma.CampaignDefaultArgs<ExtArgs>
   template?: boolean | Prisma.EmailConfig$templateArgs<ExtArgs>
+  leadGroup?: boolean | Prisma.LeadGroupDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["emailConfig"]>
 
 export type EmailConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -748,8 +927,10 @@ export type EmailConfigSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   targetListIds?: boolean
   providerCampaignId?: boolean
   templateId?: boolean
+  leadGroupId?: boolean
   campaign?: boolean | Prisma.CampaignDefaultArgs<ExtArgs>
   template?: boolean | Prisma.EmailConfig$templateArgs<ExtArgs>
+  leadGroup?: boolean | Prisma.LeadGroupDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["emailConfig"]>
 
 export type EmailConfigSelectScalar = {
@@ -762,20 +943,24 @@ export type EmailConfigSelectScalar = {
   targetListIds?: boolean
   providerCampaignId?: boolean
   templateId?: boolean
+  leadGroupId?: boolean
 }
 
-export type EmailConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "campaignId" | "subject" | "htmlContent" | "senderName" | "senderEmail" | "targetListIds" | "providerCampaignId" | "templateId", ExtArgs["result"]["emailConfig"]>
+export type EmailConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "campaignId" | "subject" | "htmlContent" | "senderName" | "senderEmail" | "targetListIds" | "providerCampaignId" | "templateId" | "leadGroupId", ExtArgs["result"]["emailConfig"]>
 export type EmailConfigInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   campaign?: boolean | Prisma.CampaignDefaultArgs<ExtArgs>
   template?: boolean | Prisma.EmailConfig$templateArgs<ExtArgs>
+  leadGroup?: boolean | Prisma.LeadGroupDefaultArgs<ExtArgs>
 }
 export type EmailConfigIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   campaign?: boolean | Prisma.CampaignDefaultArgs<ExtArgs>
   template?: boolean | Prisma.EmailConfig$templateArgs<ExtArgs>
+  leadGroup?: boolean | Prisma.LeadGroupDefaultArgs<ExtArgs>
 }
 export type EmailConfigIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   campaign?: boolean | Prisma.CampaignDefaultArgs<ExtArgs>
   template?: boolean | Prisma.EmailConfig$templateArgs<ExtArgs>
+  leadGroup?: boolean | Prisma.LeadGroupDefaultArgs<ExtArgs>
 }
 
 export type $EmailConfigPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -783,6 +968,7 @@ export type $EmailConfigPayload<ExtArgs extends runtime.Types.Extensions.Interna
   objects: {
     campaign: Prisma.$CampaignPayload<ExtArgs>
     template: Prisma.$TemplatePayload<ExtArgs> | null
+    leadGroup: Prisma.$LeadGroupPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -794,6 +980,7 @@ export type $EmailConfigPayload<ExtArgs extends runtime.Types.Extensions.Interna
     targetListIds: number[]
     providerCampaignId: string | null
     templateId: string | null
+    leadGroupId: string
   }, ExtArgs["result"]["emailConfig"]>
   composites: {}
 }
@@ -1190,6 +1377,7 @@ export interface Prisma__EmailConfigClient<T, Null = never, ExtArgs extends runt
   readonly [Symbol.toStringTag]: "PrismaPromise"
   campaign<T extends Prisma.CampaignDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CampaignDefaultArgs<ExtArgs>>): Prisma.Prisma__CampaignClient<runtime.Types.Result.GetResult<Prisma.$CampaignPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   template<T extends Prisma.EmailConfig$templateArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmailConfig$templateArgs<ExtArgs>>): Prisma.Prisma__TemplateClient<runtime.Types.Result.GetResult<Prisma.$TemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  leadGroup<T extends Prisma.LeadGroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeadGroupDefaultArgs<ExtArgs>>): Prisma.Prisma__LeadGroupClient<runtime.Types.Result.GetResult<Prisma.$LeadGroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1228,6 +1416,7 @@ export interface EmailConfigFieldRefs {
   readonly targetListIds: Prisma.FieldRef<"EmailConfig", 'Int[]'>
   readonly providerCampaignId: Prisma.FieldRef<"EmailConfig", 'String'>
   readonly templateId: Prisma.FieldRef<"EmailConfig", 'String'>
+  readonly leadGroupId: Prisma.FieldRef<"EmailConfig", 'String'>
 }
     
 
