@@ -365,7 +365,7 @@ model Lead {
 
   // Relation to Stage
   stage_id String?
-  stage    Stage?  @relation(fields: [stage_id], references: [id])
+  stage    Stage?  @relation(fields: [stage_id], references: [id]) 
 
   // Relation to LeadActivityTimeline
   activity_timelines LeadActivityTimeline[]

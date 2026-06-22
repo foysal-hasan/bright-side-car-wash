@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
 import { DepositStatus, LeadPriority, Prisma } from 'src/generated/prisma/browser';
 import { AssignLeadDto } from './dto/assign-lead.dto';
+import * as XLSX from 'xlsx';
+import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
 
 @Injectable()
 export class LeadService {
@@ -141,6 +143,55 @@ export class LeadService {
       page: Math.max(page || 1, 1),
       limit: Math.min(limit || 10, 100),
     });
+  }
+
+  async exportLeadsToBuffer(query: ExportLeadDto) {
+    // 1. Compile filters using your existing where clause builder framework
+    // (Replace `this.buildWhereClause` with your service's structural path reference)
+    const { sort_by, sort_order } = query;
+    const where = this.buildWhereClause(query);
+    const orderBy = this.buildOrderBy(sort_by, sort_order);
+
+    // 2. Fetch all matching leads from DB
+    const leads = await this.prisma.lead.findMany({
+      where,
+      orderBy,
+      include: {
+        stage: { select: { name: true } },
+        assignee: { select: { name: true } },
+      },
+    });
+
+    // 3. Flatten complex database models into table spreadsheet columns
+    const flattenedRows = leads.map((lead) => ({
+      ID: lead.id,
+      Name: lead.name || '',
+      Email: lead.email || '',
+      Phone: lead.phone || '',
+      Service: lead.service || '',
+      Vehicle: lead.vehicle || '',
+      Source: lead.source || '',
+      Stage: lead.stage?.name || 'N/A',
+      'Deposit Status': lead.deposit_status || 'PENDING',
+      Priority: lead.priority || 'LOW',
+      'Created At': lead.created_at.toISOString(),
+    }));
+
+    // 4. Generate worksheet structures via SheetJS
+    const worksheet = XLSX.utils.json_to_sheet(flattenedRows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads Export');
+
+    // 5. Compile sheet layouts down to binary buffers matching requested formats
+    if (query.format === ExportFormat.EXCEL) {
+      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      return { buffer, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', extension: 'xlsx' };
+    } else if (query.format === ExportFormat.CSV) {
+      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'csv' });
+      return { buffer, mimeType: 'text/csv', extension: 'csv',  };
+    }
+
+    throw new BadRequestException('Unsupported export file format requested.');
   }
 
   // ============ OFFSET PAGINATION ============
@@ -782,7 +833,7 @@ export class LeadService {
         data: {
           assigned_to_id: assignLeadDto.assigned_to_id,
         },
-        select: { 
+        select: {
           id: true,
           assignee: {
             select: {
@@ -792,7 +843,7 @@ export class LeadService {
               email: true,
             },
           }
-         },
+        },
       });
 
       // Log to dedicated LeadAssignmentHistory table
@@ -825,5 +876,139 @@ export class LeadService {
       where: { id },
     });
     return null;
+  }
+
+  async importLeads(file: Express.Multer.File) {
+    if (!file || !file.buffer) {
+      throw new BadRequestException('Invalid file upload payload. File buffer is empty.');
+    }
+
+    // 1. Read file buffer straight from RAM memory
+    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+
+    // 2. Convert spreadsheet layouts to raw row JSON data blocks
+    const rawRows = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet, { defval: '' });
+
+    // --- OPTIMIZATION: Fetch all stages upfront to eliminate N+1 database queries ---
+    const allStages = await this.prisma.stage.findMany({ select: { id: true, name: true } });
+
+    // Target array container for safe, fully validated records
+    const validatedLeadsToCreate: any[] = [];
+
+    // must present in row
+    const requiredFields = ['name', 'email'];
+
+    // =========================================================================
+    // PASS 1: PARSING & VALIDATION LOOP (Pure In-Memory Operations)
+    // =========================================================================
+    for (let i = 0; i < rawRows.length; i++) {
+      const row = rawRows[i];
+      const rowNumber = i + 2; // Row number context matching Excel row layouts visually
+
+      // Normalize header keys to lowercase
+      const normalizedRow: Record<string, string> = {};
+      Object.keys(row).forEach((key) => {
+        normalizedRow[key.toLowerCase().trim()] = String(row[key]).trim();
+      });
+
+      const email = normalizedRow['email'];
+      const name = normalizedRow['name'] || undefined;
+
+
+      // 1. Find any fields from your required array that are missing or blank
+      const missingFields = requiredFields.filter(
+        (field) => !normalizedRow[field] || normalizedRow[field].trim() === ''
+      );
+
+      // 2. If any fields are trapped in the missing array, reject the file immediately
+      if (missingFields.length > 0) {
+        throw new BadRequestException(
+          `Row ${rowNumber} validation failed: The following required parameters are missing or empty: ${missingFields.join(', ')}`
+        );
+      }
+
+      const phone = normalizedRow['phone'] || normalizedRow['phone number'] || null;
+      const service = normalizedRow['service'] || null;
+      const vehicle = normalizedRow['vehicle'] || null;
+      const source = normalizedRow['source'] || 'Spreadsheet Import';
+      const stageName = normalizedRow['stage'] || normalizedRow['stage name'];
+
+      // --- 1. Stage Lookup (In-Memory array matching) ---
+      if (!stageName) {
+        throw new BadRequestException(`Row ${rowNumber} validation failed: 'stage' column property is missing or empty.`);
+      }
+
+      const matchedStage = allStages.find(
+        (s) => s.name.toLowerCase().trim() === stageName.toLowerCase().trim()
+      );
+
+      if (!matchedStage) {
+        throw new NotFoundException(
+          `Row ${rowNumber} validation failed: Stage "${stageName}" does not exist. Please create this pipeline stage configuration before importing.`
+        );
+      }
+
+      // --- 2. Deposit Status Validation ---
+      let depositStatus: DepositStatus = DepositStatus.PENDING;
+      const rawDeposit = normalizedRow['deposit_status'] || normalizedRow['deposit status'];
+
+      if (rawDeposit) {
+        const normalizedDeposit = rawDeposit.toUpperCase().trim();
+        if (!Object.values(DepositStatus).includes(normalizedDeposit as DepositStatus)) {
+          throw new BadRequestException(
+            `Row ${rowNumber} validation failed: "${rawDeposit}" is an invalid deposit status. Allowed values: ${Object.values(DepositStatus).join(', ')}`
+          );
+        }
+        depositStatus = normalizedDeposit as DepositStatus;
+      }
+
+      // --- 3. Priority Validation ---
+      let priority: LeadPriority = LeadPriority.LOW;
+      const rawPriority = normalizedRow['priority'];
+
+      if (rawPriority) {
+        const normalizedPriority = rawPriority.toUpperCase().trim();
+        if (!Object.values(LeadPriority).includes(normalizedPriority as LeadPriority)) {
+          throw new BadRequestException(
+            `Row ${rowNumber} validation failed: "${rawPriority}" is an invalid priority value. Allowed values: ${Object.values(LeadPriority).join(', ')}`
+          );
+        }
+        priority = normalizedPriority as LeadPriority;
+      }
+
+      // Record is clean, append it to the bulk processing array pipeline
+      validatedLeadsToCreate.push({
+        name,
+        email,
+        phone,
+        service,
+        vehicle,
+        source,
+        stage_id: matchedStage.id,
+        deposit_status: depositStatus,
+        priority: priority,
+      });
+    }
+
+    // =========================================================================
+    // PASS 2: DATABASE WRITE LOOP (Guaranteed Safe Operations)
+    // =========================================================================
+    let processedCount = 0;
+
+    for (const leadData of validatedLeadsToCreate) {
+      // Use upsert or create depending on your requirement. Here we stick with your 'create' workflow safely.
+      await this.prisma.lead.create({
+        data: leadData,
+      });
+      processedCount++;
+    }
+
+    return {
+      success: true,
+      totalRowsFound: rawRows.length,
+      successfullyProcessed: processedCount,
+    };
   }
 }

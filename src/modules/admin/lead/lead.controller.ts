@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpStatus, BadRequestException, Res } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
@@ -8,15 +8,18 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { MyQueryLeadDto, QueryLeadDto } from './dto/query-lead.dto';
 import { AssignLeadDto } from './dto/assign-lead.dto';
-import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 import { extname } from 'path/win32';
 import appConfig from 'src/config/app.config';
-import { files } from 'node_modules/@getbrevo/brevo/dist/cjs/api/resources';
+import { SpreadsheetUploadDto } from './dto/spreadsheet-upload.dto';
+import { ExportLeadDto } from './dto/export-lead.dto';
+
+
 
 @ApiTags('Admin Lead Management')
 @ApiBearerAuth()
@@ -94,6 +97,74 @@ export class LeadController {
     }
   }
 
+  @Post('import')
+  @UseInterceptors(FileInterceptor('file', {
+    storage: memoryStorage(),
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB
+    },
+    fileFilter: (req, file, cb) => {
+      const allowedMimeTypes = [
+        'text/csv',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel',
+      ];
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        return cb(new Error('Only CSV and Excel files are allowed'), false);
+      }
+      cb(null, true);
+    }
+  }))
+  @ApiOperation({
+    summary: 'Bulk import leads from a spreadsheet file',
+    description: 'Uploads a CSV or Excel (.xlsx/.xls) file to batch-import or update lead records. Rows are automatically upserted based on their email address.'
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Multipart form-data structure containing the file payload data.',
+    type: SpreadsheetUploadDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'The file was successfully processed and the leads have been integrated/upserted.',
+  })
+  async importLeads(
+    @UploadedFile("file")
+    file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded. Please attach a CSV or Excel file.');
+    }
+    const result = await this.leadService.importLeads(file);
+    return {
+      success: true,
+      message: 'Leads imported successfully',
+      data: result,
+    };
+  }
+
+  @Get('export')
+  @ApiOperation({
+    summary: 'Export filtered leads to Excel or CSV file download',
+    description: 'Generates and downloads a spreadsheet containing all leads matching the provided query filter combinations.'
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'File download stream initiated successfully.' })
+  async exportLeads(
+    @Query() query: ExportLeadDto,
+    @Res() res: Response
+  ) {
+    const { buffer, mimeType, extension } = await this.leadService.exportLeadsToBuffer(query);
+    
+    const filename = `leads_export_${Date.now()}.${extension}`;
+
+    // Set standard browser content headers to trigger immediate download windows
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', buffer.length);
+
+    // Send binary buffer directly down the pipeline stream connection
+    return res.end(buffer);
+  }
 
 
   @Get()
@@ -208,7 +279,7 @@ export class LeadController {
     lead.attachments = lead.attachments?.map(filename => {
       const key = `${appConfig().storageUrl.lead}${filename}`;
       return SojebStorage.url(key);
-    }); 
+    });
     return {
       success: true,
       message: 'Lead retrieved successfully',
@@ -255,7 +326,7 @@ export class LeadController {
         updateLeadDto.attachments?.push(generatedFilename);
       });
 
-      updateLeadDto.updated_by = req?.user?.userId; 
+      updateLeadDto.updated_by = req?.user?.userId;
       updateLeadDto.updated_source = 'Admin Panel';
 
       const result = await this.leadService.update(id, updateLeadDto);
