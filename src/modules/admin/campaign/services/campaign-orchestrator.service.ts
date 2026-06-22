@@ -128,72 +128,188 @@ export class CampaignOrchestratorService {
         }, defaultSummary);
     }
 
-    async findAll(query: CampaignPaginationQueryDto) {
-        const page = Number(query.page) || 1;
-        const limit = Number(query.limit) || 10;
-        const skip = (page - 1) * limit;
-        const search = query.search?.trim();
+    // async findAll(query: CampaignPaginationQueryDto) {
+    //     const page = Number(query.page) || 1;
+    //     const limit = Number(query.limit) || 10;
+    //     const skip = (page - 1) * limit;
+    //     const search = query.search?.trim();
 
-        const whereClause: Prisma.CampaignWhereInput = {
-            ...(query.status && { status: query.status }),
-            ...(search && { name: { contains: search, mode: 'insensitive' } }),
-        };
+    //     const whereClause: Prisma.CampaignWhereInput = {
+    //         ...(query.status && { status: query.status }),
+    //         ...(search && { name: { contains: search, mode: 'insensitive' } }),
+    //     };
 
-        const [totalItems, data] = await this.prisma.$transaction([
-            this.prisma.campaign.count({ where: whereClause }),
-            this.prisma.campaign.findMany({
-                where: whereClause,
-                skip,
-                take: limit,
-                orderBy: { createdAt: 'desc' },
-                include: {
-                    emailConfig: {
-                        select: {
-                            subject: true,
-                            senderEmail: true,
-                            leadGroup: { select: { name: true } },
-                        },
-                    },
-                },
-            }),
-        ]);
+    //     const [totalItems, data] = await this.prisma.$transaction([
+    //         this.prisma.campaign.count({ where: whereClause }),
+    //         this.prisma.campaign.findMany({
+    //             where: whereClause,
+    //             skip,
+    //             take: limit,
+    //             orderBy: { createdAt: 'desc' },
+    //             include: {
+    //                 emailConfig: {
+    //                     select: {
+    //                         subject: true,
+    //                         senderEmail: true,
+    //                         leadGroup: { select: { name: true } },
+    //                     },
+    //                 },
+    //             },
+    //         }),
+    //     ]);
 
-        const totalPages = Math.ceil(totalItems / limit);
+    //     const totalPages = Math.ceil(totalItems / limit);
 
-        return {
-            data,
-            meta: {
-                totalItems,
-                itemCount: data.length,
-                itemsPerPage: limit,
-                totalPages,
-                currentPage: page,
-                hasNextPage: page < totalPages,
-                hasPreviousPage: page > 1,
+    //     return {
+    //         data,
+    //         meta: {
+    //             totalItems,
+    //             itemCount: data.length,
+    //             itemsPerPage: limit,
+    //             totalPages,
+    //             currentPage: page,
+    //             hasNextPage: page < totalPages,
+    //             hasPreviousPage: page > 1,
+    //         },
+    //     };
+    // }
+
+    // async findOne(id: string) {
+    //     const campaign = await this.prisma.campaign.findUnique({
+    //         where: { id },
+    //         include: {
+    //             emailConfig: {
+    //                 include: {
+    //                     leadGroup: {
+    //                         select: { id: true, name: true, brevoListId: true },
+    //                     },
+    //                 },
+    //             },
+    //         },
+    //     });
+
+    //     if (!campaign) {
+    //         throw new NotFoundException(`Campaign with ID "${id}" could not be found.`);
+    //     }
+
+    //     return campaign;
+    // }
+
+
+  async findAll(query: any) {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const search = query.search?.trim();
+
+    const whereClause: Prisma.CampaignWhereInput = {
+      ...(query.status && { status: query.status }),
+      ...(search && { name: { contains: search, mode: 'insensitive' } }),
+    };
+
+    // Step 1: Fetch the paginated campaigns row chunk
+    const [totalItems, campaigns] = await this.prisma.$transaction([
+      this.prisma.campaign.count({ where: whereClause }),
+      this.prisma.campaign.findMany({
+        where: whereClause,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          emailConfig: {
+            select: {
+              subject: true,
+              senderEmail: true,
+              leadGroup: { select: { name: true } },
             },
-        };
+          },
+        },
+      }),
+    ]);
+
+    // Step 2: Extract just the IDs for the current page
+    const campaignIds = campaigns.map((c) => c.id);
+
+    // Step 3: Batch gather all logs counts for these campaigns in exactly ONE query
+    const rawAnalytics = campaignIds.length > 0 
+      ? await this.prisma.deliveryLog.groupBy({
+          by: ['campaignId', 'status'],
+          where: { campaignId: { in: campaignIds } },
+          _count: { status: true },
+        })
+      : [];
+
+    // Step 4: Map the flat grouped array into an optimized lookup dictionary
+    // Structure: { [campaignId]: { PENDING: X, SENT: Y, ... } }
+    const analyticsLookup: Record<string, Record<string, number>> = {};
+    
+    // Initialize defaults for every campaign on the page
+    campaignIds.forEach((id) => {
+      analyticsLookup[id] = { PENDING: 0, SENT: 0, DELIVERED: 0, OPENED: 0, CLICKED: 0, BOUNCED: 0, FAILED: 0 };
+    });
+
+    // Populate with real values from the database single batch result
+    rawAnalytics.forEach((row) => {
+      if (analyticsLookup[row.campaignId]) {
+        analyticsLookup[row.campaignId][row.status] = row._count.status;
+      }
+    });
+
+    // Step 5: Merge analytics back into rows entirely in-memory
+    const data = campaigns.map((campaign) => ({
+      ...campaign,
+      analytics: analyticsLookup[campaign.id],
+    }));
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      meta: {
+        totalItems,
+        itemCount: data.length,
+        itemsPerPage: limit,
+        totalPages,
+        currentPage: page,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+
+  async findOne(id: string) {
+    const campaign = await this.prisma.campaign.findUnique({
+      where: { id },
+      include: {
+        emailConfig: {
+          include: {
+            leadGroup: {
+              select: { id: true, name: true, brevoListId: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!campaign) {
+      throw new NotFoundException(`Campaign with ID "${id}" could not be found.`);
     }
 
-    async findOne(id: string) {
-        const campaign = await this.prisma.campaign.findUnique({
-            where: { id },
-            include: {
-                emailConfig: {
-                    include: {
-                        leadGroup: {
-                            select: { id: true, name: true, brevoListId: true },
-                        },
-                    },
-                },
-            },
-        });
+    // Reuse the fast single lookup mapping
+    const defaultMap = { PENDING: 0, SENT: 0, DELIVERED: 0, OPENED: 0, CLICKED: 0, BOUNCED: 0, FAILED: 0 };
+    const logsGroupBy = await this.prisma.deliveryLog.groupBy({
+      by: ['status'],
+      where: { campaignId: id },
+      _count: { status: true },
+    });
 
-        if (!campaign) {
-            throw new NotFoundException(`Campaign with ID "${id}" could not be found.`);
-        }
+    const analytics = logsGroupBy.reduce((acc, curr) => {
+      acc[curr.status] = curr._count.status;
+      return acc;
+    }, defaultMap);
 
-        return campaign;
-    }
+    return { ...campaign, analytics };
+  }
 
     async update(id: string, dto: UpdateCampaignDto) {
         const campaign = await this.findOne(id);
