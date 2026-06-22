@@ -380,6 +380,7 @@ export const CampaignScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   name: 'name',
+  tags: 'tags',
   status: 'status',
   channelType: 'channelType',
   scheduledAt: 'scheduledAt'

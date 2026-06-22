@@ -11,6 +11,14 @@ export class CreateCampaignDto {
   @IsNotEmpty()
   name: string;
 
+  @ApiPropertyOptional({
+    description: 'Optional tags for categorizing or labeling the campaign',
+    example: ['Winter', 'Follow-up', 'Strategy'],
+  })
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
+
   @ApiProperty({
     description: 'The visual email Subject line displayed directly inside public user mailboxes',
     example: 'Exclusive service offer just for your vehicle!',
@@ -20,12 +28,12 @@ export class CreateCampaignDto {
   subject: string;
 
   @ApiProperty({
-    description: 'Raw compiled HTML template content string context containing explicit structural wrappers',
-    example: '<html><body><h1>Hello!</h1><p>Check out our dashboard deals.</p></body></html>',
+    description: 'The local CUID profile reference identifying the primary source Template',
+    example: 'clg123456000008mn8z7b6v5a',
   })
   @IsString()
   @IsNotEmpty()
-  htmlContent: string;
+  templateId: string;
 
   @ApiProperty({
     description: 'The public display identifier label showing who sent the email',
@@ -40,6 +48,7 @@ export class CreateCampaignDto {
     example: 'support@yourbrand.com',
   })
   @IsEmail()
+  @IsNotEmpty()
   senderEmail: string;
 
   @ApiProperty({

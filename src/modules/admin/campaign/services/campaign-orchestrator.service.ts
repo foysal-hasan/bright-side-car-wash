@@ -9,6 +9,7 @@ import { UpdateCampaignDto } from '../dto/update-campaign.dto';
 import { CampaignPaginationQueryDto } from '../dto/campaign-pagination-query.dto';
 import { Prisma } from 'src/generated/prisma/browser';
 import { CampaignAction } from '../dto/campaign-status-action.dto';
+import { CreateCampaignDto } from '../dto/create-campaign.dto';
 
 
 @Injectable()
@@ -18,33 +19,35 @@ export class CampaignOrchestratorService {
         @Inject(EMAIL_PROVIDER_TOKEN) private readonly brevoProvider: IEmailProvider,
     ) { }
 
-    async createCampaign(data: {
-        name: string;
-        subject: string;
-        htmlContent: string;
-        senderName: string;
-        senderEmail: string;
-        leadGroupId: string;
-        scheduledAt?: Date;
-    }) {
+    async createCampaign(createCampaignDto: CreateCampaignDto) {
+        const template = await this.prisma.template.findUnique({
+            where: { id: createCampaignDto.templateId },
+            select: {
+                emailBody: { select: { htmlContent: true } },
+            },
+        });
+
+        if (!template) {
+            throw new NotFoundException(`Template not found with the provided templateId: ${createCampaignDto.templateId}`);
+        }
+
         return this.prisma.campaign.create({
             data: {
-                name: data.name,
+                name: createCampaignDto.name,
                 channelType: ChannelType.EMAIL,
-                scheduledAt: data.scheduledAt,
+                scheduledAt: createCampaignDto.scheduledAt,
                 emailConfig: {
                     create: {
-                        subject: data.subject,
-                        htmlContent: data.htmlContent,
-                        senderName: data.senderName,
-                        senderEmail: data.senderEmail,
-                        leadGroupId: data.leadGroupId,
+                        subject: createCampaignDto.subject,
+                        htmlContent: template.emailBody.htmlContent,
+                        senderName: createCampaignDto.senderName,
+                        senderEmail: createCampaignDto.senderEmail,
+                        leadGroupId: createCampaignDto.leadGroupId,
                     },
                 },
             },
         });
     }
-
 
     async finalizeAndLaunch(campaignId: string) {
         const campaign = await this.prisma.campaign.findUnique({
@@ -80,7 +83,7 @@ export class CampaignOrchestratorService {
 
         await this.prisma.campaign.update({
             where: { id: campaignId },
-            data: { status: campaign.scheduledAt ? 'SCHEDULED' : 'SENDING' },
+            data: { status: campaign.scheduledAt ? CampaignStatus.SCHEDULED : CampaignStatus.RUNNING },
         });
 
         return { success: true, providerCampaignId };
@@ -171,22 +174,34 @@ export class CampaignOrchestratorService {
         const campaign = await this.findOne(id);
 
         // Guard Clause: Block mutations if the campaign is already deploying or finished
-        if (campaign.status === CampaignStatus.SENDING || campaign.status === CampaignStatus.COMPLETED) {
+        if (campaign.status === CampaignStatus.RUNNING || campaign.status === CampaignStatus.COMPLETED) {
             throw new BadRequestException(
                 `Modification rejected. Campaign is already locked at status: ${campaign.status}`
             );
         }
 
+        let htmlContentFromTemplate: string | undefined;
+        if(dto.templateId) {
+            const template = await this.prisma.template.findUnique({
+                where: { id: dto.templateId },
+                select: {
+                    emailBody: {select: { htmlContent: true } },
+                }
+            });
+            htmlContentFromTemplate = template?.emailBody?.htmlContent;
+        }
+
         const data = {
             // Update parent table attributes if provided
             ...(dto.name && { name: dto.name }),
+            ...(dto.tags && { tags: dto.tags }),
             ...(dto.scheduledAt !== undefined && { scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : null }),
 
             // Update nested relation table configuration values dynamically
             emailConfig: {
                 update: {
                     ...(dto.subject && { subject: dto.subject }),
-                    ...(dto.htmlContent && { htmlContent: dto.htmlContent }),
+                    ...(htmlContentFromTemplate && { htmlContent: htmlContentFromTemplate }),
                     ...(dto.senderName && { senderName: dto.senderName }),
                     ...(dto.senderEmail && { senderEmail: dto.senderEmail }),
                     ...(dto.leadGroupId && { leadGroupId: dto.leadGroupId }),
@@ -197,7 +212,7 @@ export class CampaignOrchestratorService {
         const updateMarketingCampaign = {
             ...(dto.name && { name: dto.name }),
             ...(dto.subject && { subject: dto.subject }),
-            ...(dto.htmlContent && { htmlContent: dto.htmlContent }),
+            ...(htmlContentFromTemplate && { htmlContent: htmlContentFromTemplate }),
             ...(dto.senderName && { senderName: dto.senderName }),
             ...(dto.senderEmail && { senderEmail: dto.senderEmail }),
             ...(dto.leadGroupId && { brevoListId: campaign.emailConfig?.leadGroup.brevoListId }),
@@ -271,7 +286,7 @@ export class CampaignOrchestratorService {
     async remove(id: string) {
         const campaign = await this.findOne(id);
 
-        if (campaign.status === CampaignStatus.SENDING) {
+        if (campaign.status === CampaignStatus.RUNNING) {
             throw new BadRequestException('Cannot delete a live campaign mid-flight.');
         }
 

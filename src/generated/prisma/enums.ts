@@ -42,7 +42,7 @@ export type LeadPriority = (typeof LeadPriority)[keyof typeof LeadPriority]
 export const CampaignStatus = {
   DRAFT: 'DRAFT',
   SCHEDULED: 'SCHEDULED',
-  SENDING: 'SENDING',
+  RUNNING: 'RUNNING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
   SUSPENDED: 'SUSPENDED'

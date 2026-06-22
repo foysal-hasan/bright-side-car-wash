@@ -431,7 +431,7 @@ model LeadActivityTimeline {
 enum CampaignStatus {
   DRAFT
   SCHEDULED
-  SENDING
+  RUNNING
   COMPLETED
   FAILED
   SUSPENDED
@@ -459,6 +459,7 @@ model Campaign {
   updatedAt DateTime @updatedAt
 
   name        String // Internal reference name
+  tags       String[] @default([])
   status      CampaignStatus @default(DRAFT)
   channelType ChannelType
   scheduledAt DateTime?      @db.Timestamptz
