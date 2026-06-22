@@ -469,8 +469,6 @@ model Campaign {
   // smsConfig    SmsConfig?     // One-to-One mapping for SMS details
   deliveryLogs DeliveryLog[] // One-to-Many tracking for metrics
 
-  
-
   @@index([status])
   @@index([channelType])
 }

@@ -11,4 +11,7 @@ export class CampaignStatusActionDto {
   @IsEnum(CampaignAction)
   @IsNotEmpty()
   action: CampaignAction;
+
+  @ApiProperty({ example: '2024-12-31T23:59:00Z', description: 'Required if action is RESTART. Must be a future date.' })
+  newScheduledAt?: string;
 }

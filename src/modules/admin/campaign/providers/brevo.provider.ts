@@ -2,6 +2,7 @@ import { BrevoClient } from '@getbrevo/brevo';
 import { IEmailProvider } from '../interfaces/email-provider.interface';
 import { CampaignResult, CreateCampaignPayload } from '../types/email.types';
 import appConfig from 'src/config/app.config';
+import { BadRequestException } from '@nestjs/common';
 
 export class BrevoProvider implements IEmailProvider {
   private client: any;
@@ -192,6 +193,13 @@ export class BrevoProvider implements IEmailProvider {
       scheduledAt?: Date;
     }
   ): Promise<void> {
+    const campaignId = Number(providerCampaignId);
+
+    if (isNaN(campaignId) || campaignId <= 0) {
+      throw new BadRequestException(`Invalid Brevo campaign ID provided: ${providerCampaignId}`);
+    }
+
+    // 1. Build the body object exactly as Brevo API expects it
     const campaignConfig: any = {};
 
     if (payload.name) campaignConfig.name = payload.name;
@@ -212,25 +220,65 @@ export class BrevoProvider implements IEmailProvider {
       campaignConfig.scheduledAt = payload.scheduledAt.toISOString();
     }
 
-    await this.client.emailCampaigns.updateEmailCampaign({
-      campaignId: Number(providerCampaignId),
-      requestBody: campaignConfig
-    });
+    console.log(`Updating Brevo campaign via Fetch ${campaignId} with payload:`, campaignConfig);
+
+    try {
+      // 2. Fire the native HTTP request matching your curl command layout
+      const response = await fetch(`https://api.brevo.com/v3/emailCampaigns/${campaignId}`, {
+        method: 'PUT',
+        headers: {
+          'api-key': appConfig().campaign.brevo.apiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(campaignConfig),
+      });
+
+      // 3. Handle explicit non-2xx failures from Brevo's engine
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Brevo HTTP Error ${response.status}: ${errorBody}`);
+      }
+
+      console.log(`Successfully updated Brevo campaign ${campaignId}`);
+    } catch (err) {
+      console.error(`Failed to update Brevo campaign ${campaignId}:`, err);
+      throw err;
+    }
   }
 
   async updateRemoteCampaignStatus(
     providerCampaignId: string,
-    status: 'suspended' | 'queued' | 'canceled'
+    status: 'suspended' | 'queued' | 'suspended' // Brevo status terms
   ): Promise<void> {
+    const campaignId = Number(providerCampaignId);
+
+    if (isNaN(campaignId) || campaignId <= 0) {
+      throw new BadRequestException(`Invalid Brevo campaign ID provided: ${providerCampaignId}`);
+    }
+
+    console.log(`Updating Brevo campaign status via Fetch for ID ${campaignId} to: ${status}`);
     try {
-      await this.client.emailCampaigns.updateCampaignStatus({
-        campaignId: Number(providerCampaignId),
-        requestBody: {
-          status: status,
+      // Matches: PUT https://api.brevo.com/v3/emailCampaigns/{campaignId}/status
+      const response = await fetch(`https://api.brevo.com/v3/emailCampaigns/${campaignId}/status`, {
+        method: 'PUT',
+        headers: {
+          'api-key': appConfig().campaign.brevo.apiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        body: JSON.stringify({ status }),
       });
+
+      // Handle structural responses outside of 2xx success bounds
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Brevo Status API Error ${response.status}: ${errorBody}`);
+      }
+
+      console.log(`Successfully updated Brevo campaign ${campaignId} status to "${status}"`);
     } catch (err) {
-      console.error(`Failed to update Brevo campaign status to ${status}:`, err);
+      console.error(`Failed to update Brevo campaign status for ID ${campaignId}:`, err);
       throw err;
     }
   }

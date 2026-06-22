@@ -17,7 +17,7 @@ export class CreateCampaignDto {
   })
   @IsString({ each: true })
   @IsOptional()
-  tags?: string[];
+  tags?: string[] = [];
 
   @ApiProperty({
     description: 'The visual email Subject line displayed directly inside public user mailboxes',

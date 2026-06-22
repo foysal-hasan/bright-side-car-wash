@@ -34,6 +34,7 @@ export class CampaignOrchestratorService {
         return this.prisma.campaign.create({
             data: {
                 name: createCampaignDto.name,
+                tags: createCampaignDto.tags,
                 channelType: ChannelType.EMAIL,
                 scheduledAt: createCampaignDto.scheduledAt,
                 emailConfig: {
@@ -181,11 +182,11 @@ export class CampaignOrchestratorService {
         }
 
         let htmlContentFromTemplate: string | undefined;
-        if(dto.templateId) {
+        if (dto.templateId) {
             const template = await this.prisma.template.findUnique({
                 where: { id: dto.templateId },
                 select: {
-                    emailBody: {select: { htmlContent: true } },
+                    emailBody: { select: { htmlContent: true } },
                 }
             });
             htmlContentFromTemplate = template?.emailBody?.htmlContent;
@@ -221,9 +222,9 @@ export class CampaignOrchestratorService {
 
 
         // schedule also need to update the provider campaign if it was already launched with a schedule
-        if (dto.scheduledAt !== undefined && campaign.emailConfig?.providerCampaignId) {
-            await this.brevoProvider.updateMarketingCampaign(campaign.emailConfig.providerCampaignId, updateMarketingCampaign);
-        }
+        // if (dto.scheduledAt !== undefined && campaign.emailConfig?.providerCampaignId) {
+        await this.brevoProvider.updateMarketingCampaign(campaign.emailConfig.providerCampaignId, updateMarketingCampaign);
+        // }
 
         return this.prisma.campaign.update({
             where: { id },
@@ -234,17 +235,76 @@ export class CampaignOrchestratorService {
         });
     }
 
-    async changeCampaignStatus(id: string, action: CampaignAction) {
+    // async changeCampaignStatus(id: string, action: CampaignAction) {
+    //     const campaign = await this.prisma.campaign.findUnique({
+    //         where: { id },
+    //         include: { emailConfig: true },
+    //     });
+
+    //     if (!campaign) throw new NotFoundException('Campaign not found.');
+
+    //     const providerId = campaign.emailConfig?.providerCampaignId;
+    //     if (!providerId) {
+    //         throw new BadRequestException('This campaign has not been launched or initialized in Brevo yet.');
+    //     }
+
+    //     // ==================== SUSPEND ACTION ====================
+    //     if (action === CampaignAction.SUSPEND) {
+    //         // if (campaign.status !== CampaignStatus.SCHEDULED) {
+    //         //     throw new BadRequestException('Only future-scheduled campaigns can be suspended.');
+    //         // }
+
+    //         // Tell Brevo to stop deployment checks
+    //         await this.brevoProvider.updateRemoteCampaignStatus(providerId, 'suspended');
+
+    //         // Update local state to SUSPENDED
+    //         return this.prisma.campaign.update({
+    //             where: { id },
+    //             data: { status: CampaignStatus.SUSPENDED },
+    //         });
+    //     }
+
+    //     // ==================== RESTART ACTION ====================
+    //     if (action === CampaignAction.RESTART) {
+    //         if (campaign.status !== CampaignStatus.SUSPENDED || !campaign.scheduledAt) {
+    //             throw new BadRequestException('Campaign must be a suspended draft with a scheduled time to restart.');
+    //         }
+
+    //         if (new Date(campaign.scheduledAt) <= new Date()) {
+    //             throw new BadRequestException('The scheduled date has passed. Please update the scheduled date first.');
+    //         }
+
+    //         // Tell Brevo to put it back into the active queue
+    //         await this.brevoProvider.updateRemoteCampaignStatus(providerId, 'queued');
+
+    //         return this.prisma.campaign.update({
+    //             where: { id },
+    //             data: { status: CampaignStatus.SCHEDULED },
+    //         });
+    //     }
+    // }
+
+    async changeCampaignStatus(id: string, action: CampaignAction, newScheduleDate?: string) {
         const campaign = await this.prisma.campaign.findUnique({
             where: { id },
-            include: { emailConfig: true },
+            select: {
+                status: true,
+                scheduledAt: true,
+                emailConfig: true,
+            }
         });
 
+    
         if (!campaign) throw new NotFoundException('Campaign not found.');
 
+        if(campaign.status !== CampaignStatus.SCHEDULED  && campaign.status !== CampaignStatus.SUSPENDED ) {
+            throw new BadRequestException('Status change action is only allowed for campaigns that are currently SCHEDULED or SUSPENDED.');
+        }
+        
         const providerId = campaign.emailConfig?.providerCampaignId;
-        if (!providerId) {
-            throw new BadRequestException('This campaign has not been launched or initialized in Brevo yet.');
+
+        if (!providerId || providerId === 'undefined') {
+            throw new BadRequestException('Valid remote Brevo Campaign ID missing.');
         }
 
         // ==================== SUSPEND ACTION ====================
@@ -253,10 +313,8 @@ export class CampaignOrchestratorService {
                 throw new BadRequestException('Only future-scheduled campaigns can be suspended.');
             }
 
-            // Tell Brevo to stop deployment checks
             await this.brevoProvider.updateRemoteCampaignStatus(providerId, 'suspended');
 
-            // Update local state to DRAFT or create a custom SUSPENDED status if desired
             return this.prisma.campaign.update({
                 where: { id },
                 data: { status: CampaignStatus.DRAFT },
@@ -265,20 +323,31 @@ export class CampaignOrchestratorService {
 
         // ==================== RESTART ACTION ====================
         if (action === CampaignAction.RESTART) {
-            if (campaign.status !== CampaignStatus.SUSPENDED || !campaign.scheduledAt) {
-                throw new BadRequestException('Campaign must be a suspended draft with a scheduled time to restart.');
+            // 1. Determine which future date to use
+            const targetDateString = newScheduleDate || campaign.scheduledAt;
+            if (!targetDateString) {
+                throw new BadRequestException('A schedule date is required to restart this campaign.');
             }
 
-            if (new Date(campaign.scheduledAt) <= new Date()) {
-                throw new BadRequestException('The scheduled date has passed. Please update the scheduled date first.');
+            const futureDate = new Date(targetDateString);
+
+            if (futureDate <= new Date()) {
+                throw new BadRequestException(
+                    'Cannot queue campaign. The scheduled time must be a date in the future (e.g., at least 5-10 minutes from now).'
+                );
             }
 
-            // Tell Brevo to put it back into the active queue
-            await this.brevoProvider.updateRemoteCampaignStatus(providerId, 'queued');
+            // Schedule to a future date in Brevo and update local state to SCHEDULED
+            await this.brevoProvider.updateMarketingCampaign(providerId, {
+                scheduledAt: futureDate,
+            });
 
             return this.prisma.campaign.update({
                 where: { id },
-                data: { status: CampaignStatus.SCHEDULED },
+                data: {
+                    status: CampaignStatus.SCHEDULED,
+                    scheduledAt: futureDate,
+                },
             });
         }
     }
