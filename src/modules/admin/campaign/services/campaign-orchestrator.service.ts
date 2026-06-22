@@ -87,22 +87,46 @@ export class CampaignOrchestratorService {
             data: { status: campaign.scheduledAt ? CampaignStatus.SCHEDULED : CampaignStatus.RUNNING },
         });
 
+        // Create a delivery log entry for each lead in the group
+        const leads = await this.prisma.lead.findMany({
+            where: { leadGroups: { some: { id: campaign.emailConfig.leadGroupId } } },
+            select: { email: true },
+        });
+
+        await this.prisma.deliveryLog.createMany({
+            data: leads.map((lead) => ({
+                campaignId,
+                recipient: lead.email,
+                status: DeliveryStatus.PENDING,
+            })),
+        });
+
         return { success: true, providerCampaignId };
     }
 
     async getCampaignAnalytics(campaignId: string) {
+        const defaultSummary: Record<string, number> = {
+            PENDING: 0,
+            SENT: 0,
+            DELIVERED: 0,
+            OPENED: 0,
+            CLICKED: 0,
+            BOUNCED: 0,
+            FAILED: 0,
+        };
+
         const summary = await this.prisma.deliveryLog.groupBy({
             by: ['status'],
             where: { campaignId },
             _count: { status: true },
         });
 
+        // 3. Populate matching criteria keys cleanly without dropping missing rows
         return summary.reduce((acc, current) => {
             acc[current.status] = current._count.status;
             return acc;
-        }, {} as Record<string, number>);
+        }, defaultSummary);
     }
-
 
     async findAll(query: CampaignPaginationQueryDto) {
         const page = Number(query.page) || 1;
@@ -222,9 +246,9 @@ export class CampaignOrchestratorService {
 
 
         // schedule also need to update the provider campaign if it was already launched with a schedule
-        // if (dto.scheduledAt !== undefined && campaign.emailConfig?.providerCampaignId) {
+        if (campaign.emailConfig?.providerCampaignId && Object.keys(updateMarketingCampaign).length > 0) {
         await this.brevoProvider.updateMarketingCampaign(campaign.emailConfig.providerCampaignId, updateMarketingCampaign);
-        // }
+        }
 
         return this.prisma.campaign.update({
             where: { id },
@@ -294,13 +318,13 @@ export class CampaignOrchestratorService {
             }
         });
 
-    
+
         if (!campaign) throw new NotFoundException('Campaign not found.');
 
-        if(campaign.status !== CampaignStatus.SCHEDULED  && campaign.status !== CampaignStatus.SUSPENDED ) {
+        if (campaign.status !== CampaignStatus.SCHEDULED && campaign.status !== CampaignStatus.SUSPENDED) {
             throw new BadRequestException('Status change action is only allowed for campaigns that are currently SCHEDULED or SUSPENDED.');
         }
-        
+
         const providerId = campaign.emailConfig?.providerCampaignId;
 
         if (!providerId || providerId === 'undefined') {

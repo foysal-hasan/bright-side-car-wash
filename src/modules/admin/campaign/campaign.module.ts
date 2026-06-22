@@ -7,13 +7,14 @@ import { WebhookController } from './controllers/webhook.controller';
 import { CampaignOrchestratorService } from './services/campaign-orchestrator.service';
 import { LeadGroupService } from './services/lead-group.service';
 import { CampaignService } from './services/campaign.service';
+import { LeadGroupController } from './controllers/lead-group.controller';
 
 
 @Module({
   imports: [
     ActivityLogModule
   ],
-  controllers: [CampaignController, WebhookController],
+  controllers: [CampaignController, WebhookController, LeadGroupController],
   providers: [
     {
       provide: EMAIL_PROVIDER_TOKEN,
