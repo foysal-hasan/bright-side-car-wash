@@ -105,15 +105,29 @@ async function seedUsers() {
 }
 
   async function seedRoleAndPermission() {
-    const RESOURCES = ['user', 'billing', 'lead', 'stage', 'campaign', 'activity-log', 'template', 'lead_group'];
+    const RESOURCES = [
+      'user', 
+      'billing', 
+      'lead', 
+      'stage', 
+      'campaign', 
+      'activity-log', 
+      'template', 
+      'lead_group', 
+      'role',
+    ];
+
     const ACTIONS = ['create', 'read', 'update', 'delete'];
     const SPECIAL_PERMISSIONS = [
       'admin_override:delete', 
       'system:maintenance', 
       'staff:invite', 
+      'lead:import',
+      'lead:export',
       'lead:assign',
       'lead_group:connect',
       'lead_group:disconnect',
+      'permission:read',
     ];
 
     console.log('🔄 Starting permission seeding with ioredis...');

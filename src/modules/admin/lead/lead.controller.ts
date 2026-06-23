@@ -166,6 +166,24 @@ export class LeadController {
     return res.end(buffer);
   }
 
+  @Get('metrics')
+  @ApiOperation({ 
+    summary: 'Fetch full analytical dataset summaries for widgets',
+    description: 'Returns real-time aggregated system KPI cards, rolling line chart trend arrays, and status color mappings.'
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Dashboard metrics consolidated successfully.',
+  })
+  async getPerformanceMetrics() {
+    const result = await this.leadService.getDashboardSummary();
+    return {
+      success: true,
+      message: 'Dashboard metrics retrieved successfully',
+      data: result,
+    };
+  }
+
 
   @Get()
   @ApiOperation({

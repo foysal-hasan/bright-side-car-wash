@@ -70,7 +70,11 @@ export class RoleService {
     const role = await this.prisma.role.findUnique({
       where: { name },
       include: {
-        permissions: true,
+        permissions: {
+          include: {
+            permission: true, // Returns details of the permissions assigned
+          },
+        },
       },
     });
     return role;

@@ -45,6 +45,7 @@ export class RoleController {
 
   // Get all permissions
   @ApiOperation({ summary: 'Get all permissions' })
+  @RequirePermission('permission:read')
   @LogActivity({ action: 'get', entity: 'permissions' })
   @Get('permissions')
   async getGroupedPermissions() {
