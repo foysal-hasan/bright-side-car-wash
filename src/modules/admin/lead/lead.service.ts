@@ -284,12 +284,11 @@ export class LeadService {
         orderBy: { sort_order: 'asc' }
       }),
 
-      // == COMPONENT 2: YEAR TREND LINE DATA ==
+      // == COMPONENT 2: YEAR TREND LINE DATA (Total vs Converted) ==
       this.prisma.lead.findMany({
         where: {
           created_at: { gte: rollingTwelveMonthsStart },
           deleted_at: null,
-          stage: { name: { in: ['Converted', 'Lost'] } }
         },
         select: {
           created_at: true,
@@ -310,16 +309,16 @@ export class LeadService {
 
     // --- Process Rolling 12-Month Performance Trend Line ---
     const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const trendMap = new Map<string, { month: string; converted: number; lost: number }>();
+    const trendMap = new Map<string, { month: string; total: number; converted: number }>();
 
-    // Initialize map sequence containing rolling chronological month slots
+    // Initialize slots with rolling chronological month tags
     for (let i = 11; i >= 0; i--) {
       const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const label = `${monthsShort[targetDate.getMonth()]}`; // e.g., "Jun"
+      const label = `${monthsShort[targetDate.getMonth()]}`;
       trendMap.set(`${targetDate.getFullYear()}-${targetDate.getMonth()}`, {
         month: label,
-        converted: 0,
-        lost: 0
+        total: 0,       
+        converted: 0  
       });
     }
 
@@ -328,20 +327,23 @@ export class LeadService {
       const key = `${lead.created_at.getFullYear()}-${lead.created_at.getMonth()}`;
       if (trendMap.has(key)) {
         const slot = trendMap.get(key)!;
+
+        // Every record found increments the Total counter for that month
+        slot.total++;
+
+        // Check if this specific lead achieved Converted status
         if (lead.stage?.name.toLowerCase() === 'converted') {
           slot.converted++;
-        } else if (lead.stage?.name.toLowerCase() === 'lost') {
-          slot.lost++;
         }
       }
     });
 
     // Highest-to-lowest sorting for stage distribution to match intuitive color emphasis in charts
     const sortedStatusDistribution = stagesWithLeadCounts.map((stage) => ({
-        stageName: stage.name,
-        count: stage._count.leads,
-        color: stage.color || '#cccccc' // Fallback standard color string signature if blank
-      })).sort((a, b) => b.count - a.count)
+      stageName: stage.name,
+      count: stage._count.leads,
+      color: stage.color || '#cccccc' // Fallback standard color string signature if blank
+    })).sort((a, b) => b.count - a.count)
 
     return {
       keyMetrics: {
@@ -362,7 +364,7 @@ export class LeadService {
           percentageChange: calculatePctChange(revenueCurrent, revenuePrevious)
         }
       },
-      // Array returned matches step chart intervals [ { month: 'Jan', converted: X, lost: Y }, ... ]
+      // Array returned matches step chart intervals [ { month: 'Jan', total: X, converted: Y }, ... ]
       performanceTrend: Array.from(trendMap.values()),
 
       // Formats distribution data for immediate mapping into donut or semi-circle widgets
