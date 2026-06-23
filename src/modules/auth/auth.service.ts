@@ -213,6 +213,11 @@ export class AuthService {
 
 
     if (user) {
+      // check user status
+      if(user.status === 0) {
+        throw new UnauthorizedException('Your account is blocked. Please contact support.');
+      }
+
       const _isValidPassword = await this.userRepository.validatePassword({
         email: email,
         password: _password,
