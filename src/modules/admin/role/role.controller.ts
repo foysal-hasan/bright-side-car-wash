@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterc
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
@@ -20,6 +20,7 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @ApiOperation({ summary: 'Create a new role' })
+  @ApiBody({ type: CreateRoleDto })
   @LogActivity({ action: 'create', entity: 'role' })
   @Post()
   async create(@Body() createRoleDto: CreateRoleDto) {
@@ -72,6 +73,7 @@ export class RoleController {
 
   @ApiOperation({ summary: 'Update a role by ID' })
   @LogActivity({ action: 'update', entity: 'role' })
+  @ApiBody({ type: UpdateRoleDto })
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const updatedRole = await this.roleService.update(id, updateRoleDto);
