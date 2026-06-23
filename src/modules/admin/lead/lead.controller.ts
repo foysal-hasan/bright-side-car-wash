@@ -98,6 +98,7 @@ export class LeadController {
   }
 
   @Post('import')
+  @RequirePermission('lead:import')
   @UseInterceptors(FileInterceptor('file', {
     storage: memoryStorage(),
     limits: {
@@ -143,7 +144,9 @@ export class LeadController {
     };
   }
 
+
   @Get('export')
+  @RequirePermission('lead:export')
   @ApiOperation({
     summary: 'Export filtered leads to Excel or CSV file download',
     description: 'Generates and downloads a spreadsheet containing all leads matching the provided query filter combinations.'
