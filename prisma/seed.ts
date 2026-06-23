@@ -128,6 +128,10 @@ async function seedUsers() {
       'lead_group:connect',
       'lead_group:disconnect',
       'permission:read',
+      'member:read',
+      'member:roles_update',
+      'member:block',
+      'member:unblock',
     ];
 
     console.log('🔄 Starting permission seeding with ioredis...');
