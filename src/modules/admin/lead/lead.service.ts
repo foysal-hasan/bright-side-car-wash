@@ -825,10 +825,8 @@ export class LeadService {
         assignment_history: {
           select: {
             id: true,
-            description: true,
-            source: true,
             assigned_to_id: true,
-            assigned_to: {
+            assignee: {
               select: {
                 id: true,
                 first_name: true,
@@ -837,7 +835,7 @@ export class LeadService {
               },
             },
             assigned_by_id: true,
-            assigned_by: {
+            assigner: {
               select: {
                 id: true,
                 first_name: true,
