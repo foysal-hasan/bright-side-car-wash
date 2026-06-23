@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpStatus, BadRequestException, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpStatus, BadRequestException, Res, SetMetadata } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
@@ -18,6 +18,7 @@ import { extname } from 'path/win32';
 import appConfig from 'src/config/app.config';
 import { SpreadsheetUploadDto } from './dto/spreadsheet-upload.dto';
 import { ExportLeadDto } from './dto/export-lead.dto';
+import { OnlyApiTags } from 'src/common/decorator/only-api-tag.decorator';
 
 
 
@@ -169,6 +170,7 @@ export class LeadController {
     return res.end(buffer);
   }
 
+  @OnlyApiTags('Admin Dashboard Analytics Overview')
   @Get('metrics')
   @ApiOperation({ 
     summary: 'Fetch full analytical dataset summaries for widgets',
