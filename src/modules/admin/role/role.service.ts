@@ -42,29 +42,61 @@ export class RoleService {
     return roles;
   }
 
- async getGroupedPermissions() {
-    // 1. Fetch all permissions from the database
-    const permissions = await this.prisma.permission.findMany({
-      select: { name: true },
-    });
+//  async getGroupedPermissions() {
+//     // 1. Fetch all permissions from the database
+//     const permissions = await this.prisma.permission.findMany({
+//       select: { name: true },
+//     });
 
-    // 2. Transform and group them
-    const grouped = permissions.reduce((acc, current) => {
-      // Split "lead:create" into module="lead" and action="create"
-      const [module, action] = current.name.split(':');
+//     // 2. Transform and group them
+//     const grouped = permissions.reduce((acc, current) => {
+//       // Split "lead:create" into module="lead" and action="create"
+//       const [module, action] = current.name.split(':');
 
-      if (module && action) {
-        if (!acc[module]) {
-          acc[module] = [];
-        }
-        acc[module].push(action);
+//       if (module && action) {
+//         if (!acc[module]) {
+//           acc[module] = [];
+//         }
+//         acc[module].push(action);
+//       }
+
+//       return acc;
+//     }, {} as Record<string, string[]>);
+
+//     return grouped;
+//   }
+
+async getGroupedPermissions() {
+  // 1. Fetch both name and id from the database
+  const permissions = await this.prisma.permission.findMany({
+    select: { 
+      id: true,
+      name: true 
+    },
+  });
+
+  // 2. Transform and group them into objects
+  const grouped = permissions.reduce((acc, current) => {
+    // Split "lead:create" into module="lead" and action="create"
+    const [module, action] = current.name.split(':');
+
+    if (module && action) {
+      if (!acc[module]) {
+        acc[module] = [];
       }
+      
+      // Push the object containing the action name and the database ID
+      acc[module].push({
+        id: current.id,
+        action: action,
+      });
+    }
 
-      return acc;
-    }, {} as Record<string, string[]>);
+    return acc;
+  }, {} as Record<string, Array<{ id: string; action: string }>>);
 
-    return grouped;
-  }
+  return grouped;
+}
 
   async findOne(name: string) {
     const role = await this.prisma.role.findUnique({
