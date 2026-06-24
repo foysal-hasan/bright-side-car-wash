@@ -44,7 +44,7 @@ export class CreateLeadDto {
     required: false,
   })
   @IsOptional()
-  @IsPhoneNumber(null, { message: 'Please provide a valid phone number' })
+  @IsString({ message: 'Please provide a valid phone number' })
   @MaxLength(20, { message: 'Phone number must not exceed 20 characters' })
   phone?: string;
 
