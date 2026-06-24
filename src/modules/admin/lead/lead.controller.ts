@@ -342,7 +342,7 @@ export class LeadController {
   async update(@Param('id') id: string, @Req() req: Request, @Body() updateLeadDto: UpdateLeadDto, @UploadedFiles() files: { files?: Express.Multer.File[] }) {
     try {
       // Handle file uploads and store file paths in the database
-      files.files?.forEach(async file => {
+      files?.files?.forEach(async file => {
         const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
         const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
         await SojebStorage.put(key, file.buffer);
@@ -358,6 +358,7 @@ export class LeadController {
         const key = `${appConfig().storageUrl.lead}${filename}`;
         return SojebStorage.url(key);
       });
+      
       return {
         success: true,
         message: 'Lead updated successfully',
