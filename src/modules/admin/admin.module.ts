@@ -8,6 +8,7 @@ import { RoleModule } from './role/role.module';
 import { TeamModule } from './team/team.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
 import { TemplateModule } from './template/template.module';
+import { ReportModule } from './report/report.module';
 
 
 @Module({
@@ -19,7 +20,8 @@ import { TemplateModule } from './template/template.module';
     RoleModule,
     TeamModule,
     ActivityLogModule,
-    TemplateModule
+    TemplateModule,
+    ReportModule
   ],
 })
 export class AdminModule {}

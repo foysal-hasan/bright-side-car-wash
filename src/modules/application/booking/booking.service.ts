@@ -8,8 +8,8 @@ export class SquareService {
   private squareClient: SquareClient;
 
   constructor() {
-    const accessToken = "EAAAl0BpMLTId7BDqo1iDNxEheQvZ_sCBlmNie1SC65312W7oMhzYj2Gd1n5imfk";
-    const environment = SquareEnvironment.Sandbox;
+    const accessToken = appConfig().square.accessToken;
+    const environment = appConfig().square.environment === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox;
 
 
     console.log('🔵 [BACKEND] Initializing Square client...');
@@ -210,5 +210,6 @@ export class BookingService {
 import { InternalServerErrorException } from '@nestjs/common';
 import { SquareClient, SquareEnvironment } from 'square';
 import { randomUUID } from 'crypto';
+import appConfig from "src/config/app.config";
 
 

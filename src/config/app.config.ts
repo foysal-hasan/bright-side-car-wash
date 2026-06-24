@@ -81,6 +81,11 @@ export default () => ({
     apiKey: process.env.GOOGLE_MAPS_API_KEY,
   },
 
+  square: {
+    accessToken: process.env.SQUARE_ACCESS_TOKEN,
+    environment: process.env.SQUARE_ENVIRONMENT || 'sandbox',
+  },
+
   /**
    * Storage directory
    */
