@@ -27,7 +27,17 @@ async function bootstrap() {
   app.setGlobalPrefix('api', {
     exclude: ['/', '/health', '/stripe/onboarding/refresh', '/stripe/onboarding/return'],
   });
-  app.enableCors();
+
+   // Get origins from config service
+  const corsOrigins = appConfig().app.cross_origins?.split(',') || [];
+  
+  app.enableCors({
+    origin: corsOrigins.length > 0 ? corsOrigins : true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  });
+
   app.use(helmet());
   // Enable it, if special charactrers not encoding perfectly
   // app.use((req, res, next) => {
