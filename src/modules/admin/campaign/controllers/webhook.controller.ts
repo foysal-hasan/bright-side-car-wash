@@ -236,14 +236,14 @@ export class WebhookController {
         where: {
           OR: [
             { provider_email_id: messageId.toString() },
-            { to: email, status: EmailStatus.PENDING }
+            { to: email, status: EmailStatus.DELIVERED } // Fallback: match recent delivered emails to the same recipient
           ]
         },
         orderBy: { createdAt: 'desc' }
       });
 
       if (!targetLog) {
-        console.warn(`No tracked transactional email found for target destination: ${email}`);
+        this.logger.warn(`No tracked transactional email found for target destination: ${email}`);
         return { processed: false, reason: 'Transactional log reference missing' };
       }
 
