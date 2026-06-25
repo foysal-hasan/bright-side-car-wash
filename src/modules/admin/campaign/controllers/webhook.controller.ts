@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Logger } from '@nestjs/common';
 import { CampaignStatus, DeliveryStatus, EmailStatus } from 'src/generated/prisma/browser';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('webhooks')
 export class WebhookController {
+  private readonly logger = new Logger(WebhookController.name);
   constructor(private readonly prisma: PrismaService) { }
 
   // @Post('brevo')
@@ -152,7 +153,7 @@ export class WebhookController {
   @Post('brevo')
   @HttpCode(HttpStatus.OK) // Always return a 200 OK immediately to stop Brevo retry workers
   async handleBrevoWebhook(@Body() payload: any) {
-    // console.log('Received Brevo Event Payload Data:', JSON.stringify(payload));
+    this.logger.debug(`Received Brevo Event Payload Data: ${JSON.stringify(payload)}`);
 
     const email = payload.email || payload.recipient;
     const event = payload.event;
@@ -160,7 +161,7 @@ export class WebhookController {
     const campId = payload.camp_id;
 
     if (!email) {
-      console.warn('Webhook processing skipped: Missing recipient email key.');
+      this.logger.warn('Webhook processing skipped: Missing recipient email key.');
       return { processed: false, reason: 'Missing identifier keys' };
     }
 
@@ -177,7 +178,7 @@ export class WebhookController {
       });
 
       if (!config) {
-        console.warn(`No local configuration profile found matching Brevo Campaign ID: ${campId}`);
+        this.logger.warn(`No local configuration profile found matching Brevo Campaign ID: ${campId}`);
         return { processed: false, reason: 'Campaign configuration context missing' };
       }
 
