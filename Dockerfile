@@ -1,5 +1,5 @@
 # Base image
-FROM node:20
+FROM node:24-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -21,12 +21,13 @@ COPY .env ./
 RUN npx prisma generate
 
 # Creates a "dist" folder with the production build
-# RUN yarn build
+RUN yarn build
 
 # Expose the port on which the app will run
 EXPOSE 4000
 
 # Start the server using the production build
-# CMD ["yarn", "start:prod"]
+CMD ["yarn", "start:prod"]
+
 # Start the server in dev mode
-CMD ["yarn", "start:dev-swc"]
+# CMD ["yarn", "start:dev-swc"]
