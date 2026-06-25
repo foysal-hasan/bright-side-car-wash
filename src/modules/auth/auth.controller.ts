@@ -288,7 +288,6 @@ export class AuthController {
   ) {
     const user_id = req.user.id;
     const user_email = req.user.email;
-
     const roleNames = req.user.roleUsers.map(item => item.role.name);
 
     const response = await this.authService.login({
@@ -297,6 +296,8 @@ export class AuthController {
       roles: roleNames,
     }, deviceInfo
     );
+
+    console.log('Login response:', response);
 
     // store to secure cookies
     res.cookie('refresh_token', response.authorization.refresh_token, {
