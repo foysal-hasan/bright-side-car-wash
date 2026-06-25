@@ -464,6 +464,7 @@ export type UserWhereInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineListRelationFilter
   created_leads?: Prisma.LeadListRelationFilter
   assigned_leads?: Prisma.LeadListRelationFilter
+  emailLogs?: Prisma.EmailLogListRelationFilter
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryListRelationFilter
 }
@@ -515,6 +516,7 @@ export type UserOrderByWithRelationInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineOrderByRelationAggregateInput
   created_leads?: Prisma.LeadOrderByRelationAggregateInput
   assigned_leads?: Prisma.LeadOrderByRelationAggregateInput
+  emailLogs?: Prisma.EmailLogOrderByRelationAggregateInput
   assignment_history?: Prisma.LeadAssignmentHistoryOrderByRelationAggregateInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryOrderByRelationAggregateInput
 }
@@ -569,6 +571,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   lead_activity_timelines?: Prisma.LeadActivityTimelineListRelationFilter
   created_leads?: Prisma.LeadListRelationFilter
   assigned_leads?: Prisma.LeadListRelationFilter
+  emailLogs?: Prisma.EmailLogListRelationFilter
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryListRelationFilter
 }, "id" | "email" | "username" | "domain" | "stripeAccountId">
@@ -702,6 +705,7 @@ export type UserCreateInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -753,6 +757,7 @@ export type UserUncheckedCreateInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -804,6 +809,7 @@ export type UserUpdateInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -855,6 +861,7 @@ export type UserUncheckedUpdateInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -1335,6 +1342,22 @@ export type UserUpdateOneWithoutLead_activity_timelinesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutLead_activity_timelinesInput, Prisma.UserUpdateWithoutLead_activity_timelinesInput>, Prisma.UserUncheckedUpdateWithoutLead_activity_timelinesInput>
 }
 
+export type UserCreateNestedOneWithoutEmailLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmailLogsInput, Prisma.UserUncheckedCreateWithoutEmailLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmailLogsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutEmailLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmailLogsInput, Prisma.UserUncheckedCreateWithoutEmailLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmailLogsInput
+  upsert?: Prisma.UserUpsertWithoutEmailLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmailLogsInput, Prisma.UserUpdateWithoutEmailLogsInput>, Prisma.UserUncheckedUpdateWithoutEmailLogsInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   created_at?: Date | string
@@ -1381,6 +1404,7 @@ export type UserCreateWithoutAccountsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -1431,6 +1455,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -1497,6 +1522,7 @@ export type UserUpdateWithoutAccountsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -1547,6 +1573,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -1597,6 +1624,7 @@ export type UserCreateWithoutUserSessionsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -1647,6 +1675,7 @@ export type UserUncheckedCreateWithoutUserSessionsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -1713,6 +1742,7 @@ export type UserUpdateWithoutUserSessionsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -1763,6 +1793,7 @@ export type UserUncheckedUpdateWithoutUserSessionsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -1813,6 +1844,7 @@ export type UserCreateWithoutUcodesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -1863,6 +1895,7 @@ export type UserUncheckedCreateWithoutUcodesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -1929,6 +1962,7 @@ export type UserUpdateWithoutUcodesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -1979,6 +2013,7 @@ export type UserUncheckedUpdateWithoutUcodesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -2029,6 +2064,7 @@ export type UserCreateWithoutRoleUsersInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -2079,6 +2115,7 @@ export type UserUncheckedCreateWithoutRoleUsersInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -2145,6 +2182,7 @@ export type UserUpdateWithoutRoleUsersInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -2195,6 +2233,7 @@ export type UserUncheckedUpdateWithoutRoleUsersInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -2245,6 +2284,7 @@ export type UserCreateWithoutSent_messagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -2295,6 +2335,7 @@ export type UserUncheckedCreateWithoutSent_messagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -2350,6 +2391,7 @@ export type UserCreateWithoutMessagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -2400,6 +2442,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -2466,6 +2509,7 @@ export type UserUpdateWithoutSent_messagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -2516,6 +2560,7 @@ export type UserUncheckedUpdateWithoutSent_messagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -2577,6 +2622,7 @@ export type UserUpdateWithoutMessagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -2627,6 +2673,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -2677,6 +2724,7 @@ export type UserCreateWithoutConversations_createdInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -2727,6 +2775,7 @@ export type UserUncheckedCreateWithoutConversations_createdInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -2782,6 +2831,7 @@ export type UserCreateWithoutConversations_as_participantInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -2832,6 +2882,7 @@ export type UserUncheckedCreateWithoutConversations_as_participantInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -2898,6 +2949,7 @@ export type UserUpdateWithoutConversations_createdInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -2948,6 +3000,7 @@ export type UserUncheckedUpdateWithoutConversations_createdInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -3009,6 +3062,7 @@ export type UserUpdateWithoutConversations_as_participantInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -3059,6 +3113,7 @@ export type UserUncheckedUpdateWithoutConversations_as_participantInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -3109,6 +3164,7 @@ export type UserCreateWithoutActivityLogsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -3159,6 +3215,7 @@ export type UserUncheckedCreateWithoutActivityLogsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -3225,6 +3282,7 @@ export type UserUpdateWithoutActivityLogsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -3275,6 +3333,7 @@ export type UserUncheckedUpdateWithoutActivityLogsInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -3325,6 +3384,7 @@ export type UserCreateWithoutCreated_leadsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -3375,6 +3435,7 @@ export type UserUncheckedCreateWithoutCreated_leadsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -3430,6 +3491,7 @@ export type UserCreateWithoutAssigned_leadsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -3480,6 +3542,7 @@ export type UserUncheckedCreateWithoutAssigned_leadsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -3546,6 +3609,7 @@ export type UserUpdateWithoutCreated_leadsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -3596,6 +3660,7 @@ export type UserUncheckedUpdateWithoutCreated_leadsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -3657,6 +3722,7 @@ export type UserUpdateWithoutAssigned_leadsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -3707,6 +3773,7 @@ export type UserUncheckedUpdateWithoutAssigned_leadsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -3758,6 +3825,7 @@ export type UserCreateWithoutAssignment_historyInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
 
@@ -3808,6 +3876,7 @@ export type UserUncheckedCreateWithoutAssignment_historyInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
 
@@ -3863,6 +3932,7 @@ export type UserCreateWithoutAssignment_history_as_assignerInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
 }
 
@@ -3913,6 +3983,7 @@ export type UserUncheckedCreateWithoutAssignment_history_as_assignerInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
 }
 
@@ -3979,6 +4050,7 @@ export type UserUpdateWithoutAssignment_historyInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
 
@@ -4029,6 +4101,7 @@ export type UserUncheckedUpdateWithoutAssignment_historyInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
 
@@ -4090,6 +4163,7 @@ export type UserUpdateWithoutAssignment_history_as_assignerInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
 }
 
@@ -4140,6 +4214,7 @@ export type UserUncheckedUpdateWithoutAssignment_history_as_assignerInput = {
   lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
 }
 
@@ -4189,6 +4264,7 @@ export type UserCreateWithoutLead_activity_timelinesInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
 }
@@ -4239,6 +4315,7 @@ export type UserUncheckedCreateWithoutLead_activity_timelinesInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
 }
@@ -4305,6 +4382,7 @@ export type UserUpdateWithoutLead_activity_timelinesInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
 }
@@ -4355,6 +4433,227 @@ export type UserUncheckedUpdateWithoutLead_activity_timelinesInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+}
+
+export type UserCreateWithoutEmailLogsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
+  assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+}
+
+export type UserUncheckedCreateWithoutEmailLogsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
+  assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+}
+
+export type UserCreateOrConnectWithoutEmailLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmailLogsInput, Prisma.UserUncheckedCreateWithoutEmailLogsInput>
+}
+
+export type UserUpsertWithoutEmailLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEmailLogsInput, Prisma.UserUncheckedUpdateWithoutEmailLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmailLogsInput, Prisma.UserUncheckedCreateWithoutEmailLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEmailLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEmailLogsInput, Prisma.UserUncheckedUpdateWithoutEmailLogsInput>
+}
+
+export type UserUpdateWithoutEmailLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
+  assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEmailLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
+  assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
@@ -4377,6 +4676,7 @@ export type UserCountOutputType = {
   lead_activity_timelines: number
   created_leads: number
   assigned_leads: number
+  emailLogs: number
   assignment_history: number
   assignment_history_as_assigner: number
 }
@@ -4394,6 +4694,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   lead_activity_timelines?: boolean | UserCountOutputTypeCountLead_activity_timelinesArgs
   created_leads?: boolean | UserCountOutputTypeCountCreated_leadsArgs
   assigned_leads?: boolean | UserCountOutputTypeCountAssigned_leadsArgs
+  emailLogs?: boolean | UserCountOutputTypeCountEmailLogsArgs
   assignment_history?: boolean | UserCountOutputTypeCountAssignment_historyArgs
   assignment_history_as_assigner?: boolean | UserCountOutputTypeCountAssignment_history_as_assignerArgs
 }
@@ -4495,6 +4796,13 @@ export type UserCountOutputTypeCountAssigned_leadsArgs<ExtArgs extends runtime.T
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountEmailLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmailLogWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountAssignment_historyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.LeadAssignmentHistoryWhereInput
 }
@@ -4554,6 +4862,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   lead_activity_timelines?: boolean | Prisma.User$lead_activity_timelinesArgs<ExtArgs>
   created_leads?: boolean | Prisma.User$created_leadsArgs<ExtArgs>
   assigned_leads?: boolean | Prisma.User$assigned_leadsArgs<ExtArgs>
+  emailLogs?: boolean | Prisma.User$emailLogsArgs<ExtArgs>
   assignment_history?: boolean | Prisma.User$assignment_historyArgs<ExtArgs>
   assignment_history_as_assigner?: boolean | Prisma.User$assignment_history_as_assignerArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -4684,6 +4993,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   lead_activity_timelines?: boolean | Prisma.User$lead_activity_timelinesArgs<ExtArgs>
   created_leads?: boolean | Prisma.User$created_leadsArgs<ExtArgs>
   assigned_leads?: boolean | Prisma.User$assigned_leadsArgs<ExtArgs>
+  emailLogs?: boolean | Prisma.User$emailLogsArgs<ExtArgs>
   assignment_history?: boolean | Prisma.User$assignment_historyArgs<ExtArgs>
   assignment_history_as_assigner?: boolean | Prisma.User$assignment_history_as_assignerArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -4706,6 +5016,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     lead_activity_timelines: Prisma.$LeadActivityTimelinePayload<ExtArgs>[]
     created_leads: Prisma.$LeadPayload<ExtArgs>[]
     assigned_leads: Prisma.$LeadPayload<ExtArgs>[]
+    emailLogs: Prisma.$EmailLogPayload<ExtArgs>[]
     assignment_history: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>[]
     assignment_history_as_assigner: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>[]
   }
@@ -5150,6 +5461,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   lead_activity_timelines<T extends Prisma.User$lead_activity_timelinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$lead_activity_timelinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadActivityTimelinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   created_leads<T extends Prisma.User$created_leadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$created_leadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assigned_leads<T extends Prisma.User$assigned_leadsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assigned_leadsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  emailLogs<T extends Prisma.User$emailLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignment_history<T extends Prisma.User$assignment_historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignment_historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadAssignmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignment_history_as_assigner<T extends Prisma.User$assignment_history_as_assignerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignment_history_as_assignerArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadAssignmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -5888,6 +6200,30 @@ export type User$assigned_leadsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.LeadScalarFieldEnum | Prisma.LeadScalarFieldEnum[]
+}
+
+/**
+ * User.emailLogs
+ */
+export type User$emailLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmailLog
+   */
+  select?: Prisma.EmailLogSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmailLog
+   */
+  omit?: Prisma.EmailLogOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailLogInclude<ExtArgs> | null
+  where?: Prisma.EmailLogWhereInput
+  orderBy?: Prisma.EmailLogOrderByWithRelationInput | Prisma.EmailLogOrderByWithRelationInput[]
+  cursor?: Prisma.EmailLogWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmailLogScalarFieldEnum | Prisma.EmailLogScalarFieldEnum[]
 }
 
 /**

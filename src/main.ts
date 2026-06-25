@@ -16,6 +16,7 @@ import { PrismaExceptionFilter } from './common/exception/prisma-exception-filte
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
+    logger: appConfig().app.environment === 'production' ? ['error', 'warn'] : ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
   app.getHttpAdapter().getInstance().set('trust proxy', true);
@@ -32,9 +33,23 @@ async function bootstrap() {
   const corsOrigins = appConfig().app.cross_origins?.split(',') || [];
   
   app.enableCors({
-    origin: corsOrigins.length > 0 ? corsOrigins : true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+
+      console.log(`Incoming request from origin: ${origin}`);
+
+      // Allow if origin is in the allowed list
+      if (corsOrigins.includes(origin) || corsOrigins.includes('*')) {
+        callback(null, true);
+      } else {
+        console.warn(`CORS blocked: ${origin}`);
+        console.warn(`Allowed origins: ${corsOrigins.join(', ')}`);
+        callback(new Error(`CORS policy: ${origin} not allowed`));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: true,
+    // credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 

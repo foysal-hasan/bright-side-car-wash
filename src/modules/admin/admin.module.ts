@@ -9,6 +9,7 @@ import { TeamModule } from './team/team.module';
 import { ActivityLogModule } from './activity-log/activity-log.module';
 import { TemplateModule } from './template/template.module';
 import { ReportModule } from './report/report.module';
+import { EmailManagementModule } from './email-management/email-management.module';
 
 
 @Module({
@@ -21,7 +22,8 @@ import { ReportModule } from './report/report.module';
     TeamModule,
     ActivityLogModule,
     TemplateModule,
-    ReportModule
+    ReportModule,
+    EmailManagementModule
   ],
 })
 export class AdminModule {}

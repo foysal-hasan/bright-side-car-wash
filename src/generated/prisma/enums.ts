@@ -85,3 +85,13 @@ export const EditorType = {
 } as const
 
 export type EditorType = (typeof EditorType)[keyof typeof EditorType]
+
+
+export const EmailStatus = {
+  DELIVERED: 'DELIVERED',
+  PENDING: 'PENDING',
+  FAILED: 'FAILED',
+  BOUNCED: 'BOUNCED'
+} as const
+
+export type EmailStatus = (typeof EmailStatus)[keyof typeof EmailStatus]

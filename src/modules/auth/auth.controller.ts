@@ -66,6 +66,7 @@ export class AuthController {
 
       const response = await this.authService.me(user_id);
 
+
       return response;
     } catch (error) {
       return {

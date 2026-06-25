@@ -7,6 +7,7 @@ export default () => ({
     cross_origins: process.env.CROSS_ORIGINS,
     onboarding_refresh_url: process.env.ONBOARDING_REFRESH_URL,
     port: parseInt(process.env.PORT, 10) || 3000,
+    environment: process.env.NODE_ENV || 'development',
   },
 
   fileSystems: {
@@ -111,6 +112,9 @@ export default () => ({
 
     // lead attachments
     lead: '/lead/',
+
+    // email attachments
+    emailAttachments: '/email-attachments/',
   },
 
   defaultUser: {

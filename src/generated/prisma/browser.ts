@@ -137,3 +137,8 @@ export type Template = Prisma.TemplateModel
  * 
  */
 export type EmailTemplate = Prisma.EmailTemplateModel
+/**
+ * Model EmailLog
+ * 
+ */
+export type EmailLog = Prisma.EmailLogModel

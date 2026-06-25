@@ -11,7 +11,8 @@ export class CampaignReportsController {
 
   @Get('highlights')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get top campaign summary cards', description: 'Returns metadata for the top 4 completed campaigns with open and click rates.' })
+  @ApiOperation({ summary: 'Get top campaign summary cards', 
+    description: 'Returns metadata for the top 4 completed campaigns with open and click rates.' })
   @ApiResponse({
     status: 200,
     description: 'Successfully calculated highlight metrics.',

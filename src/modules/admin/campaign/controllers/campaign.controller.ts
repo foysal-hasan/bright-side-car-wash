@@ -16,6 +16,7 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { UpdateCampaignDto } from '../dto/update-campaign.dto';
 import { CampaignPaginationQueryDto } from '../dto/campaign-pagination-query.dto';
 import { CampaignStatusActionDto } from '../dto/campaign-status-action.dto';
+import appConfig from 'src/config/app.config';
 
 @ApiTags('Admin Campaign Management')
 @ApiBearerAuth()
@@ -33,6 +34,8 @@ export class CampaignController {
   @LogActivity({ action: 'create', entity: 'campaign' })
   @Post('campaigns')
   async createCampaign(@Body() createCampaignDto: CreateCampaignDto) {
+    // createCampaignDto.senderName = appConfig().campaign.brevo.senderName;
+    // createCampaignDto.senderEmail = appConfig().campaign.brevo.senderEmail;
     const result = await this.orchestrator.createCampaign(createCampaignDto);
     return {
       success: true,

@@ -74,7 +74,8 @@ export const ModelName = {
   DeliveryLog: 'DeliveryLog',
   LeadGroup: 'LeadGroup',
   Template: 'Template',
-  EmailTemplate: 'EmailTemplate'
+  EmailTemplate: 'EmailTemplate',
+  EmailLog: 'EmailLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -455,6 +456,28 @@ export const EmailTemplateScalarFieldEnum = {
 } as const
 
 export type EmailTemplateScalarFieldEnum = (typeof EmailTemplateScalarFieldEnum)[keyof typeof EmailTemplateScalarFieldEnum]
+
+
+export const EmailLogScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  sender_name: 'sender_name',
+  sender_mail: 'sender_mail',
+  to: 'to',
+  cc: 'cc',
+  bcc: 'bcc',
+  subject: 'subject',
+  body: 'body',
+  files: 'files',
+  status: 'status',
+  is_opened: 'is_opened',
+  is_clicked: 'is_clicked',
+  provider_email_id: 'provider_email_id',
+  leadId: 'leadId',
+  created_by_id: 'created_by_id'
+} as const
+
+export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
 
 
 export const SortOrder = {

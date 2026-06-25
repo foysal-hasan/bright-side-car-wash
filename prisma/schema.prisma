@@ -99,6 +99,7 @@ model User {
   lead_activity_timelines      LeadActivityTimeline[]
   created_leads                Lead[]                 @relation("CreatedLeads")
   assigned_leads               Lead[]                 @relation("AssignedLeads")
+  emailLogs                    EmailLog[]             @relation("SentEmails")
 
   assignment_history             LeadAssignmentHistory[] @relation("LeadAssignee")
   assignment_history_as_assigner LeadAssignmentHistory[] @relation("LeadAssigner")
@@ -383,6 +384,9 @@ model Lead {
   // Implicit Many-to-Many connection
   leadGroups         LeadGroup[]             @relation("LeadToGroup")
 
+  // Relation to EmailLog
+  emailLogs          EmailLog[]              @relation("LeadEmailLogs")
+
   @@index([email])
   @@map("leads")
 }
@@ -616,3 +620,46 @@ model EmailTemplate {
 // }
 
 // ===================== Templetes end =====================
+
+// ===================== Email Logs start =====================
+enum EmailStatus {
+  DELIVERED
+  PENDING
+  FAILED
+  BOUNCED
+}
+
+model EmailLog {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  
+  sender_name  String?
+  sender_mail  String
+  to          String   
+  cc          String[] @default([]) 
+  bcc         String[] @default([]) 
+  subject     String
+  body        String   @db.Text
+  files       String[] @default([])
+  status      EmailStatus @default(PENDING)
+  is_opened   Boolean  @default(false)
+  is_clicked  Boolean  @default(false)
+
+  // extranal provider's email ID for tracking
+  provider_email_id String? @unique
+
+  // Optional connection to a Lead
+  leadId      String?
+  lead        Lead?    @relation("LeadEmailLogs", fields: [leadId], references: [id], onDelete: SetNull)
+
+  // Tracker for which Staff/User created this email
+  created_by_id String?
+  creator       User?    @relation("SentEmails", fields: [created_by_id], references: [id], onDelete: SetNull)
+
+  @@index([to])
+  @@index([leadId])
+  @@index([created_by_id])
+  @@map("email_logs")
+}
+
+// ===================== Email Logs end =====================
