@@ -15,6 +15,7 @@ import { randomUUID } from 'crypto';
 import { ConfirmBookingDto } from './dto/confirm-booking.dto';
 import { RescheduleBookingDto } from './dto/reschedule-booking.dto';
 import { CancelBookingDto } from './dto/cancel-booking.dto';
+import { GetServicesQueryDto } from './dto/get-services-query.dto';
 
 @Injectable()
 export class SquareUpBookingService {
@@ -205,29 +206,38 @@ export class SquareUpBookingService {
   //   }
   // }
 
-  async getServices(locationId?: string) {
+  async getServices(query: GetServicesQueryDto) {
     try {
       // In the latest SDK, searchCatalogObjects is preferred over catalog.search
       const response = await this.squareClient.catalog.search({
+        cursor: query.cursor || undefined,
         objectTypes: ['ITEM'],
         includeRelatedObjects: true,
-        limit: 100, // Adjust as needed for pagination
+        limit: 500,
+        query: {
+          exactQuery: {
+            attributeName: 'product_type',
+            attributeValue: 'APPOINTMENTS_SERVICE',
+          },
+        },
       });
 
       const catalogItems = (response.objects ?? []) as any[];
 
+      this.logger.debug(`Retrieved ${catalogItems.length} catalog items from Square.`);
+
       const services = catalogItems
-        .filter((object) => object.itemData?.productType === 'APPOINTMENTS_SERVICE')
+        // .filter((object) => object.itemData?.productType === 'APPOINTMENTS_SERVICE')
         .map((object) => {
           const variations = ((object.itemData?.variations ?? []) as any[])
             .filter((variation) => {
               // 1. Verify location suitability
-              const isAtLocation = this.isVariationAvailableAtLocation(variation, locationId);
+              const isAtLocation = this.isVariationAvailableAtLocation(variation, query.locationId);
 
               // 2. CRUCIAL: Verify variation is explicitly flagged for customer online booking
               const isOnlineBookable = variation.itemVariationData?.availableForBooking === true;
 
-              this.logger.debug(`Variation ${variation.id} at location ${locationId} is ${isOnlineBookable ? 'online bookable' : 'not online bookable'}`);
+              this.logger.debug(`Variation ${variation.id} at location ${query.locationId} is ${isOnlineBookable ? 'online bookable' : 'not online bookable'}`);
 
               return isAtLocation && isOnlineBookable;
             })
@@ -252,7 +262,7 @@ export class SquareUpBookingService {
         // Strip out any parent items whose variations were completely removed by the online booking filter
         .filter((service) => service.variations.length > 0);
 
-      return this.toJsonSafe({ data: services });
+      return this.toJsonSafe({ data: services, nextCursor: response.cursor || null });
     } catch (error) {
       this.handleSquareError(error);
     }

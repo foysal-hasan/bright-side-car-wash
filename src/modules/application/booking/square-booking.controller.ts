@@ -8,6 +8,7 @@ import { RescheduleBookingDto } from './dto/reschedule-booking.dto';
 import { CancelBookingDto } from './dto/cancel-booking.dto';
 import { ReleaseLockDto } from './dto/release-lock.dto';
 import { CreateBookableServiceDto } from './dto/create-service.dto';
+import { GetServicesQueryDto } from './dto/get-services-query.dto';
 
 @Controller('api/appointments')
 export class SquareBookingController {
@@ -16,37 +17,63 @@ export class SquareBookingController {
   @Post('services')
   @HttpCode(HttpStatus.CREATED)
   async createNewService(@Body() dto: CreateBookableServiceDto) {
-    return await this.bookingService.createBookableService(
+    const service = await this.bookingService.createBookableService(
       dto.name,
       dto.priceCents,
       dto.durationMinutes,
       dto.description,
     );
+    return {
+      success: true,
+      message: 'Service created successfully',
+      data: service,
+    };
   }
 
   // 1. Fetch all business locations
   @Get('locations')
   async getLocations() {
-    return await this.bookingService.getLocations();
-  }
+    const locations = await this.bookingService.getLocations();
+    return {
+      success: true,
+      message: 'Locations retrieved successfully',
+      data: locations,
+    };
+  } 
 
   // 2. Fetch basic business info for booking page
   @Get('info')
   async getBookingBasicInfo() {
-    return await this.bookingService.getBookingBasicInfo();
+    const info = await this.bookingService.getBookingBasicInfo();
+    return {
+      success: true,
+      message: 'Booking basic info retrieved successfully',
+      data: info,
+    };
   }
 
   // 3. Fetch all appointment services filtered by location
   @Get('services')
-  async getServices(@Query('locationId') locationId?: string) {
-    return await this.bookingService.getServices(locationId);
+  async getServices(@Query() query: GetServicesQueryDto) {
+    const services = await this.bookingService.getServices(query);
+    return {
+      success: true,
+      message: 'Services retrieved successfully',
+      length: services.data.length,
+      data: services.data,
+    };
   }
 
   // 4. Cart summary for one or more selected services
   @Post('cart/summary')
   @HttpCode(HttpStatus.OK)
   async getCartSummary(@Body() body: CartSummaryDto) {
-    return await this.bookingService.getCartSummary(body.locationId, body.serviceVariationIds);
+    const summary = await this.bookingService.getCartSummary(body.locationId, body.serviceVariationIds);
+    return {
+      success: true,
+      message: 'Cart summary retrieved successfully',
+      data: summary,
+    };
   }
 
   // 5. Query open slots based on selected date/range and cart services
@@ -55,13 +82,18 @@ export class SquareBookingController {
   async checkAvailability(
     @Body() body: CheckAvailabilityDto
   ) {
-    return await this.bookingService.checkAvailability(
+    const availability = await this.bookingService.checkAvailability(
       body.locationId,
       body.serviceVariationIds,
       body.date,
       body.startAt,
       body.endAt
     );
+    return {
+      success: true,
+      message: 'Availability retrieved successfully',
+      data: availability,
+    };
   }
 
   // 6. Trigger virtual hold on specific slot
@@ -69,19 +101,29 @@ export class SquareBookingController {
   async lockTimeSlot(
     @Body() body: LockTimeSlotDto
   ) {
-    return await this.bookingService.lockTimeSlot(
+    const lock = await this.bookingService.lockTimeSlot(
       body.locationId,
       body.startAt,
       body.cartId,
       body.serviceVariationIds
     );
+    return {
+      success: true,
+      message: 'Time slot locked successfully',
+      data: lock,
+    };
   }
 
   // 6.1 Release lock if user abandons checkout
   @Post('lock/release')
   @HttpCode(HttpStatus.OK)
   async releaseLock(@Body() body: ReleaseLockDto) {
-    return await this.bookingService.releaseLock(body.locationId, body.startAt, body.lockToken);
+    const release = await this.bookingService.releaseLock(body.locationId, body.startAt, body.lockToken);
+    return {
+      success: true,
+      message: 'Time slot released successfully',
+      data: release,
+    };
   }
 
   // 7. Checkout: charge + create booking
@@ -89,7 +131,12 @@ export class SquareBookingController {
   async confirmBooking(
     @Body() body: ConfirmBookingDto
   ) {
-    return await this.bookingService.confirmBookingWithDeposit(body);
+    const booking = await this.bookingService.confirmBookingWithDeposit(body);
+    return {
+      success: true,
+      message: 'Booking confirmed successfully',
+      data: booking,
+    };
   }
 
   // 8. Reschedule booking with optional fee collection
@@ -98,7 +145,12 @@ export class SquareBookingController {
     @Param('bookingId') bookingId: string,
     @Body() body: RescheduleBookingDto,
   ) {
-    return await this.bookingService.rescheduleBooking(bookingId, body);
+    const reschedule = await this.bookingService.rescheduleBooking(bookingId, body);
+    return {
+      success: true,
+      message: 'Booking rescheduled successfully',
+      data: reschedule,
+    };
   }
 
   // 9. Cancel booking with optional cancellation fee/refund handling
@@ -107,6 +159,11 @@ export class SquareBookingController {
     @Param('bookingId') bookingId: string,
     @Body() body: CancelBookingDto,
   ) {
-    return await this.bookingService.cancelBooking(bookingId, body);
+    const cancel = await this.bookingService.cancelBooking(bookingId, body);
+    return {
+      success: true,
+      message: 'Booking cancelled successfully',
+      data: cancel,
+    };
   }
 }
