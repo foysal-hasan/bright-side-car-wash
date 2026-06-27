@@ -56,6 +56,48 @@ export class SquareUpBookingService {
       const durationMilliseconds = durationMinutes * 60 * 1000;
 
 
+
+
+      // const targetLocationId = 'LFCP3G26QFGDZ'; // Define your target location ID here
+
+      // const response = await this.squareClient.catalog.object.upsert({
+      //   idempotencyKey: randomUUID(),
+      //   object: {
+      //     type: 'ITEM',
+      //     id: '#new-service-item',
+      //     // 1. Tell Square to only make this parent object available at this specific location
+      //     presentAtLocationIds: [targetLocationId],
+      //     itemData: {
+      //       name: name,
+      //       description: description,
+      //       productType: 'APPOINTMENTS_SERVICE',
+      //       variations: [
+      //         {
+      //           type: 'ITEM_VARIATION',
+      //           id: '#new-service-variation',
+      //           // 2. Mirror the location restriction to the child variation level too
+      //           presentAtLocationIds: [targetLocationId],
+      //           itemVariationData: {
+      //             name: 'Regular Session',
+      //             pricingType: 'FIXED_PRICING',
+      //             priceMoney: {
+      //               amount: BigInt(priceCents),
+      //               currency: 'USD',
+      //             },
+      //             serviceDuration: BigInt(durationMilliseconds),
+      //             availableForBooking: true,
+      //             teamMemberIds: ["TMJ05qjLA76pqIAf"],
+
+      //             // Note: Use locationOverrides only if you need special location-specific adjustments,
+      //             // like an alternative price or a different team assignment for this specific spot.
+      //             // Since we restricted visibility above, this variation will only exist here anyway!
+      //           },
+      //         },
+      //       ],
+      //     },
+      //   },
+      // });
+
       const response = await this.squareClient.catalog.object.upsert({
         idempotencyKey: randomUUID(),
         object: {
@@ -65,7 +107,6 @@ export class SquareUpBookingService {
             name: name,
             description: description,
             productType: 'APPOINTMENTS_SERVICE', // Required to expose this as a bookable appointment slot
-
             variations: [
               {
                 type: 'ITEM_VARIATION',
@@ -86,7 +127,6 @@ export class SquareUpBookingService {
           },
         },
       });
-
       const rootItem = response.catalogObject;
       const variationItem = rootItem?.itemData?.variations?.[0];
 
@@ -213,7 +253,7 @@ export class SquareUpBookingService {
         cursor: query.cursor || undefined,
         objectTypes: ['ITEM'],
         includeRelatedObjects: true,
-        limit: 500,
+        limit: query.limit || 100,
         query: {
           exactQuery: {
             attributeName: 'product_type',
@@ -236,9 +276,8 @@ export class SquareUpBookingService {
 
               // 2. CRUCIAL: Verify variation is explicitly flagged for customer online booking
               const isOnlineBookable = variation.itemVariationData?.availableForBooking === true;
-
-              this.logger.debug(`Variation ${variation.id} at location ${query.locationId} is ${isOnlineBookable ? 'online bookable' : 'not online bookable'}`);
-
+              this.logger.debug(`variation => ${this.toJsonSafe(variation.itemVariationData)}`);
+              console.log(variation)
               return isAtLocation && isOnlineBookable;
             })
             .map((variation) => ({
@@ -340,7 +379,7 @@ export class SquareUpBookingService {
         },
       });
 
-      // this.logger.debug(`Availability response for location ${locationId} and range ${JSON.stringify(resolvedRange)}:`, availabilityResponse);
+      this.logger.debug(`Availability response for location ${locationId} and range ${JSON.stringify(resolvedRange)}:`, availabilityResponse);
 
       const availableSlots = [];
       for (const slot of availabilityResponse.availabilities ?? []) {
@@ -696,6 +735,11 @@ export class SquareUpBookingService {
     if (absentAt && absentAt.length > 0) {
       return !absentAt.includes(locationId);
     }
+
+
+
+    this.logger.debug(`Variation ${variation.id} => ${variation}`);
+
 
     return true;
   }

@@ -86,6 +86,7 @@ export default () => ({
   square: {
     accessToken: process.env.SQUARE_ACCESS_TOKEN,
     environment: process.env.SQUARE_ENVIRONMENT || 'sandbox',
+    limit: parseInt(process.env.SQUARE_LIMIT, 10) || 100, // Default limit for Square API requests
   },
 
   /**

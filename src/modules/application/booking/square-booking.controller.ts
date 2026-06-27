@@ -9,6 +9,7 @@ import { CancelBookingDto } from './dto/cancel-booking.dto';
 import { ReleaseLockDto } from './dto/release-lock.dto';
 import { CreateBookableServiceDto } from './dto/create-service.dto';
 import { GetServicesQueryDto } from './dto/get-services-query.dto';
+import appConfig from 'src/config/app.config';
 
 @Controller('api/appointments')
 export class SquareBookingController {
@@ -55,12 +56,14 @@ export class SquareBookingController {
   // 3. Fetch all appointment services filtered by location
   @Get('services')
   async getServices(@Query() query: GetServicesQueryDto) {
+    query.limit = appConfig().square.limit || 100; // Default limit if not provided
     const services = await this.bookingService.getServices(query);
     return {
       success: true,
       message: 'Services retrieved successfully',
-      length: services.data.length,
+      lenth: services.data.length,
       data: services.data,
+      nextCursor: services.nextCursor,
     };
   }
 
