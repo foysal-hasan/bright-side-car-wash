@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsISO8601 } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsISO8601, IsNotEmpty, IsString } from 'class-validator';
 
 export class LockTimeSlotDto {
     @ApiProperty({
@@ -19,12 +19,13 @@ export class LockTimeSlotDto {
     startAt: string;
 
     @ApiProperty({
-        description: 'The end date and time for the time slot lock in ISO 8601 format',
-        example: '2026-09-15T12:00:00Z',
+        description: 'One or more service variation IDs currently in cart',
+        example: ['UH4TYK4N3E7J3UWT5P4G2QMW'],
     })
-    @IsISO8601({}, { message: 'endAt must be a valid ISO 8601 date string.' })
-    @IsNotEmpty({ message: 'endAt is required.' })
-    endAt: string;
+    @IsArray()
+    @ArrayNotEmpty({ message: 'At least one service variation ID is required.' })
+    @IsString({ each: true, message: 'Each service variation ID must be a string.' })
+    serviceVariationIds: string[];
 
     @ApiProperty({
         description: 'The ID of the cart associated with the time slot lock',

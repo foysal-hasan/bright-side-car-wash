@@ -1,4 +1,15 @@
-import { IsString, IsNotEmpty, IsISO8601, IsArray, IsInt, Min, ValidateNested } from 'class-validator';
+import {
+    IsString,
+    IsNotEmpty,
+    IsISO8601,
+    IsArray,
+    IsInt,
+    Min,
+    ValidateNested,
+    IsOptional,
+    IsEmail,
+    IsObject,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -11,6 +22,22 @@ export class CartItemDto {
     @IsString()
     @IsNotEmpty({ message: 'Each cart item requires a serviceVariationId.' })
     serviceVariationId: string;
+
+    @ApiProperty({
+        description: 'Current catalog version of selected service variation',
+        example: '1742908801001',
+    })
+    @IsString()
+    @IsNotEmpty({ message: 'Each cart item requires a serviceVariationVersion.' })
+    serviceVariationVersion: string;
+
+    @ApiProperty({
+        description: 'Team member ID selected by availability search',
+        example: 'TMX9QWQ3FMH5K',
+    })
+    @IsString()
+    @IsNotEmpty({ message: 'Each cart item requires a teamMemberId.' })
+    teamMemberId: string;
 
     @ApiProperty({
         description: 'The duration of the service in minutes',
@@ -39,6 +66,14 @@ export class ConfirmBookingDto {
     startAt: string;
 
     @ApiProperty({
+        description: 'Virtual lock token returned by /api/appointments/lock',
+        example: 'c0f97f44-a00f-4dd7-baa2-4f33b4e04444',
+    })
+    @IsString()
+    @IsNotEmpty({ message: 'lockToken is required to ensure slot ownership.' })
+    lockToken: string;
+
+    @ApiProperty({
         description: 'The items in the booking cart',
         type: [CartItemDto],
     })
@@ -54,6 +89,39 @@ export class ConfirmBookingDto {
     @IsString()
     @IsNotEmpty({ message: 'Payment sourceId token is required.' })
     sourceId: string;
+
+    @ApiProperty({
+        description: 'Customer full name',
+        example: 'John Doe',
+    })
+    @IsString()
+    @IsNotEmpty({ message: 'customerName is required.' })
+    customerName: string;
+
+    @ApiProperty({
+        description: 'Customer email address',
+        example: 'john@example.com',
+    })
+    @IsEmail({}, { message: 'customerEmail must be valid.' })
+    customerEmail: string;
+
+    @ApiProperty({
+        description: 'Customer phone number',
+        example: '+18885551234',
+        required: false,
+    })
+    @IsOptional()
+    @IsString()
+    customerPhone?: string;
+
+    @ApiProperty({
+        description: 'Arbitrary key/value fields from checkout form',
+        example: { vehicleType: 'SUV', plateNo: 'ABC123', notes: 'Call on arrival' },
+        required: false,
+    })
+    @IsOptional()
+    @IsObject()
+    customFields?: Record<string, unknown>;
 
     @ApiProperty({
         description: 'The deposit amount in cents for the booking',
