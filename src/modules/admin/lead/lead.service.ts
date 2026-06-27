@@ -1026,7 +1026,6 @@ export class LeadService {
       await tx.leadAssignmentHistory.create({
         data: {
           lead_id: id,
-          description: `Lead ${assignLeadDto.assigned_to_id ? 'assigned' : 'unassigned'} to ${updatedLead.assignee ? `${updatedLead.assignee.first_name} ${updatedLead.assignee.last_name}` : 'N/A'}`,
           assigned_to_id: assignLeadDto.assigned_to_id || null,
           assigned_by_id: assignLeadDto.assigned_by_id || null,
         },
