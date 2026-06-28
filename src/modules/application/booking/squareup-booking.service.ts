@@ -16,6 +16,7 @@ import { ConfirmBookingDto } from './dto/confirm-booking.dto';
 import { RescheduleBookingDto } from './dto/reschedule-booking.dto';
 import { CancelBookingDto } from './dto/cancel-booking.dto';
 import { GetServicesQueryDto } from './dto/get-services-query.dto';
+import { DepositStatus, LeadPriority, PaymentStatus } from 'src/generated/prisma/enums';
 
 @Injectable()
 export class SquareUpBookingService {
@@ -35,6 +36,7 @@ export class SquareUpBookingService {
           : SquareEnvironment.Sandbox,
     });
   }
+
 
 
   /**
@@ -666,9 +668,162 @@ export class SquareUpBookingService {
   //   }
   // }
 
+  // async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
+  //   const lockKey = this.getLockKey(payload.locationId, payload.startAt);
+  //   let createdBookingId: string | undefined;
+
+  //   try {
+  //     await this.assertLockOwnership(lockKey, payload.lockToken);
+
+  //     const cachedLockData = await this.cacheManager.get<{ startAt: string }>(lockKey);
+  //     if (!cachedLockData || cachedLockData.startAt !== payload.startAt) {
+  //       throw new BadRequestException('Tampering detected: Payload time slot does not match locked slot.');
+  //     }
+
+  //     // 1. RESOLVE OR CREATE CUSTOMER ID
+  //     let customerId: string | undefined;
+  //     if (payload.customerEmail) {
+  //       const searchResponse = await this.squareClient.customers.search({
+  //         query: {
+  //           filter: {
+  //             emailAddress: { exact: payload.customerEmail },
+  //           },
+  //         },
+  //       });
+
+  //       if (searchResponse.customers && searchResponse.customers.length > 0) {
+  //         customerId = searchResponse.customers[0].id;
+  //       } else {
+  //         const createCustomerResponse = await this.squareClient.customers.create({
+  //           idempotencyKey: randomUUID(),
+  //           givenName: payload.customerName?.split(' ')[0] || 'Guest',
+  //           familyName: payload.customerName?.split(' ').slice(1).join(' ') || 'User',
+  //           emailAddress: payload.customerEmail,
+  //           phoneNumber: payload.customerPhone,
+  //         });
+  //         customerId = createCustomerResponse.customer?.id;
+  //       }
+  //     }
+
+  //     if (!customerId) {
+  //       throw new BadRequestException('A valid customer profile is required.');
+  //     }
+
+  //     // 2. SECURE BACKEND VALIDATION: Fetch actual catalog definitions to prevent price/duration injection
+  //     const variationIds = payload.cartItems.map((item) => item.serviceVariationId);
+
+  //     const catalogResponse = await this.squareClient.catalog.batchGet({
+  //       objectIds: variationIds,
+  //     });
+
+  //     const fetchedObjects = catalogResponse.objects ?? [];
+
+  //     // Create an easily queryable map of our immutable source data
+  //     const catalogMap = new Map<string, any>(
+  //       fetchedObjects.map((obj) => [obj.id, obj])
+  //     );
+
+  //     let calculatedTotalCostCents = 0;
+
+  //     // 3. GENERATE APPOINTMENT SEGMENTS SECURELY
+  //     const appointmentSegments = payload.cartItems.map((item) => {
+  //       const catalogVariation = catalogMap.get(item.serviceVariationId);
+
+  //       this.logger.debug(`Catalog variation fetched for ID ${item.serviceVariationId}: ${this.toJsonSafe(catalogVariation)}`);
+
+  //       if (!catalogVariation || catalogVariation.type !== 'ITEM_VARIATION') {
+  //         throw new BadRequestException(`The service variation ID ${item.serviceVariationId} is invalid or no longer exists.`);
+  //       }
+
+  //       const variationData = catalogVariation.itemVariationData;
+
+
+
+  //       // Extract backend duration (Convert Milliseconds to Minutes)
+  //       const backendDurationMinutes = variationData?.serviceDuration
+  //         ? Number(variationData.serviceDuration) / 60000
+  //         : 30; // fallback default if not populated
+
+  //       // Track backend price for security audit / deposit evaluation
+  //       const backendPriceCents = Number(variationData?.priceMoney?.amount ?? 0);
+  //       calculatedTotalCostCents += backendPriceCents;
+
+  //       return {
+  //         serviceVariationId: item.serviceVariationId,
+  //         serviceVariationVersion: catalogVariation.version, // Use fresh master version from DB
+  //         teamMemberId: item.teamMemberId,
+  //         durationMinutes: backendDurationMinutes, // Enforced backend source of truth
+  //       };
+  //     });
+
+  //     // 4. SECURE DEPOSIT ENFORCEMENT
+  //     if (calculatedTotalCostCents <= 0) {
+  //       throw new BadRequestException('Invalid deposit calculation metrics detected.');
+  //     }
+
+  //     // 5. COMMENCE UPSTREAM ENTITY CREATION
+  //     const bookingResponse = await this.squareClient.bookings.create({
+  //       idempotencyKey: randomUUID(),
+  //       booking: {
+  //         startAt: payload.startAt,
+  //         locationId: payload.locationId,
+  //         customerId: customerId,
+  //         customerNote: payload.customerNote ?? '',
+  //         appointmentSegments,
+  //       },
+  //     });
+
+  //     createdBookingId = bookingResponse.booking?.id;
+
+  //     // 6. PROCESS CHARGE USING VERIFIED VALUE
+  //     const paymentResponse = await this.squareClient.payments.create({
+  //       sourceId: payload.sourceId,
+  //       idempotencyKey: randomUUID(),
+  //       amountMoney: {
+  //         amount: BigInt(calculatedTotalCostCents), // Secure value applied
+  //         currency: 'USD',
+  //       },
+  //       locationId: payload.locationId,
+  //       autocomplete: true,
+  //       referenceId: createdBookingId,
+  //       note: `Secure deposit for booking ${createdBookingId}`,
+  //     });
+
+  //     return this.toJsonSafe({
+  //       booking: bookingResponse.booking,
+  //       payment: paymentResponse.payment,
+  //       customer: {
+  //         name: payload.customerName,
+  //         email: payload.customerEmail,
+  //         phone: payload.customerPhone,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     this.logger.error('Secure booking orchestration failure:', error);
+
+  //     // Exact auto-rollback handling if payment fails but booking was already registered
+  //     if (createdBookingId) {
+  //       try {
+  //         const getBooking = await this.squareClient.bookings.get({ bookingId: createdBookingId });
+  //         await this.squareClient.bookings.cancel({
+  //           bookingId: createdBookingId,
+  //           idempotencyKey: randomUUID(),
+  //           bookingVersion: Number(getBooking.booking?.version ?? 0),
+  //         });
+  //       } catch {
+  //         // Suppress rollback failure to bubble original checkout execution error
+  //       }
+  //     }
+
+  //     this.handleSquareError(error);
+  //   }
+  // }
+
   async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
     const lockKey = this.getLockKey(payload.locationId, payload.startAt);
     let createdBookingId: string | undefined;
+    let createdLeadId: string | undefined;
+    let calculatedTotalCostCents = 0;
 
     try {
       await this.assertLockOwnership(lockKey, payload.lockToken);
@@ -678,15 +833,11 @@ export class SquareUpBookingService {
         throw new BadRequestException('Tampering detected: Payload time slot does not match locked slot.');
       }
 
-      // 1. RESOLVE OR CREATE CUSTOMER ID
+      // 1. RESOLVE OR CREATE CUSTOMER ID FROM SQUARE
       let customerId: string | undefined;
       if (payload.customerEmail) {
         const searchResponse = await this.squareClient.customers.search({
-          query: {
-            filter: {
-              emailAddress: { exact: payload.customerEmail },
-            },
-          },
+          query: { filter: { emailAddress: { exact: payload.customerEmail } } },
         });
 
         if (searchResponse.customers && searchResponse.customers.length > 0) {
@@ -707,59 +858,67 @@ export class SquareUpBookingService {
         throw new BadRequestException('A valid customer profile is required.');
       }
 
-      // 2. SECURE BACKEND VALIDATION: Fetch actual catalog definitions to prevent price/duration injection
+      // 2. SECURE BACKEND VALIDATION & VARIATION PARSING
       const variationIds = payload.cartItems.map((item) => item.serviceVariationId);
 
+      // 1. CRITICAL: Include related objects to fetch parent items along with variations
       const catalogResponse = await this.squareClient.catalog.batchGet({
         objectIds: variationIds,
+        includeRelatedObjects: true // ◄— Added this
       });
 
       const fetchedObjects = catalogResponse.objects ?? [];
+      const catalogMap = new Map<string, any>(fetchedObjects.map((obj) => [obj.id, obj]));
 
-      // Create an easily queryable map of our immutable source data
-      const catalogMap = new Map<string, any>(
-        fetchedObjects.map((obj) => [obj.id, obj])
+      // 2. Map the related parent items by their ID for lightning-fast lookup
+      const relatedObjectsMap = new Map<string, any>(
+        (catalogResponse.relatedObjects ?? []).map((obj) => [obj.id, obj])
       );
 
-      let calculatedTotalCostCents = 0;
+      
+      const serviceNamesArray: string[] = [];
 
-      // 3. GENERATE APPOINTMENT SEGMENTS SECURELY
       const appointmentSegments = payload.cartItems.map((item) => {
         const catalogVariation = catalogMap.get(item.serviceVariationId);
-
-        this.logger.debug(`Catalog variation fetched for ID ${item.serviceVariationId}: ${this.toJsonSafe(catalogVariation)}`);
-
         if (!catalogVariation || catalogVariation.type !== 'ITEM_VARIATION') {
-          throw new BadRequestException(`The service variation ID ${item.serviceVariationId} is invalid or no longer exists.`);
+          throw new BadRequestException(`The service variation ID ${item.serviceVariationId} is invalid.`);
         }
 
         const variationData = catalogVariation.itemVariationData;
 
-
-
-        // Extract backend duration (Convert Milliseconds to Minutes)
         const backendDurationMinutes = variationData?.serviceDuration
           ? Number(variationData.serviceDuration) / 60000
-          : 30; // fallback default if not populated
+          : 30;
 
-        // Track backend price for security audit / deposit evaluation
-        const backendPriceCents = Number(variationData?.priceMoney?.amount ?? 0);
-        calculatedTotalCostCents += backendPriceCents;
+        // 3. STITCH PARENT AND VARIATION NAMES TOGETHER
+        if (variationData?.name) {
+          const parentItemId = variationData.itemId;
+          const parentItem = relatedObjectsMap.get(parentItemId);
+          const parentName = parentItem?.itemData?.name || 'Unknown Service';
+          const variationName = variationData.name; // e.g., "Regular Session"
+
+          // Generates cleanly: "Express Detail Interior - Sedan/ SUV (Regular Session) - (60 min)"
+          serviceNamesArray.push(`${parentName} (${variationName}) - (${backendDurationMinutes} min)`);
+        }
+
+        calculatedTotalCostCents += Number(variationData?.priceMoney?.amount ?? 0);
 
         return {
           serviceVariationId: item.serviceVariationId,
-          serviceVariationVersion: catalogVariation.version, // Use fresh master version from DB
+          serviceVariationVersion: catalogVariation.version,
           teamMemberId: item.teamMemberId,
-          durationMinutes: backendDurationMinutes, // Enforced backend source of truth
+          durationMinutes: backendDurationMinutes,
         };
       });
 
-      // 4. SECURE DEPOSIT ENFORCEMENT
       if (calculatedTotalCostCents <= 0) {
         throw new BadRequestException('Invalid deposit calculation metrics detected.');
       }
 
-      // 5. COMMENCE UPSTREAM ENTITY CREATION
+      // 3. PERSIST INITIAL INTENT (Isolated Function)
+      createdLeadId = await this.createInitialLead(payload, serviceNamesArray, calculatedTotalCostCents);
+
+      // 4. COMMENCE UPSTREAM ENTITY CREATION IN SQUARE
       const bookingResponse = await this.squareClient.bookings.create({
         idempotencyKey: randomUUID(),
         booking: {
@@ -773,12 +932,12 @@ export class SquareUpBookingService {
 
       createdBookingId = bookingResponse.booking?.id;
 
-      // 6. PROCESS CHARGE USING VERIFIED VALUE
+      // 5. PROCESS CHARGE VIA SQUARE PAYMENTS
       const paymentResponse = await this.squareClient.payments.create({
         sourceId: payload.sourceId,
         idempotencyKey: randomUUID(),
         amountMoney: {
-          amount: BigInt(calculatedTotalCostCents), // Secure value applied
+          amount: BigInt(calculatedTotalCostCents),
           currency: 'USD',
         },
         locationId: payload.locationId,
@@ -786,6 +945,16 @@ export class SquareUpBookingService {
         referenceId: createdBookingId,
         note: `Secure deposit for booking ${createdBookingId}`,
       });
+
+      console.log('Payment response:', paymentResponse);
+
+      // 6. PROCESS SUCCESSFUL CONVERSION (Isolated Function)
+      if (createdLeadId) {
+        await this.handleLeadConversion(createdLeadId, createdBookingId, paymentResponse.payment?.id, calculatedTotalCostCents, 'USD');
+      }
+
+      // Evict cache lock immediately on success
+      await this.cacheManager.del(lockKey).catch(() => { });
 
       return this.toJsonSafe({
         booking: bookingResponse.booking,
@@ -799,7 +968,12 @@ export class SquareUpBookingService {
     } catch (error) {
       this.logger.error('Secure booking orchestration failure:', error);
 
-      // Exact auto-rollback handling if payment fails but booking was already registered
+      // 7. HANDLE DROPPED/FAILED CHECKOUT (Isolated Function)
+      if (createdLeadId) {
+        await this.handleLeadFailure(createdLeadId, error, calculatedTotalCostCents, 'USD');
+      }
+
+      // Auto-rollback Square booking if payment failed
       if (createdBookingId) {
         try {
           const getBooking = await this.squareClient.bookings.get({ bookingId: createdBookingId });
@@ -809,7 +983,7 @@ export class SquareUpBookingService {
             bookingVersion: Number(getBooking.booking?.version ?? 0),
           });
         } catch {
-          // Suppress rollback failure to bubble original checkout execution error
+          // Suppress rollback failures to bubble original checkout exceptions
         }
       }
 
@@ -1021,4 +1195,187 @@ export class SquareUpBookingService {
       ),
     ) as T;
   }
+
+
+  private async createInitialLead(
+    payload: ConfirmBookingDto,
+    serviceNames: string[],
+    totalCostCents: number,
+    depositCurrency: string = 'USD'
+  ): Promise<string | undefined> {
+    if (!payload.customerEmail) {
+      this.logger.warn('Skipping unique lead checks because email address is missing.');
+      return undefined;
+    }
+
+    try {
+      // 1. FAST PATH CHECK: If it already exists, return it immediately without any updates
+      const existingLead = await this.prisma.lead.findUnique({
+        where: { email: payload.customerEmail },
+        select: { id: true }
+      });
+
+      if (existingLead) {
+        this.logger.log(`Lead already exists for email ${payload.customerEmail}. Skipping all database changes.`);
+        return existingLead.id;
+      }
+
+      // 2. FETCH OR CREATE THE TARGET STAGE (Only for a brand new record)
+      const targetStage = await this.prisma.stage.upsert({
+        where: { name: 'New' },
+        update: {},
+        create: { name: 'New', color: '#0098E8' },
+      });
+
+      const costSummaryText = `$${(totalCostCents / 100).toFixed(2)}`;
+      const serviceSummary = serviceNames.join(', ') || 'Online Booking Service';
+
+      // 3. ATTEMPT TO CREATE A FRESH LEAD
+      const leadRecord = await this.prisma.lead.create({
+        data: {
+          name: payload.customerName,
+          email: payload.customerEmail,
+          phone: payload.customerPhone,
+          service: serviceSummary,
+          source: 'Online Booking Widget',
+          deposit_status: DepositStatus.PENDING,
+          priority: LeadPriority.LOW,
+          stage_id: targetStage.id,
+          vehicle: payload.vehicle,
+          deposit_amount: totalCostCents,
+          deposit_currency: depositCurrency,
+          notes: [`Checkout session initiated via web. Total cost matching variations: ${costSummaryText}`],
+          activity_timelines: {
+            create: {
+              description: `User started checkout for appointment at ${payload.startAt}`,
+              source: 'SYSTEM_CHECKOUT',
+            },
+          },
+        },
+      });
+
+      return leadRecord.id;
+    } catch (dbError) {
+      this.logger.error('Failed to process conditional lead entry synchronization:', dbError);
+      return undefined;
+    }
+  }
+
+  private async handleLeadConversion(
+    leadId: string,
+    bookingId: string | undefined,
+    paymentId: string | undefined,
+    totalCostCents: number,
+    currency: string = 'USD'
+  ): Promise<void> {
+    try {
+      const currentLead = await this.prisma.lead.findUnique({
+        where: { id: leadId },
+        select: { deposit_status: true, name: true, service: true }
+      });
+
+      if (currentLead?.deposit_status === DepositStatus.PAID) {
+        return;
+      }
+
+      // Reference identifier falls back cleanly to prevent primary key failures
+      const secureTxnId = paymentId || `TXN-FALLBACK-${randomUUID().substring(0, 8).toUpperCase()}`;
+
+      await this.prisma.$transaction([
+        // Update core lead fields
+        this.prisma.lead.update({
+          where: { id: leadId },
+          data: {
+            deposit_status: DepositStatus.PAID,
+            notes: {
+              push: `Payment successful. Square ID: ${paymentId}. Booking ID: ${bookingId}`,
+            },
+          },
+        }),
+        // Generate transaction entry mapping to image_15eb60.png data layout
+        this.prisma.payment.create({
+          data: {
+            transaction_id: secureTxnId,
+            customer_name: currentLead?.name || 'Guest User',
+            service: currentLead?.service || 'Online Booking',
+            amount: totalCostCents,
+            currency: currency,
+            status: PaymentStatus.PAID,
+            lead_id: leadId
+          }
+        }),
+        this.prisma.leadActivityTimeline.create({
+          data: {
+            lead_id: leadId,
+            description: `Deposit received successfully. Converted lead to appointment.`,
+            source: 'SYSTEM_PAYMENT',
+          },
+        }),
+        this.prisma.activityLog.create({
+          data: {
+            action: 'UPDATE',
+            entity: 'Lead',
+            entityId: leadId,
+            description: `Online client successfully paid deposit and secured booking ${bookingId}`,
+            metadata: { bookingId, paymentId },
+          },
+        }),
+      ]);
+    } catch (err) {
+      this.logger.error('Failed to update converted lead database states:', err);
+    }
+  }
+
+  private async handleLeadFailure(leadId: string, error: any, totalCostCents: number, currency: string = 'USD'): Promise<void> {
+    try {
+      const currentLead = await this.prisma.lead.findUnique({
+        where: { id: leadId },
+        select: { deposit_status: true, name: true, service: true }
+      });
+
+      if (currentLead?.deposit_status === DepositStatus.PAID) {
+        return;
+      }
+
+      const failedStage = await this.prisma.stage.upsert({
+        where: { name: 'Abandoned Checkout' },
+        update: {},
+        create: { name: 'Abandoned Checkout', color: '#FF0000' },
+      });
+
+      const failedTxnId = `TXN-FAIL-${randomUUID().substring(0, 8).toUpperCase()}`;
+
+      await this.prisma.$transaction([
+        this.prisma.lead.update({
+          where: { id: leadId },
+          data: {
+            deposit_status: DepositStatus.FAILED,
+            stage_id: failedStage.id,
+          },
+        }),
+        // Create a record of the failed transaction attempt
+        this.prisma.payment.create({
+          data: {
+            transaction_id: failedTxnId,
+            customer_name: currentLead?.name || 'Guest User',
+            service: currentLead?.service || 'Online Booking',
+            amount: totalCostCents,
+            currency: currency,
+            status: PaymentStatus.FAILED,
+            lead_id: leadId
+          }
+        }),
+        this.prisma.leadActivityTimeline.create({
+          data: {
+            lead_id: leadId,
+            description: `Checkout step aborted or failed. Error: ${error.message || 'Payment Declined'}`,
+            source: 'SYSTEM_EXCEPTIONS',
+          },
+        }),
+      ]);
+    } catch (dbError) {
+      this.logger.error('Failed to mark lead as failed/abandoned:', dbError);
+    }
+  }
+
 }

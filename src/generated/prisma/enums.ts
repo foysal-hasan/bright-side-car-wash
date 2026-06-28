@@ -39,6 +39,16 @@ export const LeadPriority = {
 export type LeadPriority = (typeof LeadPriority)[keyof typeof LeadPriority]
 
 
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  REFUNDED: 'REFUNDED',
+  FAILED: 'FAILED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
 export const CampaignStatus = {
   DRAFT: 'DRAFT',
   SCHEDULED: 'SCHEDULED',

@@ -128,6 +128,11 @@ export type LeadAssignmentHistory = Prisma.LeadAssignmentHistoryModel
  */
 export type LeadActivityTimeline = Prisma.LeadActivityTimelineModel
 /**
+ * Model Payment
+ * 
+ */
+export type Payment = Prisma.PaymentModel
+/**
  * Model Campaign
  * 
  */

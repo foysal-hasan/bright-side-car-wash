@@ -122,4 +122,14 @@ export class ConfirmBookingDto {
     @IsOptional()
     @IsString()
     customerNote?: string;
+
+    // vehicle information
+    @ApiProperty({
+        description: 'Vehicle information for the booking',
+        example: 'Toyota Camry 2020, Blue', 
+    })
+    @IsString()
+    @IsNotEmpty({ message: 'Vehicle information is required.' })
+    vehicle: string;
+
 }

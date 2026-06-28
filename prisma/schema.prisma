@@ -352,7 +352,7 @@ model Lead {
   deleted_at DateTime?
 
   name           String?
-  email          String?
+  email          String? @unique
   phone          String?
   service        String?
   vehicle        String?
@@ -360,6 +360,9 @@ model Lead {
   deposit_status DepositStatus? @default(PENDING)
   priority       LeadPriority?  @default(LOW)
   notes          String[]       @default([])
+
+  deposit_amount   Decimal?       @db.Decimal(10, 2)
+  deposit_currency String?        @default("USD")
 
   // attachments 
   attachments String[] @default([])
@@ -386,6 +389,9 @@ model Lead {
 
   // Relation to EmailLog
   emailLogs          EmailLog[]              @relation("LeadEmailLogs")
+
+  // Relation to Payment
+  payments           Payment[]
 
   @@index([email])
   @@map("leads")
@@ -429,6 +435,38 @@ model LeadActivityTimeline {
   @@index([lead_id])
   @@map("lead_activity_timelines")
 }
+
+
+// ==================== Payments Start ====================
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  transaction_id String        @unique @map("transaction_id")
+  customer_name  String?       @map("customer_name")
+  service        String?       
+  
+
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("USD")
+  status         PaymentStatus @default(PENDING)
+  
+  created_at     DateTime      @default(now()) 
+  updated_at     DateTime      @updatedAt
+
+  lead_id        String?       @map("lead_id")
+  lead           Lead?         @relation(fields: [lead_id], references: [id], onDelete: SetNull)
+
+  @@index([lead_id])
+  @@index([status])
+  @@map("payments")
+}
+// ==================== Payments End ====================
 
 // ==================== Campaign Management Start ====================
 

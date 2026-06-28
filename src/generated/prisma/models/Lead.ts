@@ -20,8 +20,18 @@ export type LeadModel = runtime.Types.Result.DefaultSelection<Prisma.$LeadPayloa
 
 export type AggregateLead = {
   _count: LeadCountAggregateOutputType | null
+  _avg: LeadAvgAggregateOutputType | null
+  _sum: LeadSumAggregateOutputType | null
   _min: LeadMinAggregateOutputType | null
   _max: LeadMaxAggregateOutputType | null
+}
+
+export type LeadAvgAggregateOutputType = {
+  deposit_amount: runtime.Decimal | null
+}
+
+export type LeadSumAggregateOutputType = {
+  deposit_amount: runtime.Decimal | null
 }
 
 export type LeadMinAggregateOutputType = {
@@ -37,6 +47,8 @@ export type LeadMinAggregateOutputType = {
   source: string | null
   deposit_status: $Enums.DepositStatus | null
   priority: $Enums.LeadPriority | null
+  deposit_amount: runtime.Decimal | null
+  deposit_currency: string | null
   stage_id: string | null
   created_by_id: string | null
   assigned_to_id: string | null
@@ -55,6 +67,8 @@ export type LeadMaxAggregateOutputType = {
   source: string | null
   deposit_status: $Enums.DepositStatus | null
   priority: $Enums.LeadPriority | null
+  deposit_amount: runtime.Decimal | null
+  deposit_currency: string | null
   stage_id: string | null
   created_by_id: string | null
   assigned_to_id: string | null
@@ -74,6 +88,8 @@ export type LeadCountAggregateOutputType = {
   deposit_status: number
   priority: number
   notes: number
+  deposit_amount: number
+  deposit_currency: number
   attachments: number
   stage_id: number
   created_by_id: number
@@ -81,6 +97,14 @@ export type LeadCountAggregateOutputType = {
   _all: number
 }
 
+
+export type LeadAvgAggregateInputType = {
+  deposit_amount?: true
+}
+
+export type LeadSumAggregateInputType = {
+  deposit_amount?: true
+}
 
 export type LeadMinAggregateInputType = {
   id?: true
@@ -95,6 +119,8 @@ export type LeadMinAggregateInputType = {
   source?: true
   deposit_status?: true
   priority?: true
+  deposit_amount?: true
+  deposit_currency?: true
   stage_id?: true
   created_by_id?: true
   assigned_to_id?: true
@@ -113,6 +139,8 @@ export type LeadMaxAggregateInputType = {
   source?: true
   deposit_status?: true
   priority?: true
+  deposit_amount?: true
+  deposit_currency?: true
   stage_id?: true
   created_by_id?: true
   assigned_to_id?: true
@@ -132,6 +160,8 @@ export type LeadCountAggregateInputType = {
   deposit_status?: true
   priority?: true
   notes?: true
+  deposit_amount?: true
+  deposit_currency?: true
   attachments?: true
   stage_id?: true
   created_by_id?: true
@@ -177,6 +207,18 @@ export type LeadAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: LeadAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: LeadSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: LeadMinAggregateInputType
@@ -207,6 +249,8 @@ export type LeadGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: LeadCountAggregateInputType | true
+  _avg?: LeadAvgAggregateInputType
+  _sum?: LeadSumAggregateInputType
   _min?: LeadMinAggregateInputType
   _max?: LeadMaxAggregateInputType
 }
@@ -225,11 +269,15 @@ export type LeadGroupByOutputType = {
   deposit_status: $Enums.DepositStatus | null
   priority: $Enums.LeadPriority | null
   notes: string[]
+  deposit_amount: runtime.Decimal | null
+  deposit_currency: string | null
   attachments: string[]
   stage_id: string | null
   created_by_id: string | null
   assigned_to_id: string | null
   _count: LeadCountAggregateOutputType | null
+  _avg: LeadAvgAggregateOutputType | null
+  _sum: LeadSumAggregateOutputType | null
   _min: LeadMinAggregateOutputType | null
   _max: LeadMaxAggregateOutputType | null
 }
@@ -266,6 +314,8 @@ export type LeadWhereInput = {
   deposit_status?: Prisma.EnumDepositStatusNullableFilter<"Lead"> | $Enums.DepositStatus | null
   priority?: Prisma.EnumLeadPriorityNullableFilter<"Lead"> | $Enums.LeadPriority | null
   notes?: Prisma.StringNullableListFilter<"Lead">
+  deposit_amount?: Prisma.DecimalNullableFilter<"Lead"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.StringNullableFilter<"Lead"> | string | null
   attachments?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableFilter<"Lead"> | string | null
   created_by_id?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -277,6 +327,7 @@ export type LeadWhereInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
   leadGroups?: Prisma.LeadGroupListRelationFilter
   emailLogs?: Prisma.EmailLogListRelationFilter
+  payments?: Prisma.PaymentListRelationFilter
 }
 
 export type LeadOrderByWithRelationInput = {
@@ -293,6 +344,8 @@ export type LeadOrderByWithRelationInput = {
   deposit_status?: Prisma.SortOrderInput | Prisma.SortOrder
   priority?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrder
+  deposit_amount?: Prisma.SortOrderInput | Prisma.SortOrder
+  deposit_currency?: Prisma.SortOrderInput | Prisma.SortOrder
   attachments?: Prisma.SortOrder
   stage_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_by_id?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -304,10 +357,12 @@ export type LeadOrderByWithRelationInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryOrderByRelationAggregateInput
   leadGroups?: Prisma.LeadGroupOrderByRelationAggregateInput
   emailLogs?: Prisma.EmailLogOrderByRelationAggregateInput
+  payments?: Prisma.PaymentOrderByRelationAggregateInput
 }
 
 export type LeadWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  email?: string
   AND?: Prisma.LeadWhereInput | Prisma.LeadWhereInput[]
   OR?: Prisma.LeadWhereInput[]
   NOT?: Prisma.LeadWhereInput | Prisma.LeadWhereInput[]
@@ -315,7 +370,6 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   updated_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   deleted_at?: Prisma.DateTimeNullableFilter<"Lead"> | Date | string | null
   name?: Prisma.StringNullableFilter<"Lead"> | string | null
-  email?: Prisma.StringNullableFilter<"Lead"> | string | null
   phone?: Prisma.StringNullableFilter<"Lead"> | string | null
   service?: Prisma.StringNullableFilter<"Lead"> | string | null
   vehicle?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -323,6 +377,8 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   deposit_status?: Prisma.EnumDepositStatusNullableFilter<"Lead"> | $Enums.DepositStatus | null
   priority?: Prisma.EnumLeadPriorityNullableFilter<"Lead"> | $Enums.LeadPriority | null
   notes?: Prisma.StringNullableListFilter<"Lead">
+  deposit_amount?: Prisma.DecimalNullableFilter<"Lead"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.StringNullableFilter<"Lead"> | string | null
   attachments?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableFilter<"Lead"> | string | null
   created_by_id?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -334,7 +390,8 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
   leadGroups?: Prisma.LeadGroupListRelationFilter
   emailLogs?: Prisma.EmailLogListRelationFilter
-}, "id">
+  payments?: Prisma.PaymentListRelationFilter
+}, "id" | "email">
 
 export type LeadOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -350,13 +407,17 @@ export type LeadOrderByWithAggregationInput = {
   deposit_status?: Prisma.SortOrderInput | Prisma.SortOrder
   priority?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrder
+  deposit_amount?: Prisma.SortOrderInput | Prisma.SortOrder
+  deposit_currency?: Prisma.SortOrderInput | Prisma.SortOrder
   attachments?: Prisma.SortOrder
   stage_id?: Prisma.SortOrderInput | Prisma.SortOrder
   created_by_id?: Prisma.SortOrderInput | Prisma.SortOrder
   assigned_to_id?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.LeadCountOrderByAggregateInput
+  _avg?: Prisma.LeadAvgOrderByAggregateInput
   _max?: Prisma.LeadMaxOrderByAggregateInput
   _min?: Prisma.LeadMinOrderByAggregateInput
+  _sum?: Prisma.LeadSumOrderByAggregateInput
 }
 
 export type LeadScalarWhereWithAggregatesInput = {
@@ -376,6 +437,8 @@ export type LeadScalarWhereWithAggregatesInput = {
   deposit_status?: Prisma.EnumDepositStatusNullableWithAggregatesFilter<"Lead"> | $Enums.DepositStatus | null
   priority?: Prisma.EnumLeadPriorityNullableWithAggregatesFilter<"Lead"> | $Enums.LeadPriority | null
   notes?: Prisma.StringNullableListFilter<"Lead">
+  deposit_amount?: Prisma.DecimalNullableWithAggregatesFilter<"Lead"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   attachments?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   created_by_id?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
@@ -396,6 +459,8 @@ export type LeadCreateInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
@@ -404,6 +469,7 @@ export type LeadCreateInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateInput = {
@@ -420,6 +486,8 @@ export type LeadUncheckedCreateInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -428,6 +496,7 @@ export type LeadUncheckedCreateInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUpdateInput = {
@@ -444,6 +513,8 @@ export type LeadUpdateInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
@@ -452,6 +523,7 @@ export type LeadUpdateInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateInput = {
@@ -468,6 +540,8 @@ export type LeadUncheckedUpdateInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -476,6 +550,7 @@ export type LeadUncheckedUpdateInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateManyInput = {
@@ -492,6 +567,8 @@ export type LeadCreateManyInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -512,6 +589,8 @@ export type LeadUpdateManyMutationInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
 }
 
@@ -529,6 +608,8 @@ export type LeadUncheckedUpdateManyInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -567,10 +648,16 @@ export type LeadCountOrderByAggregateInput = {
   deposit_status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  deposit_amount?: Prisma.SortOrder
+  deposit_currency?: Prisma.SortOrder
   attachments?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
   created_by_id?: Prisma.SortOrder
   assigned_to_id?: Prisma.SortOrder
+}
+
+export type LeadAvgOrderByAggregateInput = {
+  deposit_amount?: Prisma.SortOrder
 }
 
 export type LeadMaxOrderByAggregateInput = {
@@ -586,6 +673,8 @@ export type LeadMaxOrderByAggregateInput = {
   source?: Prisma.SortOrder
   deposit_status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  deposit_amount?: Prisma.SortOrder
+  deposit_currency?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
   created_by_id?: Prisma.SortOrder
   assigned_to_id?: Prisma.SortOrder
@@ -604,9 +693,15 @@ export type LeadMinOrderByAggregateInput = {
   source?: Prisma.SortOrder
   deposit_status?: Prisma.SortOrder
   priority?: Prisma.SortOrder
+  deposit_amount?: Prisma.SortOrder
+  deposit_currency?: Prisma.SortOrder
   stage_id?: Prisma.SortOrder
   created_by_id?: Prisma.SortOrder
   assigned_to_id?: Prisma.SortOrder
+}
+
+export type LeadSumOrderByAggregateInput = {
+  deposit_amount?: Prisma.SortOrder
 }
 
 export type LeadScalarRelationFilter = {
@@ -766,6 +861,14 @@ export type LeadUpdatenotesInput = {
   push?: string | string[]
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type LeadUpdateattachmentsInput = {
   set?: string[]
   push?: string | string[]
@@ -797,6 +900,22 @@ export type LeadUpdateOneRequiredWithoutActivity_timelinesNestedInput = {
   upsert?: Prisma.LeadUpsertWithoutActivity_timelinesInput
   connect?: Prisma.LeadWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutActivity_timelinesInput, Prisma.LeadUpdateWithoutActivity_timelinesInput>, Prisma.LeadUncheckedUpdateWithoutActivity_timelinesInput>
+}
+
+export type LeadCreateNestedOneWithoutPaymentsInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutPaymentsInput, Prisma.LeadUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutPaymentsInput
+  connect?: Prisma.LeadWhereUniqueInput
+}
+
+export type LeadUpdateOneWithoutPaymentsNestedInput = {
+  create?: Prisma.XOR<Prisma.LeadCreateWithoutPaymentsInput, Prisma.LeadUncheckedCreateWithoutPaymentsInput>
+  connectOrCreate?: Prisma.LeadCreateOrConnectWithoutPaymentsInput
+  upsert?: Prisma.LeadUpsertWithoutPaymentsInput
+  disconnect?: Prisma.LeadWhereInput | boolean
+  delete?: Prisma.LeadWhereInput | boolean
+  connect?: Prisma.LeadWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.LeadUpdateToOneWithWhereWithoutPaymentsInput, Prisma.LeadUpdateWithoutPaymentsInput>, Prisma.LeadUncheckedUpdateWithoutPaymentsInput>
 }
 
 export type LeadCreateNestedManyWithoutLeadGroupsInput = {
@@ -867,6 +986,8 @@ export type LeadCreateWithoutCreatorInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
@@ -874,6 +995,7 @@ export type LeadCreateWithoutCreatorInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutCreatorInput = {
@@ -890,6 +1012,8 @@ export type LeadUncheckedCreateWithoutCreatorInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   assigned_to_id?: string | null
@@ -897,6 +1021,7 @@ export type LeadUncheckedCreateWithoutCreatorInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutCreatorInput = {
@@ -923,6 +1048,8 @@ export type LeadCreateWithoutAssigneeInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
@@ -930,6 +1057,7 @@ export type LeadCreateWithoutAssigneeInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutAssigneeInput = {
@@ -946,6 +1074,8 @@ export type LeadUncheckedCreateWithoutAssigneeInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -953,6 +1083,7 @@ export type LeadUncheckedCreateWithoutAssigneeInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutAssigneeInput = {
@@ -998,6 +1129,8 @@ export type LeadScalarWhereInput = {
   deposit_status?: Prisma.EnumDepositStatusNullableFilter<"Lead"> | $Enums.DepositStatus | null
   priority?: Prisma.EnumLeadPriorityNullableFilter<"Lead"> | $Enums.LeadPriority | null
   notes?: Prisma.StringNullableListFilter<"Lead">
+  deposit_amount?: Prisma.DecimalNullableFilter<"Lead"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.StringNullableFilter<"Lead"> | string | null
   attachments?: Prisma.StringNullableListFilter<"Lead">
   stage_id?: Prisma.StringNullableFilter<"Lead"> | string | null
   created_by_id?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -1034,6 +1167,8 @@ export type LeadCreateWithoutStageInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
@@ -1041,6 +1176,7 @@ export type LeadCreateWithoutStageInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutStageInput = {
@@ -1057,6 +1193,8 @@ export type LeadUncheckedCreateWithoutStageInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   created_by_id?: string | null
   assigned_to_id?: string | null
@@ -1064,6 +1202,7 @@ export type LeadUncheckedCreateWithoutStageInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutStageInput = {
@@ -1106,6 +1245,8 @@ export type LeadCreateWithoutAssignment_historyInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
@@ -1113,6 +1254,7 @@ export type LeadCreateWithoutAssignment_historyInput = {
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutAssignment_historyInput = {
@@ -1129,6 +1271,8 @@ export type LeadUncheckedCreateWithoutAssignment_historyInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -1136,6 +1280,7 @@ export type LeadUncheckedCreateWithoutAssignment_historyInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutAssignment_historyInput = {
@@ -1168,6 +1313,8 @@ export type LeadUpdateWithoutAssignment_historyInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
@@ -1175,6 +1322,7 @@ export type LeadUpdateWithoutAssignment_historyInput = {
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutAssignment_historyInput = {
@@ -1191,6 +1339,8 @@ export type LeadUncheckedUpdateWithoutAssignment_historyInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1198,6 +1348,7 @@ export type LeadUncheckedUpdateWithoutAssignment_historyInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateWithoutActivity_timelinesInput = {
@@ -1214,6 +1365,8 @@ export type LeadCreateWithoutActivity_timelinesInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
@@ -1221,6 +1374,7 @@ export type LeadCreateWithoutActivity_timelinesInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutActivity_timelinesInput = {
@@ -1237,6 +1391,8 @@ export type LeadUncheckedCreateWithoutActivity_timelinesInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -1244,6 +1400,7 @@ export type LeadUncheckedCreateWithoutActivity_timelinesInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutActivity_timelinesInput = {
@@ -1276,6 +1433,8 @@ export type LeadUpdateWithoutActivity_timelinesInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
@@ -1283,6 +1442,7 @@ export type LeadUpdateWithoutActivity_timelinesInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutActivity_timelinesInput = {
@@ -1299,10 +1459,133 @@ export type LeadUncheckedUpdateWithoutActivity_timelinesInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadCreateWithoutPaymentsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  service?: string | null
+  vehicle?: string | null
+  source?: string | null
+  deposit_status?: $Enums.DepositStatus | null
+  priority?: $Enums.LeadPriority | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
+  attachments?: Prisma.LeadCreateattachmentsInput | string[]
+  stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
+  activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
+  creator?: Prisma.UserCreateNestedOneWithoutCreated_leadsInput
+  assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
+  assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+}
+
+export type LeadUncheckedCreateWithoutPaymentsInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  name?: string | null
+  email?: string | null
+  phone?: string | null
+  service?: string | null
+  vehicle?: string | null
+  source?: string | null
+  deposit_status?: $Enums.DepositStatus | null
+  priority?: $Enums.LeadPriority | null
+  notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
+  attachments?: Prisma.LeadCreateattachmentsInput | string[]
+  stage_id?: string | null
+  created_by_id?: string | null
+  assigned_to_id?: string | null
+  activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
+  leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+}
+
+export type LeadCreateOrConnectWithoutPaymentsInput = {
+  where: Prisma.LeadWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeadCreateWithoutPaymentsInput, Prisma.LeadUncheckedCreateWithoutPaymentsInput>
+}
+
+export type LeadUpsertWithoutPaymentsInput = {
+  update: Prisma.XOR<Prisma.LeadUpdateWithoutPaymentsInput, Prisma.LeadUncheckedUpdateWithoutPaymentsInput>
+  create: Prisma.XOR<Prisma.LeadCreateWithoutPaymentsInput, Prisma.LeadUncheckedCreateWithoutPaymentsInput>
+  where?: Prisma.LeadWhereInput
+}
+
+export type LeadUpdateToOneWithWhereWithoutPaymentsInput = {
+  where?: Prisma.LeadWhereInput
+  data: Prisma.XOR<Prisma.LeadUpdateWithoutPaymentsInput, Prisma.LeadUncheckedUpdateWithoutPaymentsInput>
+}
+
+export type LeadUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
+  priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.LeadUpdateattachmentsInput | string[]
+  stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
+  activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
+  creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
+  assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
+  leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+}
+
+export type LeadUncheckedUpdateWithoutPaymentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
+  priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
+  notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  attachments?: Prisma.LeadUpdateattachmentsInput | string[]
+  stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
@@ -1322,6 +1605,8 @@ export type LeadCreateWithoutLeadGroupsInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
@@ -1329,6 +1614,7 @@ export type LeadCreateWithoutLeadGroupsInput = {
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutLeadGroupsInput = {
@@ -1345,6 +1631,8 @@ export type LeadUncheckedCreateWithoutLeadGroupsInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -1352,6 +1640,7 @@ export type LeadUncheckedCreateWithoutLeadGroupsInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutLeadInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutLeadGroupsInput = {
@@ -1389,6 +1678,8 @@ export type LeadCreateWithoutEmailLogsInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage?: Prisma.StageCreateNestedOneWithoutLeadsInput
   activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutLeadInput
@@ -1396,6 +1687,7 @@ export type LeadCreateWithoutEmailLogsInput = {
   assignee?: Prisma.UserCreateNestedOneWithoutAssigned_leadsInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupCreateNestedManyWithoutLeadsInput
+  payments?: Prisma.PaymentCreateNestedManyWithoutLeadInput
 }
 
 export type LeadUncheckedCreateWithoutEmailLogsInput = {
@@ -1412,6 +1704,8 @@ export type LeadUncheckedCreateWithoutEmailLogsInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -1419,6 +1713,7 @@ export type LeadUncheckedCreateWithoutEmailLogsInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutLeadInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutLeadInput
   leadGroups?: Prisma.LeadGroupUncheckedCreateNestedManyWithoutLeadsInput
+  payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutLeadInput
 }
 
 export type LeadCreateOrConnectWithoutEmailLogsInput = {
@@ -1451,6 +1746,8 @@ export type LeadUpdateWithoutEmailLogsInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
@@ -1458,6 +1755,7 @@ export type LeadUpdateWithoutEmailLogsInput = {
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutEmailLogsInput = {
@@ -1474,6 +1772,8 @@ export type LeadUncheckedUpdateWithoutEmailLogsInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1481,6 +1781,7 @@ export type LeadUncheckedUpdateWithoutEmailLogsInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadCreateManyCreatorInput = {
@@ -1497,6 +1798,8 @@ export type LeadCreateManyCreatorInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   assigned_to_id?: string | null
@@ -1516,6 +1819,8 @@ export type LeadCreateManyAssigneeInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   stage_id?: string | null
   created_by_id?: string | null
@@ -1535,6 +1840,8 @@ export type LeadUpdateWithoutCreatorInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
@@ -1542,6 +1849,7 @@ export type LeadUpdateWithoutCreatorInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutCreatorInput = {
@@ -1558,6 +1866,8 @@ export type LeadUncheckedUpdateWithoutCreatorInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1565,6 +1875,7 @@ export type LeadUncheckedUpdateWithoutCreatorInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutCreatorInput = {
@@ -1581,6 +1892,8 @@ export type LeadUncheckedUpdateManyWithoutCreatorInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1600,6 +1913,8 @@ export type LeadUpdateWithoutAssigneeInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
@@ -1607,6 +1922,7 @@ export type LeadUpdateWithoutAssigneeInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutAssigneeInput = {
@@ -1623,6 +1939,8 @@ export type LeadUncheckedUpdateWithoutAssigneeInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1630,6 +1948,7 @@ export type LeadUncheckedUpdateWithoutAssigneeInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutAssigneeInput = {
@@ -1646,6 +1965,8 @@ export type LeadUncheckedUpdateManyWithoutAssigneeInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1665,6 +1986,8 @@ export type LeadCreateManyStageInput = {
   deposit_status?: $Enums.DepositStatus | null
   priority?: $Enums.LeadPriority | null
   notes?: Prisma.LeadCreatenotesInput | string[]
+  deposit_amount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: string | null
   attachments?: Prisma.LeadCreateattachmentsInput | string[]
   created_by_id?: string | null
   assigned_to_id?: string | null
@@ -1684,6 +2007,8 @@ export type LeadUpdateWithoutStageInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
   creator?: Prisma.UserUpdateOneWithoutCreated_leadsNestedInput
@@ -1691,6 +2016,7 @@ export type LeadUpdateWithoutStageInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutStageInput = {
@@ -1707,6 +2033,8 @@ export type LeadUncheckedUpdateWithoutStageInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1714,6 +2042,7 @@ export type LeadUncheckedUpdateWithoutStageInput = {
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   leadGroups?: Prisma.LeadGroupUncheckedUpdateManyWithoutLeadsNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutStageInput = {
@@ -1730,6 +2059,8 @@ export type LeadUncheckedUpdateManyWithoutStageInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   assigned_to_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1749,6 +2080,8 @@ export type LeadUpdateWithoutLeadGroupsInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage?: Prisma.StageUpdateOneWithoutLeadsNestedInput
   activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutLeadNestedInput
@@ -1756,6 +2089,7 @@ export type LeadUpdateWithoutLeadGroupsInput = {
   assignee?: Prisma.UserUpdateOneWithoutAssigned_leadsNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutLeadNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateWithoutLeadGroupsInput = {
@@ -1772,6 +2106,8 @@ export type LeadUncheckedUpdateWithoutLeadGroupsInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1779,6 +2115,7 @@ export type LeadUncheckedUpdateWithoutLeadGroupsInput = {
   activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutLeadNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutLeadNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutLeadNestedInput
+  payments?: Prisma.PaymentUncheckedUpdateManyWithoutLeadNestedInput
 }
 
 export type LeadUncheckedUpdateManyWithoutLeadGroupsInput = {
@@ -1795,6 +2132,8 @@ export type LeadUncheckedUpdateManyWithoutLeadGroupsInput = {
   deposit_status?: Prisma.NullableEnumDepositStatusFieldUpdateOperationsInput | $Enums.DepositStatus | null
   priority?: Prisma.NullableEnumLeadPriorityFieldUpdateOperationsInput | $Enums.LeadPriority | null
   notes?: Prisma.LeadUpdatenotesInput | string[]
+  deposit_amount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  deposit_currency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   attachments?: Prisma.LeadUpdateattachmentsInput | string[]
   stage_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   created_by_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1811,6 +2150,7 @@ export type LeadCountOutputType = {
   assignment_history: number
   leadGroups: number
   emailLogs: number
+  payments: number
 }
 
 export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1818,6 +2158,7 @@ export type LeadCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   assignment_history?: boolean | LeadCountOutputTypeCountAssignment_historyArgs
   leadGroups?: boolean | LeadCountOutputTypeCountLeadGroupsArgs
   emailLogs?: boolean | LeadCountOutputTypeCountEmailLogsArgs
+  payments?: boolean | LeadCountOutputTypeCountPaymentsArgs
 }
 
 /**
@@ -1858,6 +2199,13 @@ export type LeadCountOutputTypeCountEmailLogsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.EmailLogWhereInput
 }
 
+/**
+ * LeadCountOutputType without action
+ */
+export type LeadCountOutputTypeCountPaymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentWhereInput
+}
+
 
 export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1873,6 +2221,8 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   deposit_status?: boolean
   priority?: boolean
   notes?: boolean
+  deposit_amount?: boolean
+  deposit_currency?: boolean
   attachments?: boolean
   stage_id?: boolean
   created_by_id?: boolean
@@ -1884,6 +2234,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   assignment_history?: boolean | Prisma.Lead$assignment_historyArgs<ExtArgs>
   leadGroups?: boolean | Prisma.Lead$leadGroupsArgs<ExtArgs>
   emailLogs?: boolean | Prisma.Lead$emailLogsArgs<ExtArgs>
+  payments?: boolean | Prisma.Lead$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["lead"]>
 
@@ -1901,6 +2252,8 @@ export type LeadSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   deposit_status?: boolean
   priority?: boolean
   notes?: boolean
+  deposit_amount?: boolean
+  deposit_currency?: boolean
   attachments?: boolean
   stage_id?: boolean
   created_by_id?: boolean
@@ -1924,6 +2277,8 @@ export type LeadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   deposit_status?: boolean
   priority?: boolean
   notes?: boolean
+  deposit_amount?: boolean
+  deposit_currency?: boolean
   attachments?: boolean
   stage_id?: boolean
   created_by_id?: boolean
@@ -1947,13 +2302,15 @@ export type LeadSelectScalar = {
   deposit_status?: boolean
   priority?: boolean
   notes?: boolean
+  deposit_amount?: boolean
+  deposit_currency?: boolean
   attachments?: boolean
   stage_id?: boolean
   created_by_id?: boolean
   assigned_to_id?: boolean
 }
 
-export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "email" | "phone" | "service" | "vehicle" | "source" | "deposit_status" | "priority" | "notes" | "attachments" | "stage_id" | "created_by_id" | "assigned_to_id", ExtArgs["result"]["lead"]>
+export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "email" | "phone" | "service" | "vehicle" | "source" | "deposit_status" | "priority" | "notes" | "deposit_amount" | "deposit_currency" | "attachments" | "stage_id" | "created_by_id" | "assigned_to_id", ExtArgs["result"]["lead"]>
 export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stage?: boolean | Prisma.Lead$stageArgs<ExtArgs>
   activity_timelines?: boolean | Prisma.Lead$activity_timelinesArgs<ExtArgs>
@@ -1962,6 +2319,7 @@ export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   assignment_history?: boolean | Prisma.Lead$assignment_historyArgs<ExtArgs>
   leadGroups?: boolean | Prisma.Lead$leadGroupsArgs<ExtArgs>
   emailLogs?: boolean | Prisma.Lead$emailLogsArgs<ExtArgs>
+  payments?: boolean | Prisma.Lead$paymentsArgs<ExtArgs>
   _count?: boolean | Prisma.LeadCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type LeadIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1985,6 +2343,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     assignment_history: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>[]
     leadGroups: Prisma.$LeadGroupPayload<ExtArgs>[]
     emailLogs: Prisma.$EmailLogPayload<ExtArgs>[]
+    payments: Prisma.$PaymentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2000,6 +2359,8 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     deposit_status: $Enums.DepositStatus | null
     priority: $Enums.LeadPriority | null
     notes: string[]
+    deposit_amount: runtime.Decimal | null
+    deposit_currency: string | null
     attachments: string[]
     stage_id: string | null
     created_by_id: string | null
@@ -2405,6 +2766,7 @@ export interface Prisma__LeadClient<T, Null = never, ExtArgs extends runtime.Typ
   assignment_history<T extends Prisma.Lead$assignment_historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$assignment_historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadAssignmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   leadGroups<T extends Prisma.Lead$leadGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$leadGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadGroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   emailLogs<T extends Prisma.Lead$emailLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$emailLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payments<T extends Prisma.Lead$paymentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Lead$paymentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2447,6 +2809,8 @@ export interface LeadFieldRefs {
   readonly deposit_status: Prisma.FieldRef<"Lead", 'DepositStatus'>
   readonly priority: Prisma.FieldRef<"Lead", 'LeadPriority'>
   readonly notes: Prisma.FieldRef<"Lead", 'String[]'>
+  readonly deposit_amount: Prisma.FieldRef<"Lead", 'Decimal'>
+  readonly deposit_currency: Prisma.FieldRef<"Lead", 'String'>
   readonly attachments: Prisma.FieldRef<"Lead", 'String[]'>
   readonly stage_id: Prisma.FieldRef<"Lead", 'String'>
   readonly created_by_id: Prisma.FieldRef<"Lead", 'String'>
@@ -2997,6 +3361,30 @@ export type Lead$emailLogsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EmailLogScalarFieldEnum | Prisma.EmailLogScalarFieldEnum[]
+}
+
+/**
+ * Lead.payments
+ */
+export type Lead$paymentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Payment
+   */
+  select?: Prisma.PaymentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Payment
+   */
+  omit?: Prisma.PaymentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentInclude<ExtArgs> | null
+  where?: Prisma.PaymentWhereInput
+  orderBy?: Prisma.PaymentOrderByWithRelationInput | Prisma.PaymentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentScalarFieldEnum | Prisma.PaymentScalarFieldEnum[]
 }
 
 /**
