@@ -287,6 +287,10 @@ export class LeadController {
   @ApiOperation({ summary: 'Get all stages with lead counts' })
   async getStagesWithCounts() {
     const stages = await this.leadService.getStagesWithCounts();
+    stages.forEach(stage => {
+        const key = `${appConfig().storageUrl.stage}${stage.icon}`;
+        stage.icon = stage.icon? SojebStorage.url(key) : null;
+    });
     return {
       success: true,
       data: stages,
