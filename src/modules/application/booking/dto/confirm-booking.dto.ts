@@ -23,13 +23,13 @@ export class CartItemDto {
     @IsNotEmpty({ message: 'Each cart item requires a serviceVariationId.' })
     serviceVariationId: string;
 
-    @ApiProperty({
-        description: 'Current catalog version of selected service variation',
-        example: '1742908801001',
-    })
-    @IsString()
-    @IsNotEmpty({ message: 'Each cart item requires a serviceVariationVersion.' })
-    serviceVariationVersion: string;
+    // @ApiProperty({
+    //     description: 'Current catalog version of selected service variation',
+    //     example: '1742908801001',
+    // })
+    // @IsString()
+    // @IsNotEmpty({ message: 'Each cart item requires a serviceVariationVersion.' })
+    // serviceVariationVersion: string;
 
     @ApiProperty({
         description: 'Team member ID selected by availability search',
@@ -39,13 +39,13 @@ export class CartItemDto {
     @IsNotEmpty({ message: 'Each cart item requires a teamMemberId.' })
     teamMemberId: string;
 
-    @ApiProperty({
-        description: 'The duration of the service in minutes',
-        example: 60,
-    })
-    @IsInt()
-    @Min(1, { message: 'Duration must be at least 1 minute.' })
-    durationMinutes: number;
+    // @ApiProperty({
+    //     description: 'The duration of the service in minutes',
+    //     example: 60,
+    // })
+    // @IsInt()
+    // @Min(1, { message: 'Duration must be at least 1 minute.' })
+    // durationMinutes: number;
 }
 
 export class ConfirmBookingDto {
@@ -115,19 +115,11 @@ export class ConfirmBookingDto {
     customerPhone?: string;
 
     @ApiProperty({
-        description: 'Arbitrary key/value fields from checkout form',
-        example: { vehicleType: 'SUV', plateNo: 'ABC123', notes: 'Call on arrival' },
+        description: 'Optional note from the customer for the booking',
+        example: 'Please be gentle with my car.',
         required: false,
     })
     @IsOptional()
-    @IsObject()
-    customFields?: Record<string, unknown>;
-
-    @ApiProperty({
-        description: 'The deposit amount in cents for the booking',
-        example: 5000, // Represents $50.00
-    })
-    @IsInt()
-    @Min(0, { message: 'Deposit amount cannot be negative.' })
-    depositAmountInCents: number;
+    @IsString()
+    customerNote?: string;
 }

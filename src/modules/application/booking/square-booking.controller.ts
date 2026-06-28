@@ -10,11 +10,14 @@ import { ReleaseLockDto } from './dto/release-lock.dto';
 import { CreateBookableServiceDto } from './dto/create-service.dto';
 import { GetServicesQueryDto } from './dto/get-services-query.dto';
 import appConfig from 'src/config/app.config';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Square Booking API')
 @Controller('api/appointments')
 export class SquareBookingController {
   constructor(private readonly bookingService: SquareUpBookingService) {}
 
+  @ApiOperation({ summary: 'Create a new bookable service (Just for testing, not needed in a production application)' })
   @Post('services')
   @HttpCode(HttpStatus.CREATED)
   async createNewService(@Body() dto: CreateBookableServiceDto) {
@@ -32,6 +35,7 @@ export class SquareBookingController {
   }
 
   // 1. Fetch all business locations
+  @ApiOperation({ summary: 'Fetch all business locations' })
   @Get('locations')
   async getLocations() {
     const locations = await this.bookingService.getLocations();
@@ -43,6 +47,7 @@ export class SquareBookingController {
   } 
 
   // 2. Fetch basic business info for booking page
+  @ApiOperation({ summary: 'Fetch basic business info for booking page' })
   @Get('info')
   async getBookingBasicInfo() {
     const info = await this.bookingService.getBookingBasicInfo();
@@ -54,7 +59,9 @@ export class SquareBookingController {
   }
 
   // 3. Fetch all appointment services filtered by location
+  @ApiOperation({ summary: 'Fetch all appointment services filtered by location' })
   @Get('services')
+  @HttpCode(HttpStatus.OK)
   async getServices(@Query() query: GetServicesQueryDto) {
     query.limit = appConfig().square.limit || 100; // Default limit if not provided
     const services = await this.bookingService.getServices(query);
@@ -68,6 +75,7 @@ export class SquareBookingController {
   }
 
   // 4. Cart summary for one or more selected services
+  @ApiOperation({ summary: 'Get cart summary for selected services' })
   @Post('cart/summary')
   @HttpCode(HttpStatus.OK)
   async getCartSummary(@Body() body: CartSummaryDto) {
@@ -80,6 +88,7 @@ export class SquareBookingController {
   }
 
   // 5. Query open slots based on selected date/range and cart services
+  @ApiOperation({ summary: 'Query open slots based on selected date/range and cart services' })
   @Post('availability')
   @HttpCode(HttpStatus.OK)
   async checkAvailability(
@@ -100,6 +109,7 @@ export class SquareBookingController {
   }
 
   // 6. Trigger virtual hold on specific slot
+  @ApiOperation({ summary: 'Lock a specific time slot for selected services' })
   @Post('lock')
   async lockTimeSlot(
     @Body() body: LockTimeSlotDto
@@ -118,6 +128,7 @@ export class SquareBookingController {
   }
 
   // 6.1 Release lock if user abandons checkout
+  @ApiOperation({ summary: 'Release a previously locked time slot' })
   @Post('lock/release')
   @HttpCode(HttpStatus.OK)
   async releaseLock(@Body() body: ReleaseLockDto) {
@@ -130,6 +141,7 @@ export class SquareBookingController {
   }
 
   // 7. Checkout: charge + create booking
+  @ApiOperation({ summary: 'Confirm booking and process payment' })
   @Post('checkout')
   async confirmBooking(
     @Body() body: ConfirmBookingDto
@@ -142,31 +154,33 @@ export class SquareBookingController {
     };
   }
 
-  // 8. Reschedule booking with optional fee collection
-  @Post(':bookingId/reschedule')
-  async rescheduleBooking(
-    @Param('bookingId') bookingId: string,
-    @Body() body: RescheduleBookingDto,
-  ) {
-    const reschedule = await this.bookingService.rescheduleBooking(bookingId, body);
-    return {
-      success: true,
-      message: 'Booking rescheduled successfully',
-      data: reschedule,
-    };
-  }
+  // // 8. Reschedule booking with optional fee collection
+  // @ApiOperation({ summary: 'Reschedule an existing booking' })
+  // @Post(':bookingId/reschedule')
+  // async rescheduleBooking(
+  //   @Param('bookingId') bookingId: string,
+  //   @Body() body: RescheduleBookingDto,
+  // ) {
+  //   const reschedule = await this.bookingService.rescheduleBooking(bookingId, body);
+  //   return {
+  //     success: true,
+  //     message: 'Booking rescheduled successfully',
+  //     data: reschedule,
+  //   };
+  // }
 
-  // 9. Cancel booking with optional cancellation fee/refund handling
-  @Post(':bookingId/cancel')
-  async cancelBooking(
-    @Param('bookingId') bookingId: string,
-    @Body() body: CancelBookingDto,
-  ) {
-    const cancel = await this.bookingService.cancelBooking(bookingId, body);
-    return {
-      success: true,
-      message: 'Booking cancelled successfully',
-      data: cancel,
-    };
-  }
+  // // 9. Cancel booking with optional cancellation fee/refund handling
+  // @ApiOperation({ summary: 'Cancel an existing booking' })
+  // @Post(':bookingId/cancel')
+  // async cancelBooking(
+  //   @Param('bookingId') bookingId: string,
+  //   @Body() body: CancelBookingDto,
+  // ) {
+  //   const cancel = await this.bookingService.cancelBooking(bookingId, body);
+  //   return {
+  //     success: true,
+  //     message: 'Booking cancelled successfully',
+  //     data: cancel,
+  //   };
+  // }
 }
