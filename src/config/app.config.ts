@@ -116,6 +116,9 @@ export default () => ({
 
     // email attachments
     emailAttachments: '/email-attachments/',
+
+    // gallery images
+    gallery: '/gallery/',
   },
 
   defaultUser: {

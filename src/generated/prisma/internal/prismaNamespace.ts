@@ -409,7 +409,9 @@ export const ModelName = {
   LeadGroup: 'LeadGroup',
   Template: 'Template',
   EmailTemplate: 'EmailTemplate',
-  EmailLog: 'EmailLog'
+  EmailLog: 'EmailLog',
+  Faq: 'Faq',
+  Gallery: 'Gallery'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -425,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog"
+    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2353,6 +2355,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Faq: {
+      payload: Prisma.$FaqPayload<ExtArgs>
+      fields: Prisma.FaqFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FaqFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FaqFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>
+        }
+        findFirst: {
+          args: Prisma.FaqFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FaqFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>
+        }
+        findMany: {
+          args: Prisma.FaqFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>[]
+        }
+        create: {
+          args: Prisma.FaqCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>
+        }
+        createMany: {
+          args: Prisma.FaqCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FaqCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>[]
+        }
+        delete: {
+          args: Prisma.FaqDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>
+        }
+        update: {
+          args: Prisma.FaqUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>
+        }
+        deleteMany: {
+          args: Prisma.FaqDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FaqUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FaqUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>[]
+        }
+        upsert: {
+          args: Prisma.FaqUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FaqPayload>
+        }
+        aggregate: {
+          args: Prisma.FaqAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFaq>
+        }
+        groupBy: {
+          args: Prisma.FaqGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FaqGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FaqCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FaqCountAggregateOutputType> | number
+        }
+      }
+    }
+    Gallery: {
+      payload: Prisma.$GalleryPayload<ExtArgs>
+      fields: Prisma.GalleryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GalleryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GalleryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>
+        }
+        findFirst: {
+          args: Prisma.GalleryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GalleryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>
+        }
+        findMany: {
+          args: Prisma.GalleryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>[]
+        }
+        create: {
+          args: Prisma.GalleryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>
+        }
+        createMany: {
+          args: Prisma.GalleryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GalleryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>[]
+        }
+        delete: {
+          args: Prisma.GalleryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>
+        }
+        update: {
+          args: Prisma.GalleryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>
+        }
+        deleteMany: {
+          args: Prisma.GalleryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GalleryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GalleryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>[]
+        }
+        upsert: {
+          args: Prisma.GalleryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GalleryPayload>
+        }
+        aggregate: {
+          args: Prisma.GalleryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGallery>
+        }
+        groupBy: {
+          args: Prisma.GalleryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GalleryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GalleryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GalleryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2796,6 +2946,30 @@ export const EmailLogScalarFieldEnum = {
 export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
 
 
+export const FaqScalarFieldEnum = {
+  id: 'id',
+  question: 'question',
+  answer: 'answer',
+  display_order: 'display_order',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type FaqScalarFieldEnum = (typeof FaqScalarFieldEnum)[keyof typeof FaqScalarFieldEnum]
+
+
+export const GalleryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  image: 'image',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type GalleryScalarFieldEnum = (typeof GalleryScalarFieldEnum)[keyof typeof GalleryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3178,6 +3352,8 @@ export type GlobalOmitConfig = {
   template?: Prisma.TemplateOmit
   emailTemplate?: Prisma.EmailTemplateOmit
   emailLog?: Prisma.EmailLogOmit
+  faq?: Prisma.FaqOmit
+  gallery?: Prisma.GalleryOmit
 }
 
 /* Types for Logging */

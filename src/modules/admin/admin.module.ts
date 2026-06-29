@@ -10,6 +10,8 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
 import { TemplateModule } from './template/template.module';
 import { ReportModule } from './report/report.module';
 import { EmailManagementModule } from './email-management/email-management.module';
+import { FaqModule } from './faq/faq.module';
+import { GalleryModule } from './gallery/gallery.module';
 
 
 @Module({
@@ -23,7 +25,9 @@ import { EmailManagementModule } from './email-management/email-management.modul
     ActivityLogModule,
     TemplateModule,
     ReportModule,
-    EmailManagementModule
+    EmailManagementModule,
+    FaqModule,
+    GalleryModule
   ],
 })
 export class AdminModule {}

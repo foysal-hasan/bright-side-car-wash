@@ -147,3 +147,13 @@ export type EmailTemplate = Prisma.EmailTemplateModel
  * 
  */
 export type EmailLog = Prisma.EmailLogModel
+/**
+ * Model Faq
+ * 
+ */
+export type Faq = Prisma.FaqModel
+/**
+ * Model Gallery
+ * 
+ */
+export type Gallery = Prisma.GalleryModel

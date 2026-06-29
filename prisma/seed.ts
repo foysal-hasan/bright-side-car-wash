@@ -115,6 +115,7 @@ async function seedUsers() {
       'template', 
       'lead_group', 
       'role',
+      'faq',
     ];
 
     const ACTIONS = ['create', 'read', 'update', 'delete'];

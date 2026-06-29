@@ -76,7 +76,9 @@ export const ModelName = {
   LeadGroup: 'LeadGroup',
   Template: 'Template',
   EmailTemplate: 'EmailTemplate',
-  EmailLog: 'EmailLog'
+  EmailLog: 'EmailLog',
+  Faq: 'Faq',
+  Gallery: 'Gallery'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -497,6 +499,30 @@ export const EmailLogScalarFieldEnum = {
 } as const
 
 export type EmailLogScalarFieldEnum = (typeof EmailLogScalarFieldEnum)[keyof typeof EmailLogScalarFieldEnum]
+
+
+export const FaqScalarFieldEnum = {
+  id: 'id',
+  question: 'question',
+  answer: 'answer',
+  display_order: 'display_order',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type FaqScalarFieldEnum = (typeof FaqScalarFieldEnum)[keyof typeof FaqScalarFieldEnum]
+
+
+export const GalleryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  image: 'image',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type GalleryScalarFieldEnum = (typeof GalleryScalarFieldEnum)[keyof typeof GalleryScalarFieldEnum]
 
 
 export const SortOrder = {
