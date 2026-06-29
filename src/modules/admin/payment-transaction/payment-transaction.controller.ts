@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseIntercepto
 import { PaymentTransactionService } from './payment-transaction.service';
 import { CreatePaymentTransactionDto } from './dto/create-payment-transaction.dto';
 import { UpdatePaymentTransactionDto } from './dto/update-payment-transaction.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetPaymentsTransactionQueryDto } from './dto/get-payments-transaction-query.dto';
 import { TransformResponseInterceptor } from 'src/common/interceptors/response.interceptor';
 import { Response } from 'express';
@@ -14,6 +14,7 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 @ApiTags('Admin Payment Transaction Management')
+@ApiBearerAuth()
 @Controller('payment-transaction')
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @UseInterceptors(ActivityLogInterceptor, TransformResponseInterceptor)
