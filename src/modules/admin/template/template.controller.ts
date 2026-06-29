@@ -1,6 +1,6 @@
 // templates.controller.ts
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, HttpStatus, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth, ApiQuery, ApiConsumes } from '@nestjs/swagger';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
 import { TemplatesService } from './template.service';
@@ -10,6 +10,12 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
+import { memoryStorage } from 'multer';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadImageDto } from './dto/upload-image.dto';
+import { extname } from 'path';
+import appConfig from 'src/config/app.config';
+import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 
 
 @ApiTags('Templates Management')
@@ -19,7 +25,7 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 @UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/templates')
 export class TemplatesController {
-  constructor(private readonly templatesService: TemplatesService) {}
+  constructor(private readonly templatesService: TemplatesService) { }
 
   @ApiOperation({ summary: 'Create a new template', description: 'Creates a master template entry and automatically handles structural channel layouts (e.g., EmailTemplate).' })
   @ApiBody({ type: CreateTemplateDto })
@@ -35,7 +41,7 @@ export class TemplatesController {
       data: template,
     };
   }
-  
+
 
   @ApiOperation({ summary: 'Retrieve all templates with filters', description: 'Supports pagination, string searching, architecture typing filtering, and archival status views.' })
   @ApiResponse({ status: 200, description: 'List of templates matching criteria fetched successfully.' })
@@ -49,6 +55,40 @@ export class TemplatesController {
       data: templates.data,
       meta: templates.meta,
     };
+  }
+
+  // upload image for template
+  @ApiOperation({ 
+    summary: 'Upload an image for a template', 
+    description: 'Uploads an image to be used in a template. Returns the URL of the uploaded image.' 
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Image uploaded successfully.' })
+  @LogActivity({ action: 'upload', entity: 'template' })
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 25 * 1024 * 1024, // 25MB
+      },
+    }),
+  )
+  async uploadImage(@Body() _: UploadImageDto, @UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('file is required');
+    }
+    const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+    const key = `${appConfig().storageUrl.templateAttachments}${generatedFilename}`;
+    await SojebStorage.put(key, file.buffer);
+
+    return {
+      success: true,
+      message: 'File uploaded successfully',
+      data: {
+        url: SojebStorage.url(key),
+      }
+    }
   }
 
   @ApiOperation({ summary: 'Get a specific template by ID' })
