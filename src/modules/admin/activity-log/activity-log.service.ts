@@ -13,6 +13,9 @@ export class ActivityLogService {
     const data = await this.prisma.activityLog.findMany({
       skip,
       take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     const totalCount = await this.prisma.activityLog.count();
