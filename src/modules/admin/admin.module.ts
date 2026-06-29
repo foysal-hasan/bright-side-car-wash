@@ -12,6 +12,7 @@ import { ReportModule } from './report/report.module';
 import { EmailManagementModule } from './email-management/email-management.module';
 import { FaqModule } from './faq/faq.module';
 import { GalleryModule } from './gallery/gallery.module';
+import { TestimonialModule } from './testimonial/testimonial.module';
 
 
 @Module({
@@ -27,7 +28,8 @@ import { GalleryModule } from './gallery/gallery.module';
     ReportModule,
     EmailManagementModule,
     FaqModule,
-    GalleryModule
+    GalleryModule,
+    TestimonialModule
   ],
 })
 export class AdminModule {}

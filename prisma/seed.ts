@@ -136,6 +136,7 @@ async function seedUsers() {
       'member:unblock',
       'mail-management:send_email',
       'mail-management:view_logs'
+      upload-image
     ];
 
     console.log('🔄 Starting permission seeding with ioredis...');

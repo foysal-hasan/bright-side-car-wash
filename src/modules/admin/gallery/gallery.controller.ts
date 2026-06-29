@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GalleryService } from './gallery.service';
 import { TransformResponseInterceptor } from 'src/common/interceptors/response.interceptor';
@@ -9,11 +9,16 @@ import { memoryStorage } from 'multer';
 import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 import appConfig from 'src/config/app.config';
 import { extname } from 'path';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
+import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 
 @ApiTags('Admin / Gallery Management')
 @ApiBearerAuth()
 @Controller('admin/gallery')
-@UseInterceptors(TransformResponseInterceptor)
+@UseGuards(JwtAuthGuard, PermissionGuard)
+@UseInterceptors(ActivityLogInterceptor, TransformResponseInterceptor)
 export class AdminGalleryController {
   constructor(private readonly galleryService: GalleryService) { }
 
@@ -35,6 +40,7 @@ export class AdminGalleryController {
     }),
   )
   @ApiOperation({ summary: 'Upload/Add a new image into the gallery' })
+  @LogActivity({ action: 'create', entity: 'gallery' })
   async create(@Body() createGalleryDto: CreateGalleryDto, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('Image file is required');
 
@@ -54,6 +60,7 @@ export class AdminGalleryController {
 
   @Get()
   @ApiOperation({ summary: 'Fetch all operational gallery images' })
+  @LogActivity({ action: 'view', entity: 'gallery' })
   async findAll() {
     const result = await this.galleryService.findAllAdmin();
     result.forEach(gallery => {
@@ -67,6 +74,7 @@ export class AdminGalleryController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get details of a single gallery item' })
+  @LogActivity({ action: 'view', entity: 'gallery' })
   async findOne(@Param('id') id: string) {
     const result = await this.galleryService.findOne(id);
     if (result.image) {
@@ -94,6 +102,7 @@ export class AdminGalleryController {
     }),
   )
   @ApiOperation({ summary: 'Modify an existing gallery item metadata' })
+  @LogActivity({ action: 'update', entity: 'gallery' })
   async update(@Param('id') id: string, @Body() updateGalleryDto: UpdateGalleryDto, @UploadedFile() file: Express.Multer.File) {
     if (file) {
       const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
@@ -111,6 +120,7 @@ export class AdminGalleryController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a gallery item permanently' })
+  @LogActivity({ action: 'delete', entity: 'gallery' })
   remove(@Param('id') id: string) {
     return this.galleryService.remove(id);
   }

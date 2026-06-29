@@ -78,7 +78,8 @@ export const ModelName = {
   EmailTemplate: 'EmailTemplate',
   EmailLog: 'EmailLog',
   Faq: 'Faq',
-  Gallery: 'Gallery'
+  Gallery: 'Gallery',
+  Testimonial: 'Testimonial'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -523,6 +524,21 @@ export const GalleryScalarFieldEnum = {
 } as const
 
 export type GalleryScalarFieldEnum = (typeof GalleryScalarFieldEnum)[keyof typeof GalleryScalarFieldEnum]
+
+
+export const TestimonialScalarFieldEnum = {
+  id: 'id',
+  avatar: 'avatar',
+  name: 'name',
+  designation: 'designation',
+  review_text: 'review_text',
+  ratings: 'ratings',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -157,3 +157,8 @@ export type Faq = Prisma.FaqModel
  * 
  */
 export type Gallery = Prisma.GalleryModel
+/**
+ * Model Testimonial
+ * 
+ */
+export type Testimonial = Prisma.TestimonialModel

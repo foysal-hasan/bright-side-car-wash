@@ -728,3 +728,19 @@ model Gallery {
   @@map("galleries")
 }
 // ==================== Gallery end =====================
+
+// ==================== Testimonial start =====================
+model Testimonial {
+  id          String   @id @default(cuid())
+  avatar      String?  
+  name        String
+  designation String
+  review_text  String   @db.Text
+  ratings     Int      @default(5)
+  is_active    Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("testimonials")
+}
+// ================== Testimonial end =====================

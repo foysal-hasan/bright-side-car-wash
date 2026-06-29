@@ -117,8 +117,14 @@ export default () => ({
     // email attachments
     emailAttachments: '/email-attachments/',
 
+    // template images
+    templateAttachments: '/template-attachments/',
+
     // gallery images
     gallery: '/gallery/',
+
+    // testimonial images
+    testimonialAvatars: '/testimonial-avatars/',
   },
 
   defaultUser: {
