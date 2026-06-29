@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Put, Param, Delete, Get, UseInterceptors, UploadedFile, Query, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Put, Param, Delete, Get, UseInterceptors, UploadedFile, Query, Patch, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import { TestimonialService } from './testimonial.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
@@ -11,9 +11,12 @@ import appConfig from 'src/config/app.config';
 import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 import { extname } from 'path';
 import { GetTestimonialsQueryDto } from './dto/get-testimonials-query.dto';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
 @ApiTags('Admin / Testimonials')
 @Controller('admin/testimonials')
+@UseGuards(JwtAuthGuard, PermissionGuard)
 @UseInterceptors(TransformResponseInterceptor)
 export class TestimonialController {
   constructor(private readonly testimonialService: TestimonialService) { }
