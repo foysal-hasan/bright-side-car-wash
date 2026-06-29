@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpStatus, BadRequestException, Res, SetMetadata } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, Req, Query, UploadedFiles, UploadedFile, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpStatus, BadRequestException, Res, SetMetadata, HttpCode } from '@nestjs/common';
 import { LeadService } from './lead.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
@@ -19,6 +19,7 @@ import appConfig from 'src/config/app.config';
 import { SpreadsheetUploadDto } from './dto/spreadsheet-upload.dto';
 import { ExportLeadDto } from './dto/export-lead.dto';
 import { OnlyApiTags } from 'src/common/decorator/only-api-tag.decorator';
+import { UnassignLeadDto } from './dto/unassign-lead.dto';
 
 
 
@@ -382,6 +383,7 @@ export class LeadController {
   }
 
   // Asign lead to a user and log the activity
+  @HttpCode(HttpStatus.OK)
   @Patch(':id/assign')
   @ApiBody({ type: AssignLeadDto })
   @ApiOperation({ summary: 'Assign a lead to a user' })
@@ -409,6 +411,29 @@ export class LeadController {
     return {
       success: true,
       message: 'Lead assigned successfully',
+      data: result,
+    };
+  }
+
+
+  @HttpCode(HttpStatus.OK)
+  @Patch(':id/unassign')
+  @ApiOperation({ summary: 'Unassign a lead from a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lead unassigned successfully',
+  })
+  @RequirePermission('lead:unassign')
+  @LogActivity({ action: 'unassign', entity: 'lead' })
+  async unassignLead(@Param('id') id: string, @Req() req: Request) {
+    const unassignLeadDto: UnassignLeadDto = {
+      assigned_by_id: req?.user?.userId,
+      assignment_source: 'Admin Panel',
+    };
+    const result = await this.leadService.unassignLead(id, unassignLeadDto);
+    return {
+      success: true,
+      message: 'Lead unassigned successfully',
       data: result,
     };
   }

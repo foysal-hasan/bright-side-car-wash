@@ -7,6 +7,7 @@ import { DepositStatus, LeadPriority, Prisma } from 'src/generated/prisma/browse
 import { AssignLeadDto } from './dto/assign-lead.dto';
 import * as XLSX from 'xlsx';
 import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
+import { UnassignLeadDto } from './dto/unassign-lead.dto';
 
 @Injectable()
 export class LeadService {
@@ -821,6 +822,9 @@ export class LeadService {
             },
             source: true,
           },
+          orderBy: {
+            created_at: 'desc',
+          },
         },
         assignment_history: {
           select: {
@@ -843,6 +847,9 @@ export class LeadService {
                 email: true,
               },
             },
+          },
+          orderBy: {
+            created_at: 'desc',
           },
         },
       },
@@ -1039,6 +1046,66 @@ export class LeadService {
             ? `Lead assigned`
             : `Lead unassigned`,
           user_id: assignLeadDto.assigned_to_id || null,
+          source: updateSource,
+        },
+      });
+      return updatedLead;
+    });
+  }
+
+  async unassignLead(id: string, unassignLeadDto: UnassignLeadDto) {
+    // 1. Fetch current assignment status to prevent duplicate log actions
+    const existingLead = await this.prisma.lead.findUnique({
+      where: { id },
+      select: { id: true, assigned_to_id: true },
+    });
+
+    if (!existingLead) {
+      throw new NotFoundException(`Lead with ID ${id} not found`);
+    }
+
+    if (!existingLead.assigned_to_id) {
+      throw new BadRequestException(`Lead is not currently assigned to any user`);
+    }
+
+    const updateSource = unassignLeadDto.assignment_source || 'Admin Panel';
+    
+    // 2. Wrap operations in an atomic transaction
+    return await this.prisma.$transaction(async (tx) => {
+      // Update the main Lead record
+      const updatedLead = await tx.lead.update({
+        where: { id },
+        data: {
+          assigned_to_id: null,
+        },
+        select: {
+          id: true,
+          assignee: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true,
+              email: true,
+            },
+          }
+        },
+      });
+
+      // Log to dedicated LeadAssignmentHistory table
+      await tx.leadAssignmentHistory.create({
+        data: {
+          lead_id: id,
+          assigned_to_id: null,
+          assigned_by_id: unassignLeadDto.assigned_by_id || null,
+        },
+      });
+
+      // Log to general LeadActivityTimeline
+      await tx.leadActivityTimeline.create({
+        data: {
+          lead_id: id,
+          description: `Lead unassigned`,
+          user_id: null,
           source: updateSource,
         },
       });

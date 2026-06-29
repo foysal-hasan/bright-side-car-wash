@@ -126,6 +126,7 @@ async function seedUsers() {
       'lead:import',
       'lead:export',
       'lead:assign',
+      'lead:unassign',
       'lead_group:connect',
       'lead_group:disconnect',
       'permission:read',
