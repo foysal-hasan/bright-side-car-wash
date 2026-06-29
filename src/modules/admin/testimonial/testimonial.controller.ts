@@ -131,6 +131,11 @@ export class TestimonialController {
   @ApiParam({ name: 'id', description: 'Testimonial CUID' })
   @LogActivity({ action: 'delete', entity: 'testimonial' })
   async remove(@Param('id') id: string) {
+    const item = await this.testimonialService.findOne(id);
+    if (item.avatar) {
+      const key = `${appConfig().storageUrl.testimonialAvatars}${item.avatar}`;
+      await SojebStorage.delete(key);
+    }
     return await this.testimonialService.remove(id);
   }
 }

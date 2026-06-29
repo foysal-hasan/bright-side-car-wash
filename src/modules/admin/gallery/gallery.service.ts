@@ -35,10 +35,14 @@ export class GalleryService {
     if (!item) {
       throw new NotFoundException(`Gallery record with ID "${id}" not found`);
     }
-    return this.prisma.gallery.update({
+    const updatedGallery = await this.prisma.gallery.update({
       where: { id },
       data: dto,
     });
+    return {
+      updatedGallery,
+      existingImage: item.image, 
+    };
   }
 
   async remove(id: string) {

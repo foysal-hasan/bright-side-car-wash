@@ -111,17 +111,27 @@ export class AdminGalleryController {
       updateGalleryDto.image = generatedFilename;
     }
     const result = await this.galleryService.update(id, updateGalleryDto);
-    if (result.image) {
-      const key = `${appConfig().storageUrl.gallery}${result.image}`;
-      result.image = SojebStorage.url(key);
+    if (result.updatedGallery.image) {
+      const key = `${appConfig().storageUrl.gallery}${result.updatedGallery.image}`;
+      result.updatedGallery.image = SojebStorage.url(key);
     }
-    return result;
+
+    if(updateGalleryDto.image && result.existingImage) {
+      const existingImageKey = `${appConfig().storageUrl.gallery}${result.existingImage}`;
+      await SojebStorage.delete(existingImageKey);
+    }
+    return result.updatedGallery;
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a gallery item permanently' })
   @LogActivity({ action: 'delete', entity: 'gallery' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
+    const item = await this.galleryService.findOne(id);
+    if (item.image) {
+      const key = `${appConfig().storageUrl.gallery}${item.image}`;
+      await SojebStorage.delete(key);
+    }
     return this.galleryService.remove(id);
   }
 
