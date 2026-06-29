@@ -946,7 +946,6 @@ export class SquareUpBookingService {
         note: `Secure deposit for booking ${createdBookingId}`,
       });
 
-      console.log('Payment response:', paymentResponse);
 
       // 6. PROCESS SUCCESSFUL CONVERSION (Isolated Function)
       if (createdLeadId) {
@@ -1368,7 +1367,7 @@ export class SquareUpBookingService {
         this.prisma.leadActivityTimeline.create({
           data: {
             lead_id: leadId,
-            description: `Checkout step aborted or failed. Error: ${error.message || 'Payment Declined'}`,
+            description: `Checkout step aborted or failed.`,
             source: 'SYSTEM_EXCEPTIONS',
           },
         }),
