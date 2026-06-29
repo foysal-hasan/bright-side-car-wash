@@ -13,6 +13,7 @@ import { EmailManagementModule } from './email-management/email-management.modul
 import { FaqModule } from './faq/faq.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
+import { PaymentTransactionModule } from './payment-transaction/payment-transaction.module';
 
 
 @Module({
@@ -29,7 +30,8 @@ import { TestimonialModule } from './testimonial/testimonial.module';
     EmailManagementModule,
     FaqModule,
     GalleryModule,
-    TestimonialModule
+    TestimonialModule,
+    PaymentTransactionModule
   ],
 })
 export class AdminModule {}
