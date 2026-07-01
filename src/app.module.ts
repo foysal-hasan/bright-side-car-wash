@@ -26,6 +26,7 @@ import { AnalyticsTrackingService } from './common/analytics/analytics-tracking.
 import { APP_GUARD } from '@nestjs/core';
 import { PermissionGuard } from './modules/auth/guards/permission.guard';
 import { ActivityLogModule } from './activity-log/activity-log.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { ActivityLogModule } from './activity-log/activity-log.module';
     ChatModule,
     PrometheusModule,
     ActivityLogModule,
+    NotificationModule,
     // FirebaseModule,
   ],
   controllers: [AppController],

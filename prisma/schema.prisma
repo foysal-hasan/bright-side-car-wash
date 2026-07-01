@@ -780,3 +780,34 @@ model NewsAndEvent {
   @@map("news_and_events")
 }
 // =================== News and Events end =====================
+
+// =================== Notification start =====================
+enum NotificationChannel {
+  EMAIL
+  SMS
+  PUSH
+  IN_APP
+}
+
+enum NotificationStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model NotificationLog {
+  id         String              @id @default(uuid())
+  recipient  String
+  title      String
+  body       String
+  channel    NotificationChannel
+  status     NotificationStatus  @default(PENDING)
+  metadata   Json?
+  error_logs String?             @db.Text
+  created_at DateTime            @default(now())
+  updated_at DateTime            @updatedAt
+
+  @@map("notification_logs")
+}
+
+// =================== Notification end =====================

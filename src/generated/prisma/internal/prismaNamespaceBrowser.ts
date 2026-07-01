@@ -81,7 +81,8 @@ export const ModelName = {
   Gallery: 'Gallery',
   Testimonial: 'Testimonial',
   Category: 'Category',
-  NewsAndEvent: 'NewsAndEvent'
+  NewsAndEvent: 'NewsAndEvent',
+  NotificationLog: 'NotificationLog'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -569,6 +570,22 @@ export const NewsAndEventScalarFieldEnum = {
 } as const
 
 export type NewsAndEventScalarFieldEnum = (typeof NewsAndEventScalarFieldEnum)[keyof typeof NewsAndEventScalarFieldEnum]
+
+
+export const NotificationLogScalarFieldEnum = {
+  id: 'id',
+  recipient: 'recipient',
+  title: 'title',
+  body: 'body',
+  channel: 'channel',
+  status: 'status',
+  metadata: 'metadata',
+  error_logs: 'error_logs',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
 
 
 export const SortOrder = {

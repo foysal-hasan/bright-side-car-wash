@@ -172,3 +172,8 @@ export type Category = Prisma.CategoryModel
  * 
  */
 export type NewsAndEvent = Prisma.NewsAndEventModel
+/**
+ * Model NotificationLog
+ * 
+ */
+export type NotificationLog = Prisma.NotificationLogModel
