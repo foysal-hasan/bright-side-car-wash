@@ -162,3 +162,13 @@ export type Gallery = Prisma.GalleryModel
  * 
  */
 export type Testimonial = Prisma.TestimonialModel
+/**
+ * Model Category
+ * 
+ */
+export type Category = Prisma.CategoryModel
+/**
+ * Model NewsAndEvent
+ * 
+ */
+export type NewsAndEvent = Prisma.NewsAndEventModel

@@ -125,6 +125,9 @@ export default () => ({
 
     // testimonial images
     testimonialAvatars: '/testimonial-avatars/',
+
+    // news and events images
+    newsAndEvents: '/news-and-events/',
   },
 
   defaultUser: {

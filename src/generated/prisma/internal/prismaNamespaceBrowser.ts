@@ -79,7 +79,9 @@ export const ModelName = {
   EmailLog: 'EmailLog',
   Faq: 'Faq',
   Gallery: 'Gallery',
-  Testimonial: 'Testimonial'
+  Testimonial: 'Testimonial',
+  Category: 'Category',
+  NewsAndEvent: 'NewsAndEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -539,6 +541,34 @@ export const TestimonialScalarFieldEnum = {
 } as const
 
 export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
+
+
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const NewsAndEventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  slug: 'slug',
+  content: 'content',
+  summary: 'summary',
+  image_url: 'image_url',
+  category_id: 'category_id',
+  is_published: 'is_published',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  created_by_id: 'created_by_id'
+} as const
+
+export type NewsAndEventScalarFieldEnum = (typeof NewsAndEventScalarFieldEnum)[keyof typeof NewsAndEventScalarFieldEnum]
 
 
 export const SortOrder = {

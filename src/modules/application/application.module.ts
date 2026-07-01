@@ -3,6 +3,7 @@ import { BookingModule } from './booking/booking.module';
 import { FaqModule } from './faq/faq.module';
 import { GalleryModule } from './gallery/gallery.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
+import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
 
 
 @Module({
@@ -10,7 +11,8 @@ import { TestimonialModule } from './testimonial/testimonial.module';
   BookingModule,
   FaqModule,
   GalleryModule,
-  TestimonialModule
+  TestimonialModule,
+  NewsAndEventsModule
 ],
 })
 export class ApplicationModule {}

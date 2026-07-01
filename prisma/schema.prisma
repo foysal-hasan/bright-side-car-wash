@@ -104,6 +104,9 @@ model User {
   assignment_history             LeadAssignmentHistory[] @relation("LeadAssignee")
   assignment_history_as_assigner LeadAssignmentHistory[] @relation("LeadAssigner")
 
+  // relations for news and events
+  news_and_events_created NewsAndEvent[]
+
   @@index([email])
   @@index([phone_number])
   @@map("users")
@@ -361,7 +364,7 @@ model Lead {
   priority       LeadPriority?  @default(LOW)
   notes          String[]       @default([])
 
-  deposit_amount   Decimal?       @db.Decimal(10, 2)
+  deposit_amount   Decimal?       @db.Decimal(10, 2) @default(0.00)
   deposit_currency String?        @default("USD")
 
   // attachments 
@@ -744,3 +747,36 @@ model Testimonial {
   @@map("testimonials")
 }
 // ================== Testimonial end =====================
+
+// =================== News and Events start =====================
+model Category {
+  id              String         @id @default(cuid())
+  name            String         @unique
+  slug            String         @unique
+  created_at      DateTime       @default(now()) @db.Timestamptz
+  updated_at      DateTime       @updatedAt @db.Timestamptz
+  news_and_events NewsAndEvent[]
+
+  @@map("categories")
+}
+
+model NewsAndEvent {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  content      String   @db.Text
+  summary      String?  @db.Text
+  image_url    String?
+  category_id  String
+  is_published Boolean  @default(false)
+  created_at   DateTime @default(now()) @db.Timestamptz
+  updated_at   DateTime @updatedAt @db.Timestamptz
+
+  category Category @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
+  created_by_id String
+  creator  User     @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
+
+  @@map("news_and_events")
+}
+// =================== News and Events end =====================

@@ -467,6 +467,7 @@ export type UserWhereInput = {
   emailLogs?: Prisma.EmailLogListRelationFilter
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryListRelationFilter
+  news_and_events_created?: Prisma.NewsAndEventListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -519,6 +520,7 @@ export type UserOrderByWithRelationInput = {
   emailLogs?: Prisma.EmailLogOrderByRelationAggregateInput
   assignment_history?: Prisma.LeadAssignmentHistoryOrderByRelationAggregateInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryOrderByRelationAggregateInput
+  news_and_events_created?: Prisma.NewsAndEventOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -574,6 +576,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailLogs?: Prisma.EmailLogListRelationFilter
   assignment_history?: Prisma.LeadAssignmentHistoryListRelationFilter
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryListRelationFilter
+  news_and_events_created?: Prisma.NewsAndEventListRelationFilter
 }, "id" | "email" | "username" | "domain" | "stripeAccountId">
 
 export type UserOrderByWithAggregationInput = {
@@ -708,6 +711,7 @@ export type UserCreateInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -760,6 +764,7 @@ export type UserUncheckedCreateInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUpdateInput = {
@@ -812,6 +817,7 @@ export type UserUpdateInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -864,6 +870,7 @@ export type UserUncheckedUpdateInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1358,6 +1365,20 @@ export type UserUpdateOneWithoutEmailLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmailLogsInput, Prisma.UserUpdateWithoutEmailLogsInput>, Prisma.UserUncheckedUpdateWithoutEmailLogsInput>
 }
 
+export type UserCreateNestedOneWithoutNews_and_events_createdInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNews_and_events_createdInput, Prisma.UserUncheckedCreateWithoutNews_and_events_createdInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNews_and_events_createdInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutNews_and_events_createdNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutNews_and_events_createdInput, Prisma.UserUncheckedCreateWithoutNews_and_events_createdInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutNews_and_events_createdInput
+  upsert?: Prisma.UserUpsertWithoutNews_and_events_createdInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutNews_and_events_createdInput, Prisma.UserUpdateWithoutNews_and_events_createdInput>, Prisma.UserUncheckedUpdateWithoutNews_and_events_createdInput>
+}
+
 export type UserCreateWithoutAccountsInput = {
   id?: string
   created_at?: Date | string
@@ -1407,6 +1428,7 @@ export type UserCreateWithoutAccountsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1458,6 +1480,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1525,6 +1548,7 @@ export type UserUpdateWithoutAccountsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1576,6 +1600,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutUserSessionsInput = {
@@ -1627,6 +1652,7 @@ export type UserCreateWithoutUserSessionsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutUserSessionsInput = {
@@ -1678,6 +1704,7 @@ export type UserUncheckedCreateWithoutUserSessionsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutUserSessionsInput = {
@@ -1745,6 +1772,7 @@ export type UserUpdateWithoutUserSessionsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserSessionsInput = {
@@ -1796,6 +1824,7 @@ export type UserUncheckedUpdateWithoutUserSessionsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutUcodesInput = {
@@ -1847,6 +1876,7 @@ export type UserCreateWithoutUcodesInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutUcodesInput = {
@@ -1898,6 +1928,7 @@ export type UserUncheckedCreateWithoutUcodesInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutUcodesInput = {
@@ -1965,6 +1996,7 @@ export type UserUpdateWithoutUcodesInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUcodesInput = {
@@ -2016,6 +2048,7 @@ export type UserUncheckedUpdateWithoutUcodesInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutRoleUsersInput = {
@@ -2067,6 +2100,7 @@ export type UserCreateWithoutRoleUsersInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutRoleUsersInput = {
@@ -2118,6 +2152,7 @@ export type UserUncheckedCreateWithoutRoleUsersInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutRoleUsersInput = {
@@ -2185,6 +2220,7 @@ export type UserUpdateWithoutRoleUsersInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRoleUsersInput = {
@@ -2236,6 +2272,7 @@ export type UserUncheckedUpdateWithoutRoleUsersInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutSent_messagesInput = {
@@ -2287,6 +2324,7 @@ export type UserCreateWithoutSent_messagesInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutSent_messagesInput = {
@@ -2338,6 +2376,7 @@ export type UserUncheckedCreateWithoutSent_messagesInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutSent_messagesInput = {
@@ -2394,6 +2433,7 @@ export type UserCreateWithoutMessagesInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -2445,6 +2485,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -2512,6 +2553,7 @@ export type UserUpdateWithoutSent_messagesInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSent_messagesInput = {
@@ -2563,6 +2605,7 @@ export type UserUncheckedUpdateWithoutSent_messagesInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUpsertWithoutMessagesInput = {
@@ -2625,6 +2668,7 @@ export type UserUpdateWithoutMessagesInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -2676,6 +2720,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutConversations_createdInput = {
@@ -2727,6 +2772,7 @@ export type UserCreateWithoutConversations_createdInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutConversations_createdInput = {
@@ -2778,6 +2824,7 @@ export type UserUncheckedCreateWithoutConversations_createdInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutConversations_createdInput = {
@@ -2834,6 +2881,7 @@ export type UserCreateWithoutConversations_as_participantInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutConversations_as_participantInput = {
@@ -2885,6 +2933,7 @@ export type UserUncheckedCreateWithoutConversations_as_participantInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutConversations_as_participantInput = {
@@ -2952,6 +3001,7 @@ export type UserUpdateWithoutConversations_createdInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversations_createdInput = {
@@ -3003,6 +3053,7 @@ export type UserUncheckedUpdateWithoutConversations_createdInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUpsertWithoutConversations_as_participantInput = {
@@ -3065,6 +3116,7 @@ export type UserUpdateWithoutConversations_as_participantInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversations_as_participantInput = {
@@ -3116,6 +3168,7 @@ export type UserUncheckedUpdateWithoutConversations_as_participantInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutActivityLogsInput = {
@@ -3167,6 +3220,7 @@ export type UserCreateWithoutActivityLogsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutActivityLogsInput = {
@@ -3218,6 +3272,7 @@ export type UserUncheckedCreateWithoutActivityLogsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutActivityLogsInput = {
@@ -3285,6 +3340,7 @@ export type UserUpdateWithoutActivityLogsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutActivityLogsInput = {
@@ -3336,6 +3392,7 @@ export type UserUncheckedUpdateWithoutActivityLogsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutCreated_leadsInput = {
@@ -3387,6 +3444,7 @@ export type UserCreateWithoutCreated_leadsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutCreated_leadsInput = {
@@ -3438,6 +3496,7 @@ export type UserUncheckedCreateWithoutCreated_leadsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutCreated_leadsInput = {
@@ -3494,6 +3553,7 @@ export type UserCreateWithoutAssigned_leadsInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutAssigned_leadsInput = {
@@ -3545,6 +3605,7 @@ export type UserUncheckedCreateWithoutAssigned_leadsInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutAssigned_leadsInput = {
@@ -3612,6 +3673,7 @@ export type UserUpdateWithoutCreated_leadsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreated_leadsInput = {
@@ -3663,6 +3725,7 @@ export type UserUncheckedUpdateWithoutCreated_leadsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUpsertWithoutAssigned_leadsInput = {
@@ -3725,6 +3788,7 @@ export type UserUpdateWithoutAssigned_leadsInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssigned_leadsInput = {
@@ -3776,6 +3840,7 @@ export type UserUncheckedUpdateWithoutAssigned_leadsInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutAssignment_historyInput = {
@@ -3827,6 +3892,7 @@ export type UserCreateWithoutAssignment_historyInput = {
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutAssignment_historyInput = {
@@ -3878,6 +3944,7 @@ export type UserUncheckedCreateWithoutAssignment_historyInput = {
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutAssignment_historyInput = {
@@ -3934,6 +4001,7 @@ export type UserCreateWithoutAssignment_history_as_assignerInput = {
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutAssignment_history_as_assignerInput = {
@@ -3985,6 +4053,7 @@ export type UserUncheckedCreateWithoutAssignment_history_as_assignerInput = {
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutAssignment_history_as_assignerInput = {
@@ -4052,6 +4121,7 @@ export type UserUpdateWithoutAssignment_historyInput = {
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignment_historyInput = {
@@ -4103,6 +4173,7 @@ export type UserUncheckedUpdateWithoutAssignment_historyInput = {
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUpsertWithoutAssignment_history_as_assignerInput = {
@@ -4165,6 +4236,7 @@ export type UserUpdateWithoutAssignment_history_as_assignerInput = {
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignment_history_as_assignerInput = {
@@ -4216,6 +4288,7 @@ export type UserUncheckedUpdateWithoutAssignment_history_as_assignerInput = {
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutLead_activity_timelinesInput = {
@@ -4267,6 +4340,7 @@ export type UserCreateWithoutLead_activity_timelinesInput = {
   emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutLead_activity_timelinesInput = {
@@ -4318,6 +4392,7 @@ export type UserUncheckedCreateWithoutLead_activity_timelinesInput = {
   emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutLead_activity_timelinesInput = {
@@ -4385,6 +4460,7 @@ export type UserUpdateWithoutLead_activity_timelinesInput = {
   emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLead_activity_timelinesInput = {
@@ -4436,6 +4512,7 @@ export type UserUncheckedUpdateWithoutLead_activity_timelinesInput = {
   emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserCreateWithoutEmailLogsInput = {
@@ -4487,6 +4564,7 @@ export type UserCreateWithoutEmailLogsInput = {
   assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
   assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventCreateNestedManyWithoutCreatorInput
 }
 
 export type UserUncheckedCreateWithoutEmailLogsInput = {
@@ -4538,6 +4616,7 @@ export type UserUncheckedCreateWithoutEmailLogsInput = {
   assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedCreateNestedManyWithoutCreatorInput
 }
 
 export type UserCreateOrConnectWithoutEmailLogsInput = {
@@ -4605,6 +4684,7 @@ export type UserUpdateWithoutEmailLogsInput = {
   assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUpdateManyWithoutCreatorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailLogsInput = {
@@ -4656,6 +4736,231 @@ export type UserUncheckedUpdateWithoutEmailLogsInput = {
   assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
   assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
+  news_and_events_created?: Prisma.NewsAndEventUncheckedUpdateManyWithoutCreatorNestedInput
+}
+
+export type UserCreateWithoutNews_and_events_createdInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadCreateNestedManyWithoutCreatorInput
+  assigned_leads?: Prisma.LeadCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogCreateNestedManyWithoutCreatorInput
+  assignment_history?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssigneeInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryCreateNestedManyWithoutAssignerInput
+}
+
+export type UserUncheckedCreateWithoutNews_and_events_createdInput = {
+  id?: string
+  created_at?: Date | string
+  updated_at?: Date | string
+  deleted_at?: Date | string | null
+  status?: number | null
+  approved_at?: Date | string | null
+  availability?: string | null
+  email?: string | null
+  username?: string | null
+  password?: string | null
+  phone_number?: string | null
+  name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  avatar?: string | null
+  gender?: string | null
+  date_of_birth?: Date | string | null
+  country?: string | null
+  state?: string | null
+  city?: string | null
+  address?: string | null
+  zip_code?: string | null
+  domain?: string | null
+  email_verified_at?: Date | string | null
+  billing_id?: string | null
+  stripeAccountId?: string | null
+  onboardingCompleted?: boolean
+  type?: string | null
+  is_two_factor_enabled?: number | null
+  two_factor_secret?: string | null
+  isPhoneVerified?: boolean | null
+  isActive?: boolean
+  inviteToken?: string | null
+  inviteTokenExpiry?: Date | string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  ucodes?: Prisma.UcodeUncheckedCreateNestedManyWithoutUserInput
+  userSessions?: Prisma.UserSessionUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.MessageUncheckedCreateNestedManyWithoutReceiverInput
+  sent_messages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  conversations_created?: Prisma.ConversationUncheckedCreateNestedManyWithoutCreatorInput
+  conversations_as_participant?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipantInput
+  roleUsers?: Prisma.RoleUserUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedCreateNestedManyWithoutUserInput
+  created_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutCreatorInput
+  assigned_leads?: Prisma.LeadUncheckedCreateNestedManyWithoutAssigneeInput
+  emailLogs?: Prisma.EmailLogUncheckedCreateNestedManyWithoutCreatorInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssigneeInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedCreateNestedManyWithoutAssignerInput
+}
+
+export type UserCreateOrConnectWithoutNews_and_events_createdInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutNews_and_events_createdInput, Prisma.UserUncheckedCreateWithoutNews_and_events_createdInput>
+}
+
+export type UserUpsertWithoutNews_and_events_createdInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutNews_and_events_createdInput, Prisma.UserUncheckedUpdateWithoutNews_and_events_createdInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutNews_and_events_createdInput, Prisma.UserUncheckedCreateWithoutNews_and_events_createdInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutNews_and_events_createdInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutNews_and_events_createdInput, Prisma.UserUncheckedUpdateWithoutNews_and_events_createdInput>
+}
+
+export type UserUpdateWithoutNews_and_events_createdInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUpdateManyWithoutCreatorNestedInput
+  assigned_leads?: Prisma.LeadUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUpdateManyWithoutCreatorNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssigneeNestedInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUpdateManyWithoutAssignerNestedInput
+}
+
+export type UserUncheckedUpdateWithoutNews_and_events_createdInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  approved_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  availability?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone_number?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  first_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  last_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  date_of_birth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  country?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  state?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  zip_code?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email_verified_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  billing_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stripeAccountId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  onboardingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  type?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_two_factor_enabled?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  two_factor_secret?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPhoneVerified?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  inviteToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  inviteTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  ucodes?: Prisma.UcodeUncheckedUpdateManyWithoutUserNestedInput
+  userSessions?: Prisma.UserSessionUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.MessageUncheckedUpdateManyWithoutReceiverNestedInput
+  sent_messages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  conversations_created?: Prisma.ConversationUncheckedUpdateManyWithoutCreatorNestedInput
+  conversations_as_participant?: Prisma.ConversationUncheckedUpdateManyWithoutParticipantNestedInput
+  roleUsers?: Prisma.RoleUserUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  lead_activity_timelines?: Prisma.LeadActivityTimelineUncheckedUpdateManyWithoutUserNestedInput
+  created_leads?: Prisma.LeadUncheckedUpdateManyWithoutCreatorNestedInput
+  assigned_leads?: Prisma.LeadUncheckedUpdateManyWithoutAssigneeNestedInput
+  emailLogs?: Prisma.EmailLogUncheckedUpdateManyWithoutCreatorNestedInput
+  assignment_history?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssigneeNestedInput
+  assignment_history_as_assigner?: Prisma.LeadAssignmentHistoryUncheckedUpdateManyWithoutAssignerNestedInput
 }
 
 
@@ -4679,6 +4984,7 @@ export type UserCountOutputType = {
   emailLogs: number
   assignment_history: number
   assignment_history_as_assigner: number
+  news_and_events_created: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4697,6 +5003,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   emailLogs?: boolean | UserCountOutputTypeCountEmailLogsArgs
   assignment_history?: boolean | UserCountOutputTypeCountAssignment_historyArgs
   assignment_history_as_assigner?: boolean | UserCountOutputTypeCountAssignment_history_as_assignerArgs
+  news_and_events_created?: boolean | UserCountOutputTypeCountNews_and_events_createdArgs
 }
 
 /**
@@ -4814,6 +5121,13 @@ export type UserCountOutputTypeCountAssignment_history_as_assignerArgs<ExtArgs e
   where?: Prisma.LeadAssignmentHistoryWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNews_and_events_createdArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NewsAndEventWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4865,6 +5179,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailLogs?: boolean | Prisma.User$emailLogsArgs<ExtArgs>
   assignment_history?: boolean | Prisma.User$assignment_historyArgs<ExtArgs>
   assignment_history_as_assigner?: boolean | Prisma.User$assignment_history_as_assignerArgs<ExtArgs>
+  news_and_events_created?: boolean | Prisma.User$news_and_events_createdArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -4996,6 +5311,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   emailLogs?: boolean | Prisma.User$emailLogsArgs<ExtArgs>
   assignment_history?: boolean | Prisma.User$assignment_historyArgs<ExtArgs>
   assignment_history_as_assigner?: boolean | Prisma.User$assignment_history_as_assignerArgs<ExtArgs>
+  news_and_events_created?: boolean | Prisma.User$news_and_events_createdArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -5019,6 +5335,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailLogs: Prisma.$EmailLogPayload<ExtArgs>[]
     assignment_history: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>[]
     assignment_history_as_assigner: Prisma.$LeadAssignmentHistoryPayload<ExtArgs>[]
+    news_and_events_created: Prisma.$NewsAndEventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -5464,6 +5781,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   emailLogs<T extends Prisma.User$emailLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignment_history<T extends Prisma.User$assignment_historyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignment_historyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadAssignmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignment_history_as_assigner<T extends Prisma.User$assignment_history_as_assignerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignment_history_as_assignerArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeadAssignmentHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  news_and_events_created<T extends Prisma.User$news_and_events_createdArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$news_and_events_createdArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewsAndEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6272,6 +6590,30 @@ export type User$assignment_history_as_assignerArgs<ExtArgs extends runtime.Type
   take?: number
   skip?: number
   distinct?: Prisma.LeadAssignmentHistoryScalarFieldEnum | Prisma.LeadAssignmentHistoryScalarFieldEnum[]
+}
+
+/**
+ * User.news_and_events_created
+ */
+export type User$news_and_events_createdArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NewsAndEvent
+   */
+  select?: Prisma.NewsAndEventSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NewsAndEvent
+   */
+  omit?: Prisma.NewsAndEventOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NewsAndEventInclude<ExtArgs> | null
+  where?: Prisma.NewsAndEventWhereInput
+  orderBy?: Prisma.NewsAndEventOrderByWithRelationInput | Prisma.NewsAndEventOrderByWithRelationInput[]
+  cursor?: Prisma.NewsAndEventWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NewsAndEventScalarFieldEnum | Prisma.NewsAndEventScalarFieldEnum[]
 }
 
 /**

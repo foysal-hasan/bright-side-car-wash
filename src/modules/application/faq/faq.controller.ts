@@ -4,7 +4,7 @@ import { CreateFaqDto } from './dto/create-faq.dto';
 import { UpdateFaqDto } from './dto/update-faq.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('FAQ Management')
+@ApiTags('Application / Public FAQ')
 @Controller('faq')
 export class FaqController {
   constructor(private readonly faqService: FaqService) { }

@@ -139,7 +139,9 @@ async function seedUsers() {
       'mail-management:send_email',
       'mail-management:view_logs',
       'payment-transaction:read',
-      'payment-transaction:export'
+      'payment-transaction:export',
+      'news-and-events:manage',
+      'news-and-events-category:manage',
     ];
 
     console.log('🔄 Starting permission seeding with ioredis...');

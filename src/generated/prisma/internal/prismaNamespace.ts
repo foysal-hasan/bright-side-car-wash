@@ -412,7 +412,9 @@ export const ModelName = {
   EmailLog: 'EmailLog',
   Faq: 'Faq',
   Gallery: 'Gallery',
-  Testimonial: 'Testimonial'
+  Testimonial: 'Testimonial',
+  Category: 'Category',
+  NewsAndEvent: 'NewsAndEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -428,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery" | "testimonial"
+    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery" | "testimonial" | "category" | "newsAndEvent"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2578,6 +2580,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Category: {
+      payload: Prisma.$CategoryPayload<ExtArgs>
+      fields: Prisma.CategoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CategoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CategoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>
+        }
+        findFirst: {
+          args: Prisma.CategoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CategoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>
+        }
+        findMany: {
+          args: Prisma.CategoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>[]
+        }
+        create: {
+          args: Prisma.CategoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>
+        }
+        createMany: {
+          args: Prisma.CategoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CategoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>[]
+        }
+        delete: {
+          args: Prisma.CategoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>
+        }
+        update: {
+          args: Prisma.CategoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.CategoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CategoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CategoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.CategoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CategoryPayload>
+        }
+        aggregate: {
+          args: Prisma.CategoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCategory>
+        }
+        groupBy: {
+          args: Prisma.CategoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CategoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CategoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CategoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    NewsAndEvent: {
+      payload: Prisma.$NewsAndEventPayload<ExtArgs>
+      fields: Prisma.NewsAndEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.NewsAndEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.NewsAndEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>
+        }
+        findFirst: {
+          args: Prisma.NewsAndEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.NewsAndEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>
+        }
+        findMany: {
+          args: Prisma.NewsAndEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>[]
+        }
+        create: {
+          args: Prisma.NewsAndEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>
+        }
+        createMany: {
+          args: Prisma.NewsAndEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.NewsAndEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>[]
+        }
+        delete: {
+          args: Prisma.NewsAndEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>
+        }
+        update: {
+          args: Prisma.NewsAndEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.NewsAndEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.NewsAndEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.NewsAndEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.NewsAndEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$NewsAndEventPayload>
+        }
+        aggregate: {
+          args: Prisma.NewsAndEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateNewsAndEvent>
+        }
+        groupBy: {
+          args: Prisma.NewsAndEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsAndEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.NewsAndEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.NewsAndEventCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3060,6 +3210,34 @@ export const TestimonialScalarFieldEnum = {
 export type TestimonialScalarFieldEnum = (typeof TestimonialScalarFieldEnum)[keyof typeof TestimonialScalarFieldEnum]
 
 
+export const CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
+
+
+export const NewsAndEventScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  slug: 'slug',
+  content: 'content',
+  summary: 'summary',
+  image_url: 'image_url',
+  category_id: 'category_id',
+  is_published: 'is_published',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  created_by_id: 'created_by_id'
+} as const
+
+export type NewsAndEventScalarFieldEnum = (typeof NewsAndEventScalarFieldEnum)[keyof typeof NewsAndEventScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3445,6 +3623,8 @@ export type GlobalOmitConfig = {
   faq?: Prisma.FaqOmit
   gallery?: Prisma.GalleryOmit
   testimonial?: Prisma.TestimonialOmit
+  category?: Prisma.CategoryOmit
+  newsAndEvent?: Prisma.NewsAndEventOmit
 }
 
 /* Types for Logging */
