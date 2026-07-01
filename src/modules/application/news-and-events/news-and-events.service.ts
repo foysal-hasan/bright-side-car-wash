@@ -54,12 +54,27 @@ export class NewsAndEventsService {
   async find_by_slug(slug: string) {
     const record = await this.prisma.newsAndEvent.findUnique({
       where: { slug, is_published: true },
-      include: { 
+      include: {
         category: { select: { name: true, slug: true } },
         creator: { select: { first_name: true, last_name: true, email: true } }
       },
     });
+
     if (!record) throw new NotFoundException(`The requested entry could not be located.`);
-    return record;
+
+    const related_items = await this.prisma.newsAndEvent.findMany({
+      where: { category_id: record.category_id, slug: { not: slug }, is_published: true },
+      take: 3,
+      orderBy: { created_at: 'desc' },
+      include: {
+        category: { select: { name: true, slug: true } },
+        creator: { select: { first_name: true, last_name: true, email: true } }
+      },
+    });
+
+    return {
+      item: record,
+      related_items,
+    };
   }
 }

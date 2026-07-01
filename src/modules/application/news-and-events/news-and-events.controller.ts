@@ -8,10 +8,10 @@ import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 
 
 @ApiTags('Application / Public News and Events')
-@Controller('news-and-events')  
+@Controller('news-and-events')
 @UseInterceptors(TransformResponseInterceptor)
 export class NewsAndEventsController {
-  constructor(private readonly service: NewsAndEventsService) {}
+  constructor(private readonly service: NewsAndEventsService) { }
 
   @Get('categories')
   @ApiOperation({ summary: 'Get active category listings' })
@@ -36,10 +36,17 @@ export class NewsAndEventsController {
   @ApiOperation({ summary: 'Fetch item data content body structure matching specified unique slug identity text' })
   async find_one(@Param('slug') slug: string) {
     const result = await this.service.find_by_slug(slug);
-    if (result.image_url) {
-      const key = `${appConfig().storageUrl.newsAndEvents}${result.image_url}`;
-      result.image_url = SojebStorage.url(key);
+    if (result.item.image_url) {
+      const key = `${appConfig().storageUrl.newsAndEvents}${result.item.image_url}`;
+      result.item.image_url = SojebStorage.url(key);
     }
+
+    result.related_items.forEach(item => {
+      if (item.image_url) {
+        const key = `${appConfig().storageUrl.newsAndEvents}${item.image_url}`;
+        item.image_url = SojebStorage.url(key);
+      }
+    });
     return result;
   }
 }
