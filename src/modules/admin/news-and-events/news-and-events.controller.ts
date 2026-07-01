@@ -196,6 +196,7 @@ export class NewsAndEventsController {
   @Delete(':id')
   @RequirePermission('news-and-events:manage')
   @LogActivity({ action: 'delete', entity: 'news-and-events' })
+  @ApiOperation({ summary: 'Delete a specific news/event entry by ID' })
   async remove(@Param('id') id: string) {
     const result = await this.service.remove(id);
     if (result.deleted_image_url) {
