@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-
+import { NotificationModule } from './notification/notification.module';
 import { WebsiteInfoModule } from './website-info/website-info.module';
 import { StageModule } from './stage/stage.module';
 import { LeadModule } from './lead/lead.module';
@@ -33,7 +33,8 @@ import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
     GalleryModule,
     TestimonialModule,
     PaymentTransactionModule,
-    NewsAndEventsModule
+    NewsAndEventsModule,
+    NotificationModule,
   ],
 })
 export class AdminModule {}

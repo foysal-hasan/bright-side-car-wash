@@ -43,10 +43,10 @@ export class NotificationService {
       });
 
       return success;
-    } catch (error) {
+    } catch (error: any) {
       await this.prisma.notificationLog.update({
         where: { id: log_record.id },
-        data: { status: NotificationStatus.FAILED, error_logs: error.message },
+        data: { status: NotificationStatus.FAILED, error_logs: error?.message || 'Unknown error' },
       });
       throw error;
     }

@@ -3,15 +3,17 @@ import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
-import { DepositStatus, LeadPriority, Prisma } from 'src/generated/prisma/browser';
+import { DepositStatus, LeadPriority, NotificationChannel, Prisma } from 'src/generated/prisma/browser';
 import { AssignLeadDto } from './dto/assign-lead.dto';
 import * as XLSX from 'xlsx';
 import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
 import { UnassignLeadDto } from './dto/unassign-lead.dto';
+import { NotificationProducer } from 'src/modules/notification/queue/notification.producer';
+import { NotificationPayload } from 'src/modules/notification/interfaces/notification-strategy.interface';
 
 @Injectable()
 export class LeadService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService, private readonly notification: NotificationProducer) { }
   async create(createLeadDto: CreateLeadDto) {
     // check if the stage_id exists in the stage table
     const stage = await this.prisma.stage.findFirst({
@@ -318,8 +320,8 @@ export class LeadService {
       const label = `${monthsShort[targetDate.getMonth()]}`;
       trendMap.set(`${targetDate.getFullYear()}-${targetDate.getMonth()}`, {
         month: label,
-        total: 0,       
-        converted: 0  
+        total: 0,
+        converted: 0
       });
     }
 
@@ -1018,6 +1020,7 @@ export class LeadService {
         },
         select: {
           id: true,
+          name: true,
           assignee: {
             select: {
               id: true,
@@ -1049,15 +1052,29 @@ export class LeadService {
           source: updateSource,
         },
       });
+
+      // send notification to the assigned user if assigned_to_id is provided
+      if (assignLeadDto.assigned_to_id) {
+        const payload: NotificationPayload = {
+          title: 'New Lead Assigned',
+          recipient: assignLeadDto.assigned_to_id,
+          body: `You have been assigned a new lead: ${updatedLead.name}.`,
+          metadata: {
+            leadId: id,
+          },
+        };
+        await this.notification.trigger(NotificationChannel.IN_APP, payload);
+      }
       return updatedLead;
     });
+
   }
 
   async unassignLead(id: string, unassignLeadDto: UnassignLeadDto) {
     // 1. Fetch current assignment status to prevent duplicate log actions
     const existingLead = await this.prisma.lead.findUnique({
       where: { id },
-      select: { id: true, assigned_to_id: true },
+      select: { id: true, name: true, assigned_to_id: true },
     });
 
     if (!existingLead) {
@@ -1069,7 +1086,7 @@ export class LeadService {
     }
 
     const updateSource = unassignLeadDto.assignment_source || 'Admin Panel';
-    
+
     // 2. Wrap operations in an atomic transaction
     return await this.prisma.$transaction(async (tx) => {
       // Update the main Lead record
@@ -1109,6 +1126,18 @@ export class LeadService {
           source: updateSource,
         },
       });
+
+      if (existingLead.assigned_to_id) {
+        const payload: NotificationPayload = {
+          title: 'Lead Unassigned',
+          recipient: existingLead.assigned_to_id,
+          body: `You have been unassigned from lead: ${existingLead.name}.`,
+          metadata: {
+            leadId: id,
+          },
+        };
+        await this.notification.trigger(NotificationChannel.IN_APP, payload);
+      }
       return updatedLead;
     });
   }

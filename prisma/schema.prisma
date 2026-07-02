@@ -796,7 +796,7 @@ enum NotificationStatus {
 }
 
 model NotificationLog {
-  id         String              @id @default(uuid())
+  id         String              @id @default(cuid())
   recipient  String
   title      String
   body       String
@@ -804,6 +804,7 @@ model NotificationLog {
   status     NotificationStatus  @default(PENDING)
   metadata   Json?
   error_logs String?             @db.Text
+  is_read    Boolean             @default(false)
   created_at DateTime            @default(now())
   updated_at DateTime            @updatedAt
 

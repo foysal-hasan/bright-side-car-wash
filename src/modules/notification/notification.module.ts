@@ -4,7 +4,6 @@ import { NotificationService } from './notification.service';
 import { NotificationProducer } from './queue/notification.producer';
 import { NotificationConsumer } from './queue/notification.consumer';
 import { NotificationGateway } from './gateway/notification.gateway';
-import { AdminNotificationController } from './admin-notification.controller';
 import { NOTIFICATION_STRATEGY_TOKEN } from './interfaces/notification-strategy.interface';
 
 // 1. Clean, explicit imports of your strategies
@@ -33,7 +32,7 @@ const StrategyFactoryProvider: Provider = {
       name: 'notification_queue',
     }),
   ],
-  controllers: [AdminNotificationController],
+  controllers: [],
   providers: [
     NotificationService,
     NotificationProducer,

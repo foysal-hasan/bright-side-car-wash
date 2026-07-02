@@ -1,39 +1,68 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
+import appConfig from 'src/config/app.config';
+import * as jwt from 'jsonwebtoken';
 
-@WebSocketGateway({ cors: { origin: '*' }, namespace: 'notifications' })
+
+export interface AuthenticatedSocket extends Socket {
+    user_id?: string;
+}
+
+@WebSocketGateway({
+    cors: { origin: '*' },
+    namespace: 'notifications',
+    maxHttpBufferSize: 1e8, // 100MB
+})
 export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  @WebSocketServer() server: Server;
-  private readonly logger = new Logger(NotificationGateway.name);
-  private readonly user_sockets = new Map<string, string>();
+    @WebSocketServer() server: Server;
+    private readonly logger = new Logger(NotificationGateway.name);
 
-  handleConnection(client: Socket) {
-    const user_id = client.handshake.query.user_id as string;
-    if (user_id) {
-      this.user_sockets.set(user_id, client.id);
-      this.logger.log(`User ${user_id} linked to socket session ${client.id}`);
-    }
-  }
+    async handleConnection(client: AuthenticatedSocket) {
+        try {
+            const token = client.handshake?.auth?.token || client.handshake?.headers?.authorization?.split(' ')?.[1];
 
-  handleDisconnect(client: Socket) {
-    for (const [user_id, socket_id] of this.user_sockets.entries()) {
-      if (socket_id === client.id) {
-        this.user_sockets.delete(user_id);
-        this.logger.log(`User ${user_id} disconnected.`);
-        break;
-      }
-    }
-  }
+            if (!token) return client.disconnect();
 
-  send_to_user(user_id: string, event: string, data: any): boolean {
-    const socket_id = this.user_sockets.get(user_id);
-    if (socket_id) {
-      this.server.to(socket_id).emit(event, data);
-      return true;
+            const decoded: any = jwt.verify(token, appConfig().jwt.access_token_secret);
+            const user_id = decoded.sub;
+            if (!user_id) return client.disconnect();
+
+            // IMPORTANT STEP: Bind the user_id to this specific socket instance memory block
+            client.user_id = user_id;
+
+            await client.join(user_id);
+            // TODO: update user status in database to 'online'
+            // this.server.emit('userStatusChange', { user_id, status: 'online' });
+            this.logger.log(`User ${user_id} connected seamlessly.`);
+        } catch (error) {
+            client.disconnect();
+            this.logger.error('Connection handshake auth failure:', error);
+        }
     }
-    // test line
-    this.server.emit(event, data);
-    return false;
-  }
+
+    async handleDisconnect(client: AuthenticatedSocket) {
+        const user_id = client.user_id;
+
+        if (user_id) {
+            // 1. Fetch all active socket instances still alive in this user's room
+            const active_connections = await this.server.in(user_id).fetchSockets();
+
+            // 2. Only mark offline if this was the last remaining tab/device closed!
+            if (active_connections.length === 0) {
+                // TODO: update user status in database to 'offline'
+                // this.server.emit('userStatusChange', { user_id, status: 'offline' });
+
+                this.logger.log(`User ${user_id} completely went dark.`);
+            } else {
+                this.logger.log(`User ${user_id} closed a tab, but remains online elsewhere.`);
+            }
+        }
+    }
+
+
+    send_to_user(user_id: string, event: string, data: any): boolean {
+        this.server.to(user_id).emit(event, data);
+        return true;
+    }
 }

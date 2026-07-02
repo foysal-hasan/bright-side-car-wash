@@ -66,7 +66,7 @@ export class MessageGateway
         return;
       }
 
-      const decoded: any = jwt.verify(token, appConfig().jwt.secret);
+      const decoded: any = jwt.verify(token, appConfig().jwt.access_token_secret);
       // const decoded: any = this.jwtService.verify(token);
       // const userId = client.handshake.query.userId as string;
       const userId = decoded.sub;

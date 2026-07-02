@@ -3322,6 +3322,7 @@ export const NotificationLogScalarFieldEnum = {
   status: 'status',
   metadata: 'metadata',
   error_logs: 'error_logs',
+  is_read: 'is_read',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const

@@ -8,13 +8,9 @@ import { NotificationChannel } from 'src/generated/prisma/enums';
 export class PushNotificationStrategy implements NotificationStrategy {
   readonly channel = NotificationChannel.PUSH;
 
-  constructor(private readonly gateway: NotificationGateway) {}
+  constructor() {}
 
   async send(payload: NotificationPayload): Promise<boolean> {
-    return this.gateway.send_to_user(payload.recipient, 'live_notification', {
-      title: payload.title,
-      body: payload.body,
-      metadata: payload.metadata,
-    });
+    return false;
   }
 }

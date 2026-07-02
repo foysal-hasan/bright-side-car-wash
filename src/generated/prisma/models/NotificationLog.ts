@@ -32,6 +32,7 @@ export type NotificationLogMinAggregateOutputType = {
   channel: $Enums.NotificationChannel | null
   status: $Enums.NotificationStatus | null
   error_logs: string | null
+  is_read: boolean | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -44,6 +45,7 @@ export type NotificationLogMaxAggregateOutputType = {
   channel: $Enums.NotificationChannel | null
   status: $Enums.NotificationStatus | null
   error_logs: string | null
+  is_read: boolean | null
   created_at: Date | null
   updated_at: Date | null
 }
@@ -57,6 +59,7 @@ export type NotificationLogCountAggregateOutputType = {
   status: number
   metadata: number
   error_logs: number
+  is_read: number
   created_at: number
   updated_at: number
   _all: number
@@ -71,6 +74,7 @@ export type NotificationLogMinAggregateInputType = {
   channel?: true
   status?: true
   error_logs?: true
+  is_read?: true
   created_at?: true
   updated_at?: true
 }
@@ -83,6 +87,7 @@ export type NotificationLogMaxAggregateInputType = {
   channel?: true
   status?: true
   error_logs?: true
+  is_read?: true
   created_at?: true
   updated_at?: true
 }
@@ -96,6 +101,7 @@ export type NotificationLogCountAggregateInputType = {
   status?: true
   metadata?: true
   error_logs?: true
+  is_read?: true
   created_at?: true
   updated_at?: true
   _all?: true
@@ -182,6 +188,7 @@ export type NotificationLogGroupByOutputType = {
   status: $Enums.NotificationStatus
   metadata: runtime.JsonValue | null
   error_logs: string | null
+  is_read: boolean
   created_at: Date
   updated_at: Date
   _count: NotificationLogCountAggregateOutputType | null
@@ -216,6 +223,7 @@ export type NotificationLogWhereInput = {
   status?: Prisma.EnumNotificationStatusFilter<"NotificationLog"> | $Enums.NotificationStatus
   metadata?: Prisma.JsonNullableFilter<"NotificationLog">
   error_logs?: Prisma.StringNullableFilter<"NotificationLog"> | string | null
+  is_read?: Prisma.BoolFilter<"NotificationLog"> | boolean
   created_at?: Prisma.DateTimeFilter<"NotificationLog"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"NotificationLog"> | Date | string
 }
@@ -229,6 +237,7 @@ export type NotificationLogOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   error_logs?: Prisma.SortOrderInput | Prisma.SortOrder
+  is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -245,6 +254,7 @@ export type NotificationLogWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumNotificationStatusFilter<"NotificationLog"> | $Enums.NotificationStatus
   metadata?: Prisma.JsonNullableFilter<"NotificationLog">
   error_logs?: Prisma.StringNullableFilter<"NotificationLog"> | string | null
+  is_read?: Prisma.BoolFilter<"NotificationLog"> | boolean
   created_at?: Prisma.DateTimeFilter<"NotificationLog"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"NotificationLog"> | Date | string
 }, "id">
@@ -258,6 +268,7 @@ export type NotificationLogOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   error_logs?: Prisma.SortOrderInput | Prisma.SortOrder
+  is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   _count?: Prisma.NotificationLogCountOrderByAggregateInput
@@ -277,6 +288,7 @@ export type NotificationLogScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumNotificationStatusWithAggregatesFilter<"NotificationLog"> | $Enums.NotificationStatus
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"NotificationLog">
   error_logs?: Prisma.StringNullableWithAggregatesFilter<"NotificationLog"> | string | null
+  is_read?: Prisma.BoolWithAggregatesFilter<"NotificationLog"> | boolean
   created_at?: Prisma.DateTimeWithAggregatesFilter<"NotificationLog"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"NotificationLog"> | Date | string
 }
@@ -290,6 +302,7 @@ export type NotificationLogCreateInput = {
   status?: $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: string | null
+  is_read?: boolean
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -303,6 +316,7 @@ export type NotificationLogUncheckedCreateInput = {
   status?: $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: string | null
+  is_read?: boolean
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -316,6 +330,7 @@ export type NotificationLogUpdateInput = {
   status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_read?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -329,6 +344,7 @@ export type NotificationLogUncheckedUpdateInput = {
   status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_read?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -342,6 +358,7 @@ export type NotificationLogCreateManyInput = {
   status?: $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: string | null
+  is_read?: boolean
   created_at?: Date | string
   updated_at?: Date | string
 }
@@ -355,6 +372,7 @@ export type NotificationLogUpdateManyMutationInput = {
   status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_read?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -368,6 +386,7 @@ export type NotificationLogUncheckedUpdateManyInput = {
   status?: Prisma.EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   error_logs?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_read?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -381,6 +400,7 @@ export type NotificationLogCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
   error_logs?: Prisma.SortOrder
+  is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -393,6 +413,7 @@ export type NotificationLogMaxOrderByAggregateInput = {
   channel?: Prisma.SortOrder
   status?: Prisma.SortOrder
   error_logs?: Prisma.SortOrder
+  is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -405,6 +426,7 @@ export type NotificationLogMinOrderByAggregateInput = {
   channel?: Prisma.SortOrder
   status?: Prisma.SortOrder
   error_logs?: Prisma.SortOrder
+  is_read?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
 }
@@ -428,6 +450,7 @@ export type NotificationLogSelect<ExtArgs extends runtime.Types.Extensions.Inter
   status?: boolean
   metadata?: boolean
   error_logs?: boolean
+  is_read?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["notificationLog"]>
@@ -441,6 +464,7 @@ export type NotificationLogSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   status?: boolean
   metadata?: boolean
   error_logs?: boolean
+  is_read?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["notificationLog"]>
@@ -454,6 +478,7 @@ export type NotificationLogSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   status?: boolean
   metadata?: boolean
   error_logs?: boolean
+  is_read?: boolean
   created_at?: boolean
   updated_at?: boolean
 }, ExtArgs["result"]["notificationLog"]>
@@ -467,11 +492,12 @@ export type NotificationLogSelectScalar = {
   status?: boolean
   metadata?: boolean
   error_logs?: boolean
+  is_read?: boolean
   created_at?: boolean
   updated_at?: boolean
 }
 
-export type NotificationLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "recipient" | "title" | "body" | "channel" | "status" | "metadata" | "error_logs" | "created_at" | "updated_at", ExtArgs["result"]["notificationLog"]>
+export type NotificationLogOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "recipient" | "title" | "body" | "channel" | "status" | "metadata" | "error_logs" | "is_read" | "created_at" | "updated_at", ExtArgs["result"]["notificationLog"]>
 
 export type $NotificationLogPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "NotificationLog"
@@ -485,6 +511,7 @@ export type $NotificationLogPayload<ExtArgs extends runtime.Types.Extensions.Int
     status: $Enums.NotificationStatus
     metadata: runtime.JsonValue | null
     error_logs: string | null
+    is_read: boolean
     created_at: Date
     updated_at: Date
   }, ExtArgs["result"]["notificationLog"]>
@@ -918,6 +945,7 @@ export interface NotificationLogFieldRefs {
   readonly status: Prisma.FieldRef<"NotificationLog", 'NotificationStatus'>
   readonly metadata: Prisma.FieldRef<"NotificationLog", 'Json'>
   readonly error_logs: Prisma.FieldRef<"NotificationLog", 'String'>
+  readonly is_read: Prisma.FieldRef<"NotificationLog", 'Boolean'>
   readonly created_at: Prisma.FieldRef<"NotificationLog", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"NotificationLog", 'DateTime'>
 }
