@@ -5,9 +5,11 @@ import { CampaignReportsController } from './controllers/campaign.controller';
 import { CampaignReportsService } from './services/campaign.service';
 import { MemberActivityController } from './controllers/member-activity.controller';
 import { MemberActivityService } from './services/member-activity.service';
+import { DepositAnalyticsController } from './controllers/deposit-analytics.controller';
+import { DepositAnalyticsService } from './services/deposit.analytics.service';
 
 @Module({
-  controllers: [ReportsController, CampaignReportsController, MemberActivityController],
-  providers: [ReportsService, CampaignReportsService, MemberActivityService],
+  controllers: [ReportsController, CampaignReportsController, MemberActivityController, DepositAnalyticsController],
+  providers: [ReportsService, CampaignReportsService, MemberActivityService, DepositAnalyticsService],
 })
 export class ReportModule {}

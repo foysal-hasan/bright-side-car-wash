@@ -3,7 +3,7 @@ import { ReportsService } from '../services/lead.service';
 import { DynamicStageReportDto, SourceBreakdownDto, StageBreakdownDto } from '../dto/lead-converstion-reports.dto';
 import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Admin Reports')
+@ApiTags('Admin Lead Reports')
 @Controller('admin/reports/leads')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
