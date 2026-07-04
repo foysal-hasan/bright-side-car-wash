@@ -25,13 +25,41 @@
               </p>
 
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin: 12px 0 16px; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <% 
+                  const displayTimeValue = typeof startAtDisplay !== 'undefined' ? startAtDisplay : undefined;
+                  const startAtRawValue = typeof startAtRaw !== 'undefined' ? startAtRaw : undefined;
+                  const startAtValue = typeof startAt !== 'undefined' ? startAt : undefined;
+                  const hasDisplayTime = typeof displayTimeValue === 'string' && displayTimeValue.trim().length > 0;
+                  const rawStartAtValue = startAtRawValue || startAtValue;
+                  const parsedStartAt = rawStartAtValue ? new Date(rawStartAtValue) : null;
+                  const hasValidRawDate = parsedStartAt && !Number.isNaN(parsedStartAt.getTime());
+                  const fallbackReadableTime = hasValidRawDate
+                    ? parsedStartAt.toLocaleString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                        timeZoneName: 'short',
+                      })
+                    : (rawStartAtValue || 'Not available');
+                  const finalDisplayTime = hasDisplayTime ? displayTimeValue : fallbackReadableTime;
+                  const timeZoneLabelValue = typeof timeZoneLabel !== 'undefined' ? timeZoneLabel : '';
+                %>
                 <tr>
                   <td style="padding: 12px 14px; border-bottom: 1px solid #e2e8f0; width: 38%; color: #334155;">Booking ID</td>
                   <td style="padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-weight: 600;"><%= bookingId %></td>
                 </tr>
                 <tr>
                   <td style="padding: 12px 14px; border-bottom: 1px solid #e2e8f0; color: #334155;">Appointment Time</td>
-                  <td style="padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-weight: 600;"><%= startAt %></td>
+                  <td style="padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">
+                    <%= finalDisplayTime %>
+                    <% if (timeZoneLabelValue) { %>
+                      (<%= timeZoneLabelValue %>)
+                    <% } %>
+                  </td>
                 </tr>
                 <tr>
                   <td style="padding: 12px 14px; color: #334155;">Paid Amount</td>

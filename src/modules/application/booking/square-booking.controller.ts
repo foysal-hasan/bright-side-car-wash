@@ -11,11 +11,15 @@ import { CreateBookableServiceDto } from './dto/create-service.dto';
 import { GetServicesQueryDto } from './dto/get-services-query.dto';
 import appConfig from 'src/config/app.config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { MailService } from 'src/mail/mail.service';
 
 @ApiTags('Square Booking API')
 @Controller('api/appointments')
 export class SquareBookingController {
-  constructor(private readonly bookingService: SquareUpBookingService) {}
+  constructor(
+    private readonly bookingService: SquareUpBookingService,
+    private readonly mailService: MailService,
+  ) {}
 
   @ApiOperation({ summary: 'Create a new bookable service (Just for testing, not needed in a production application)' })
   @Post('services')
@@ -151,6 +155,34 @@ export class SquareBookingController {
       success: true,
       message: 'Booking confirmed successfully',
       data: booking,
+    };
+  }
+
+  @ApiOperation({ summary: 'Send booking confirmation email (testing endpoint)' })
+  @Post('test-confirmation-email')
+  @HttpCode(HttpStatus.OK)
+  async sendTestConfirmationEmail() {
+    const now = new Date();
+    const fallbackBookingId = `BK-TEST-${now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14)}`;
+    const recipient = appConfig().defaultUser.system.email || appConfig().mail.from;
+
+    await this.mailService.sendBookingConfirmationEmail({
+      to: recipient,
+      customerName: 'Test Customer',
+      bookingId: fallbackBookingId,
+      startAt: '2026-07-21T01:00:00Z',
+      services: ['Online Booking Service'],
+      totalCostCents: 4999,
+      currency: 'USD',
+    });
+
+    return {
+      success: true,
+      message: 'Test booking confirmation email queued successfully',
+      data: {
+        to: recipient,
+        bookingId: fallbackBookingId,
+      },
     };
   }
 
