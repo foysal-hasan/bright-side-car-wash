@@ -265,8 +265,24 @@ export class SquareUpBookingService {
       });
 
       const catalogItems = (response.objects ?? []) as any[];
+      const relatedObjects = (response.relatedObjects ?? []) as any[];
 
+      // Create a quick lookup map for image URLs by their Catalog ID
+      const imageMap = new Map<string, string>();
+      relatedObjects.forEach((obj) => {
+        if (obj.type === 'IMAGE' && obj.imageData?.url) {
+          imageMap.set(obj.id, obj.imageData.url);
+        }
+      });
+     
       this.logger.debug(`Retrieved ${catalogItems.length} catalog items from Square.`);
+
+      const resolveImageUrls = (ids: string[] | undefined): string[] => {
+        if (!ids || !Array.isArray(ids)) return [];
+        return ids
+          .map((id) => imageMap.get(id))
+          .filter((url): url is string => !!url);
+      };
 
       const services = catalogItems
         // .filter((object) => object.itemData?.productType === 'APPOINTMENTS_SERVICE')
@@ -278,26 +294,37 @@ export class SquareUpBookingService {
 
               // 2. CRUCIAL: Verify variation is explicitly flagged for customer online booking
               const isOnlineBookable = variation.itemVariationData?.availableForBooking === true;
-              this.logger.debug(`variation => ${this.toJsonSafe(variation.itemVariationData)}`);
-              console.log(variation)
+              // this.logger.debug(`variation => ${this.toJsonSafe(variation.itemVariationData)}`);
+              // console.log(variation)
               return isAtLocation && isOnlineBookable;
             })
-            .map((variation) => ({
-              id: variation.id,
-              version: variation.version,
-              name: variation.itemVariationData?.name,
-              durationMinutes: variation.itemVariationData?.serviceDuration
-                ? Number(variation.itemVariationData.serviceDuration) / 60000
-                : null,
-              priceInCents: Number(variation.itemVariationData?.priceMoney?.amount ?? 0),
-              currency: variation.itemVariationData?.priceMoney?.currency,
-            }));
+            .map((variation) => {
+              const variationImageIds = variation.itemVariationData?.imageIds
+                ?? (variation.itemVariationData?.imageId ? [variation.itemVariationData.imageId] : []);
+
+              return {
+                id: variation.id,
+                version: variation.version,
+                name: variation.itemVariationData?.name,
+                durationMinutes: variation.itemVariationData?.serviceDuration
+                  ? Number(variation.itemVariationData.serviceDuration) / 60000
+                  : null,
+                priceInCents: Number(variation.itemVariationData?.priceMoney?.amount ?? 0),
+                currency: variation.itemVariationData?.priceMoney?.currency,
+                images: resolveImageUrls(variationImageIds),
+              }
+            });
+
+          // Extract image URLs from the imageIds array present in your JSON payload
+          const itemImageIds = object.itemData?.imageIds
+            ?? (object.itemData?.imageId ? [object.itemData.imageId] : []);
 
           return {
             id: object.id,
             name: object.itemData?.name,
             description: object.itemData?.description,
             variations,
+            images: resolveImageUrls(itemImageIds),
           };
         })
         // Strip out any parent items whose variations were completely removed by the online booking filter
@@ -875,7 +902,7 @@ export class SquareUpBookingService {
         (catalogResponse.relatedObjects ?? []).map((obj) => [obj.id, obj])
       );
 
-      
+
       const serviceNamesArray: string[] = [];
 
       const appointmentSegments = payload.cartItems.map((item) => {
