@@ -346,7 +346,7 @@ export class AuthService {
       where: { id: sessionId }
     });
 
-    await this.prisma.userSession.create({
+    const newSession = await this.prisma.userSession.create({
       data: {
         userId: user_id,
         deviceName: deviceInfo.deviceName,
@@ -361,16 +361,16 @@ export class AuthService {
     }
 
     // delete old refresh token
-    await this.redis.del(`refresh_token:${sessionId}`);
+    await this.redis.del(`refresh_token:${newSession.id}`);
  
-    const payload = { email: userDetails.email, sub: userDetails.id, sessionId: sessionId, roles: userDetails.roleUsers.map(item => item.role.name) };
+    const payload = { email: userDetails.email, sub: userDetails.id, sessionId: newSession.id, roles: userDetails.roleUsers.map(item => item.role.name) };
     const accessToken = this.jwtService.sign(payload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').unixSeconds, secret: appConfig().jwt.access_token_secret });
 
-    const newRefreshTokenPayload = { sessionId: sessionId, sub: user_id };
+    const newRefreshTokenPayload = { sessionId: newSession.id, sub: user_id };
     const newRefreshToken = this.jwtService.sign(newRefreshTokenPayload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').unixSeconds, secret: appConfig().jwt.refresh_token_secret });
 
     await this.redis.set(
-      `refresh_token:${sessionId}`,
+      `refresh_token:${newSession.id}`,
       newRefreshToken,
       'EX',
       DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').date.getTime() - new Date().getTime()
