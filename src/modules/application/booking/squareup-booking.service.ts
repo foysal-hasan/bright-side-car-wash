@@ -17,6 +17,9 @@ import { RescheduleBookingDto } from './dto/reschedule-booking.dto';
 import { CancelBookingDto } from './dto/cancel-booking.dto';
 import { GetServicesQueryDto } from './dto/get-services-query.dto';
 import { DepositStatus, LeadPriority, PaymentStatus } from 'src/generated/prisma/enums';
+import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+
 
 @Injectable()
 export class SquareUpBookingService {
@@ -25,7 +28,7 @@ export class SquareUpBookingService {
   private readonly logger = new Logger(SquareUpBookingService.name);
 
   constructor(
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectRedis() private readonly redis: Redis,
     private prisma: PrismaService,
   ) {
     this.squareClient = new SquareClient({
@@ -53,52 +56,8 @@ export class SquareUpBookingService {
     description: string,
   ) {
     try {
-
       // Convert minutes to milliseconds for Square's serviceDuration parameter
       const durationMilliseconds = durationMinutes * 60 * 1000;
-
-
-
-
-      // const targetLocationId = 'LFCP3G26QFGDZ'; // Define your target location ID here
-
-      // const response = await this.squareClient.catalog.object.upsert({
-      //   idempotencyKey: randomUUID(),
-      //   object: {
-      //     type: 'ITEM',
-      //     id: '#new-service-item',
-      //     // 1. Tell Square to only make this parent object available at this specific location
-      //     presentAtLocationIds: [targetLocationId],
-      //     itemData: {
-      //       name: name,
-      //       description: description,
-      //       productType: 'APPOINTMENTS_SERVICE',
-      //       variations: [
-      //         {
-      //           type: 'ITEM_VARIATION',
-      //           id: '#new-service-variation',
-      //           // 2. Mirror the location restriction to the child variation level too
-      //           presentAtLocationIds: [targetLocationId],
-      //           itemVariationData: {
-      //             name: 'Regular Session',
-      //             pricingType: 'FIXED_PRICING',
-      //             priceMoney: {
-      //               amount: BigInt(priceCents),
-      //               currency: 'USD',
-      //             },
-      //             serviceDuration: BigInt(durationMilliseconds),
-      //             availableForBooking: true,
-      //             teamMemberIds: ["TMJ05qjLA76pqIAf"],
-
-      //             // Note: Use locationOverrides only if you need special location-specific adjustments,
-      //             // like an alternative price or a different team assignment for this specific spot.
-      //             // Since we restricted visibility above, this variation will only exist here anyway!
-      //           },
-      //         },
-      //       ],
-      //     },
-      //   },
-      // });
 
       const response = await this.squareClient.catalog.object.upsert({
         idempotencyKey: randomUUID(),
@@ -130,7 +89,7 @@ export class SquareUpBookingService {
         },
       });
       const rootItem = response.catalogObject;
-      const variationItem = rootItem?.itemData?.variations?.[0];
+      const variationItem = (rootItem as any)?.itemData?.variations?.[0];
 
       return {
         message: 'Bookable service item generated successfully for all locations.',
@@ -140,7 +99,8 @@ export class SquareUpBookingService {
       };
     } catch (error) {
       // Square SDK errors expose raw responses inside an array structure
-      throw new BadRequestException(error.errors || error.message);
+      // throw new BadRequestException(error.errors || error.message);
+      this.handleSquareError(error);
     }
   }
 
@@ -208,46 +168,6 @@ export class SquareUpBookingService {
     }
   }
 
-  // async getServices(locationId?: string) {
-  //   try {
-  //     const response = await this.squareClient.catalog.search({
-  //       objectTypes: ['ITEM'],
-  //       includeRelatedObjects: true,
-  //     });
-
-  //     const catalogItems = (response.objects ?? []) as any[];
-
-  //     const services = catalogItems
-  //       .filter((object) => object.itemData?.productType === 'APPOINTMENTS_SERVICE')
-  //       .map((object) => {
-  //         const variations = ((object.itemData?.variations ?? []) as any[])
-  //           .filter((variation) => this.isVariationAvailableAtLocation(variation, locationId))
-  //           .map((variation) => ({
-  //             id: variation.id,
-  //             version: variation.version,
-  //             name: variation.itemVariationData?.name,
-  //             durationMinutes: variation.itemVariationData?.serviceDuration
-  //               ? Number(variation.itemVariationData.serviceDuration) / 60000
-  //               : null,
-  //             priceInCents: Number(variation.itemVariationData?.priceMoney?.amount ?? 0),
-  //             currency: variation.itemVariationData?.priceMoney?.currency,
-  //           }));
-
-  //         return {
-  //           id: object.id,
-  //           name: object.itemData?.name,
-  //           description: object.itemData?.description,
-  //           variations,
-  //         };
-  //       })
-  //       .filter((service) => service.variations.length > 0);
-
-  //     return this.toJsonSafe({ data: services });
-  //   } catch (error) {
-  //     this.handleSquareError(error);
-  //   }
-  // }
-
   async getServices(query: GetServicesQueryDto) {
     try {
       // In the latest SDK, searchCatalogObjects is preferred over catalog.search
@@ -274,7 +194,7 @@ export class SquareUpBookingService {
           imageMap.set(obj.id, obj.imageData.url);
         }
       });
-     
+
       this.logger.debug(`Retrieved ${catalogItems.length} catalog items from Square.`);
 
       const resolveImageUrls = (ids: string[] | undefined): string[] => {
@@ -411,7 +331,7 @@ export class SquareUpBookingService {
       const availableSlots = [];
       for (const slot of availabilityResponse.availabilities ?? []) {
         const lockKey = this.getLockKey(locationId, slot.startAt ?? '');
-        const isLocked = await this.cacheManager.get(lockKey);
+        const isLocked = await this.redis.get(lockKey);
         if (!isLocked) {
           availableSlots.push(slot);
         }
@@ -427,106 +347,57 @@ export class SquareUpBookingService {
     }
   }
 
-  // async lockTimeSlot(
-  //   locationId: string,
-  //   startAt: string,
-  //   cartId: string,
-  //   serviceVariationIds: string[],
-  // ) {
-  //   const lockKey = this.getLockKey(locationId, startAt);
-  //   const existingLock = await this.cacheManager.get<{
-  //     lockToken: string;
-  //     cartId: string;
-  //     expiresAt: string;
-  //   }>(lockKey);
-
-  //   if (existingLock && existingLock.cartId !== cartId) {
-  //     throw new ConflictException('This booking time is currently locked by another checkout session.');
-  //   }
-
-  //   const lockToken = randomUUID();
-  //   const expiresAt = new Date(Date.now() + this.lockTtlMs).toISOString();
-
-  //   await this.cacheManager.set(
-  //     lockKey,
-  //     {
-  //       lockToken,
-  //       cartId,
-  //       locationId,
-  //       startAt,
-  //       serviceVariationIds,
-  //       expiresAt,
-  //     },
-  //     this.lockTtlMs,
-  //   );
-
-  //   return {
-  //     status: 'LOCKED',
-  //     lockToken,
-  //     cartId,
-  //     expiresAt,
-  //   };
-  // }
 
   async lockTimeSlot(
     locationId: string,
     startAt: string,
     cartId: string,
     serviceVariationIds: string[],
-    teamMemberId?: string, // Recommended to verify true availability
+    teamMemberId?: string,
   ) {
     const lockKey = this.getLockKey(locationId, startAt);
 
-    // 1. Check if an active session already claims this slot locally
-    const existingLock = await this.cacheManager.get<{
-      lockToken: string;
-      cartId: string;
-      expiresAt: string;
-    }>(lockKey);
+    // 1. Fetch existing lock from Redis
+    const rawLock = await this.redis.get(lockKey);
+    let existingLock: any = null;
 
-    // Fetch the raw wrapper from the in-memory store
-    const rawRecord = await this.cacheManager.get(lockKey);
-    console.log('Raw cache record:', rawRecord);
-
-    const ttlRemaining = await this.cacheManager.ttl(lockKey);
-    console.log('TTL remaining for lock key:', ttlRemaining);
-
-    if (existingLock && existingLock.cartId !== cartId) {
-      throw new ConflictException('This booking time is currently locked by another checkout session.');
+    if (rawLock) {
+      try {
+        existingLock = JSON.parse(rawLock);
+      } catch (e) {
+        this.logger.error('Failed to parse redis lock string payload', e);
+      }
     }
 
-    if (existingLock && existingLock.cartId === cartId) {
-      // If the same cart is trying to lock again, show a error to prevent accidental double-locking
-      throw new ConflictException('This booking time is already locked by your current session.');
+    if (existingLock) {
+      if (existingLock.cartId !== cartId) {
+        throw new ConflictException('This booking time is currently locked by another checkout session.');
+      }
+      if (existingLock.cartId === cartId) {
+        throw new ConflictException('This booking time is already locked by your current session.');
+      }
     }
 
     try {
       // 2. Validate against Square's real-time calendar availability engine
       const requestedTime = new Date(startAt);
-
-      // Search availability requires a time range filter (must be at least 24 hours long)
-      const startRangeMin = new Date(requestedTime.getTime() - 60 * 60 * 1000).toISOString(); // 1 hr before
-      const startRangeMax = new Date(requestedTime.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days window
+      const startRangeMin = new Date(requestedTime.getTime() - 60 * 60 * 1000).toISOString();
+      const startRangeMax = new Date(requestedTime.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
       const availabilityResponse = await this.squareClient.bookings.searchAvailability({
         query: {
           filter: {
-            startAtRange: {
-              startAt: startRangeMin,
-              endAt: startRangeMax,
-            },
+            startAtRange: { startAt: startRangeMin, endAt: startRangeMax },
             locationId,
             segmentFilters: serviceVariationIds.map((id) => ({
               serviceVariationId: id,
-              teamMemberId: teamMemberId || undefined, // Filters explicitly for a specific staff member if passed
+              teamMemberId: teamMemberId || undefined,
             })),
           },
         },
       });
 
       const availableSlots = availabilityResponse.availabilities ?? [];
-
-      // 3. Confirm Square considers the exact timestamp open
       const isSlotAvailable = availableSlots.some(
         (slot: any) => new Date(slot.startAt).getTime() === requestedTime.getTime()
       );
@@ -534,29 +405,27 @@ export class SquareUpBookingService {
       if (!isSlotAvailable) {
         throw new ConflictException('The requested time slot is no longer available in the master calendar schedule.');
       }
-
     } catch (error) {
       this.logger.error('Availability check failed during lock initialization:', error);
       if (error instanceof ConflictException) throw error;
       throw new BadRequestException('Could not verify calendar slot status with the booking server.');
     }
 
-    // 4. Time slot is authenticated and free -> apply cache lock
+    // 4. Time slot is authenticated and free -> apply atomic Redis TTL lock
     const lockToken = randomUUID();
     const expiresAt = new Date(Date.now() + this.lockTtlMs).toISOString();
 
-    await this.cacheManager.set(
-      lockKey,
-      {
-        lockToken,
-        cartId,
-        locationId,
-        startAt,
-        serviceVariationIds,
-        expiresAt,
-      },
-      this.lockTtlMs,
-    );
+    const lockData = {
+      lockToken,
+      cartId,
+      locationId,
+      startAt,
+      serviceVariationIds,
+      expiresAt,
+    };
+
+    // 'PX' sets the TTL specifically in milliseconds via ioredis
+    await this.redis.set(lockKey, JSON.stringify(lockData), 'PX', this.lockTtlMs);
 
     return {
       status: 'LOCKED',
@@ -569,7 +438,8 @@ export class SquareUpBookingService {
   async releaseLock(locationId: string, startAt: string, lockToken: string) {
     const lockKey = this.getLockKey(locationId, startAt);
     await this.assertLockOwnership(lockKey, lockToken);
-    await this.cacheManager.del(lockKey);
+
+    await this.redis.del(lockKey);
 
     return {
       status: 'RELEASED',
@@ -578,273 +448,19 @@ export class SquareUpBookingService {
     };
   }
 
-  /**
-   * 
-   * @param payload 
-   * @returns 
-   * 
-   * 1. In Your Sandbox / Testing Environment
-    If your SquareClient configuration is pointing to SquareEnvironment.Sandbox, you can pass a standard testing token explicitly to bypass the frontend SDK framework:
+  private async assertLockOwnership(lockKey: string, lockToken: string) {
+    const rawLock = await this.redis.get(lockKey);
+    if (!rawLock) {
+      throw new ConflictException('Booking lock expired. Recheck availability and lock again.');
+    }
 
-    Use "cnon:card-nonce-ok" to simulate a successful standard payment.
-    Use "cnon:card-nonce-declined" to test your rollback and failure handler logic.
-   */
-  // async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
-  //   const lockKey = this.getLockKey(payload.locationId, payload.startAt);
-  //   let createdBookingId: string | undefined;
-
-  //   try {
-  //     await this.assertLockOwnership(lockKey, payload.lockToken);
-
-  //     // 1. RESOLVE OR CREATE CUSTOMER ID (Crucial step to resolve the 'customer_id not found' error)
-  //     let customerId: string | undefined;
-
-  //     if (!customerId && payload.customerEmail) {
-  //       // Search for an existing customer using their email address
-  //       const searchResponse = await this.squareClient.customers.search({
-  //         query: {
-  //           filter: {
-  //             emailAddress: {
-  //               exact: payload.customerEmail,
-  //             },
-  //           },
-  //         },
-  //       });
-
-  //       if (searchResponse.customers && searchResponse.customers.length > 0) {
-  //         customerId = searchResponse.customers[0].id;
-  //       } else {
-  //         // If the customer does not exist, create a new customer profile
-  //         const createCustomerResponse = await this.squareClient.customers.create({
-  //           idempotencyKey: randomUUID(),
-  //           givenName: payload.customerName?.split(' ')[0] || 'Guest',
-  //           familyName: payload.customerName?.split(' ').slice(1).join(' ') || 'User',
-  //           emailAddress: payload.customerEmail,
-  //           phoneNumber: payload.customerPhone,
-  //         });
-  //         customerId = createCustomerResponse.customer?.id;
-  //       }
-  //     }
-
-  //     if (!customerId) {
-  //       throw new BadRequestException('A valid customer account or profile details are required to complete a booking.');
-  //     }
-
-  //     const appointmentSegments = payload.cartItems.map((item) => ({
-  //       serviceVariationId: item.serviceVariationId,
-  //       serviceVariationVersion: item.serviceVariationVersion
-  //         ? BigInt(item.serviceVariationVersion)
-  //         : undefined,
-  //       teamMemberId: item.teamMemberId,
-  //       durationMinutes: item.durationMinutes,
-  //     }));
-
-  //     const bookingResponse = await this.squareClient.bookings.create({
-  //       idempotencyKey: randomUUID(),
-  //       booking: {
-  //         startAt: payload.startAt,
-  //         locationId: payload.locationId,
-  //         customerId: customerId,
-  //         customerNote: JSON.stringify(payload.customFields ?? {}),
-  //         appointmentSegments,
-  //       },
-  //     });
-
-  //     createdBookingId = bookingResponse.booking?.id;
-
-  //     const paymentResponse = await this.squareClient.payments.create({
-  //       sourceId: payload.sourceId,
-  //       idempotencyKey: randomUUID(),
-  //       amountMoney: {
-  //         amount: BigInt(payload.depositAmountInCents),
-  //         currency: 'USD',
-  //       },
-  //       locationId: payload.locationId,
-  //       autocomplete: true,
-  //       referenceId: createdBookingId,
-  //       note: `Deposit for booking ${createdBookingId}`,
-  //     });
-
-  //     // await this.cacheManager.del(lockKey);
-
-  //     return this.toJsonSafe({
-  //       booking: bookingResponse.booking,
-  //       payment: paymentResponse.payment,
-  //       customer: {
-  //         name: payload.customerName,
-  //         email: payload.customerEmail,
-  //         phone: payload.customerPhone,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     this.logger.error('Error during booking confirmation:', error);
-  //     if (createdBookingId) {
-  //       try {
-  //         const getBooking = await this.squareClient.bookings.get({ bookingId: createdBookingId });
-  //         await this.squareClient.bookings.cancel({
-  //           bookingId: createdBookingId,
-  //           idempotencyKey: randomUUID(),
-  //           bookingVersion: Number(getBooking.booking?.version ?? 0),
-  //         });
-  //       } catch {
-  //         // swallow rollback error and surface original checkout failure
-  //       }
-  //     }
-
-  //     this.handleSquareError(error);
-  //   }
-  // }
-
-  // async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
-  //   const lockKey = this.getLockKey(payload.locationId, payload.startAt);
-  //   let createdBookingId: string | undefined;
-
-  //   try {
-  //     await this.assertLockOwnership(lockKey, payload.lockToken);
-
-  //     const cachedLockData = await this.cacheManager.get<{ startAt: string }>(lockKey);
-  //     if (!cachedLockData || cachedLockData.startAt !== payload.startAt) {
-  //       throw new BadRequestException('Tampering detected: Payload time slot does not match locked slot.');
-  //     }
-
-  //     // 1. RESOLVE OR CREATE CUSTOMER ID
-  //     let customerId: string | undefined;
-  //     if (payload.customerEmail) {
-  //       const searchResponse = await this.squareClient.customers.search({
-  //         query: {
-  //           filter: {
-  //             emailAddress: { exact: payload.customerEmail },
-  //           },
-  //         },
-  //       });
-
-  //       if (searchResponse.customers && searchResponse.customers.length > 0) {
-  //         customerId = searchResponse.customers[0].id;
-  //       } else {
-  //         const createCustomerResponse = await this.squareClient.customers.create({
-  //           idempotencyKey: randomUUID(),
-  //           givenName: payload.customerName?.split(' ')[0] || 'Guest',
-  //           familyName: payload.customerName?.split(' ').slice(1).join(' ') || 'User',
-  //           emailAddress: payload.customerEmail,
-  //           phoneNumber: payload.customerPhone,
-  //         });
-  //         customerId = createCustomerResponse.customer?.id;
-  //       }
-  //     }
-
-  //     if (!customerId) {
-  //       throw new BadRequestException('A valid customer profile is required.');
-  //     }
-
-  //     // 2. SECURE BACKEND VALIDATION: Fetch actual catalog definitions to prevent price/duration injection
-  //     const variationIds = payload.cartItems.map((item) => item.serviceVariationId);
-
-  //     const catalogResponse = await this.squareClient.catalog.batchGet({
-  //       objectIds: variationIds,
-  //     });
-
-  //     const fetchedObjects = catalogResponse.objects ?? [];
-
-  //     // Create an easily queryable map of our immutable source data
-  //     const catalogMap = new Map<string, any>(
-  //       fetchedObjects.map((obj) => [obj.id, obj])
-  //     );
-
-  //     let calculatedTotalCostCents = 0;
-
-  //     // 3. GENERATE APPOINTMENT SEGMENTS SECURELY
-  //     const appointmentSegments = payload.cartItems.map((item) => {
-  //       const catalogVariation = catalogMap.get(item.serviceVariationId);
-
-  //       this.logger.debug(`Catalog variation fetched for ID ${item.serviceVariationId}: ${this.toJsonSafe(catalogVariation)}`);
-
-  //       if (!catalogVariation || catalogVariation.type !== 'ITEM_VARIATION') {
-  //         throw new BadRequestException(`The service variation ID ${item.serviceVariationId} is invalid or no longer exists.`);
-  //       }
-
-  //       const variationData = catalogVariation.itemVariationData;
+    const lock = JSON.parse(rawLock);
+    if (lock.lockToken !== lockToken) {
+      throw new ConflictException('Invalid lock token for this booking time slot.');
+    }
+  }
 
 
-
-  //       // Extract backend duration (Convert Milliseconds to Minutes)
-  //       const backendDurationMinutes = variationData?.serviceDuration
-  //         ? Number(variationData.serviceDuration) / 60000
-  //         : 30; // fallback default if not populated
-
-  //       // Track backend price for security audit / deposit evaluation
-  //       const backendPriceCents = Number(variationData?.priceMoney?.amount ?? 0);
-  //       calculatedTotalCostCents += backendPriceCents;
-
-  //       return {
-  //         serviceVariationId: item.serviceVariationId,
-  //         serviceVariationVersion: catalogVariation.version, // Use fresh master version from DB
-  //         teamMemberId: item.teamMemberId,
-  //         durationMinutes: backendDurationMinutes, // Enforced backend source of truth
-  //       };
-  //     });
-
-  //     // 4. SECURE DEPOSIT ENFORCEMENT
-  //     if (calculatedTotalCostCents <= 0) {
-  //       throw new BadRequestException('Invalid deposit calculation metrics detected.');
-  //     }
-
-  //     // 5. COMMENCE UPSTREAM ENTITY CREATION
-  //     const bookingResponse = await this.squareClient.bookings.create({
-  //       idempotencyKey: randomUUID(),
-  //       booking: {
-  //         startAt: payload.startAt,
-  //         locationId: payload.locationId,
-  //         customerId: customerId,
-  //         customerNote: payload.customerNote ?? '',
-  //         appointmentSegments,
-  //       },
-  //     });
-
-  //     createdBookingId = bookingResponse.booking?.id;
-
-  //     // 6. PROCESS CHARGE USING VERIFIED VALUE
-  //     const paymentResponse = await this.squareClient.payments.create({
-  //       sourceId: payload.sourceId,
-  //       idempotencyKey: randomUUID(),
-  //       amountMoney: {
-  //         amount: BigInt(calculatedTotalCostCents), // Secure value applied
-  //         currency: 'USD',
-  //       },
-  //       locationId: payload.locationId,
-  //       autocomplete: true,
-  //       referenceId: createdBookingId,
-  //       note: `Secure deposit for booking ${createdBookingId}`,
-  //     });
-
-  //     return this.toJsonSafe({
-  //       booking: bookingResponse.booking,
-  //       payment: paymentResponse.payment,
-  //       customer: {
-  //         name: payload.customerName,
-  //         email: payload.customerEmail,
-  //         phone: payload.customerPhone,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     this.logger.error('Secure booking orchestration failure:', error);
-
-  //     // Exact auto-rollback handling if payment fails but booking was already registered
-  //     if (createdBookingId) {
-  //       try {
-  //         const getBooking = await this.squareClient.bookings.get({ bookingId: createdBookingId });
-  //         await this.squareClient.bookings.cancel({
-  //           bookingId: createdBookingId,
-  //           idempotencyKey: randomUUID(),
-  //           bookingVersion: Number(getBooking.booking?.version ?? 0),
-  //         });
-  //       } catch {
-  //         // Suppress rollback failure to bubble original checkout execution error
-  //       }
-  //     }
-
-  //     this.handleSquareError(error);
-  //   }
-  // }
 
   async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
     const lockKey = this.getLockKey(payload.locationId, payload.startAt);
@@ -855,7 +471,8 @@ export class SquareUpBookingService {
     try {
       await this.assertLockOwnership(lockKey, payload.lockToken);
 
-      const cachedLockData = await this.cacheManager.get<{ startAt: string }>(lockKey);
+      const rawCachedLockData = await this.redis.get(lockKey);
+      const cachedLockData = rawCachedLockData ? JSON.parse(rawCachedLockData) : null;
       if (!cachedLockData || cachedLockData.startAt !== payload.startAt) {
         throw new BadRequestException('Tampering detected: Payload time slot does not match locked slot.');
       }
@@ -980,7 +597,7 @@ export class SquareUpBookingService {
       }
 
       // Evict cache lock immediately on success
-      await this.cacheManager.del(lockKey).catch(() => { });
+      await this.redis.del(lockKey).catch(() => { });
 
       return this.toJsonSafe({
         booking: bookingResponse.booking,
@@ -1058,7 +675,7 @@ export class SquareUpBookingService {
         feePayment = payment.payment;
       }
 
-      await this.cacheManager.del(lockKey);
+      await this.redis.del(lockKey);
 
       return this.toJsonSafe({
         booking: updated.booking,
@@ -1156,16 +773,6 @@ export class SquareUpBookingService {
     return `lock:${locationId}:${startAt}`;
   }
 
-  private async assertLockOwnership(lockKey: string, lockToken: string) {
-    const lock = await this.cacheManager.get<{ lockToken: string; expiresAt: string }>(lockKey);
-    if (!lock) {
-      throw new ConflictException('Booking lock expired. Recheck availability and lock again.');
-    }
-
-    if (lock.lockToken !== lockToken) {
-      throw new ConflictException('Invalid lock token for this booking time slot.');
-    }
-  }
 
   private isVariationAvailableAtLocation(variation: any, locationId?: string) {
     if (!locationId) {
