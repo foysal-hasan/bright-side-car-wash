@@ -19,6 +19,7 @@ import { GetServicesQueryDto } from './dto/get-services-query.dto';
 import { DepositStatus, LeadPriority, PaymentStatus } from 'src/generated/prisma/enums';
 import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
+import { MailService } from 'src/mail/mail.service';
 
 
 @Injectable()
@@ -30,6 +31,7 @@ export class SquareUpBookingService {
   constructor(
     @InjectRedis() private readonly redis: Redis,
     private prisma: PrismaService,
+    private readonly mailService: MailService,
   ) {
     this.squareClient = new SquareClient({
       token: appConfig().square.accessToken,
@@ -461,7 +463,7 @@ export class SquareUpBookingService {
   }
 
 
-
+// cnon:card-nonce-ok for test sendbox payment
   async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
     const lockKey = this.getLockKey(payload.locationId, payload.startAt);
     let createdBookingId: string | undefined;
@@ -594,6 +596,18 @@ export class SquareUpBookingService {
       // 6. PROCESS SUCCESSFUL CONVERSION (Isolated Function)
       if (createdLeadId) {
         await this.handleLeadConversion(createdLeadId, createdBookingId, paymentResponse.payment?.id, calculatedTotalCostCents, 'USD');
+      }
+
+      if (payload.customerEmail && createdBookingId) {
+        await this.mailService.sendBookingConfirmationEmail({
+          to: payload.customerEmail,
+          customerName: payload.customerName,
+          bookingId: createdBookingId,
+          startAt: payload.startAt,
+          services: serviceNamesArray,
+          totalCostCents: calculatedTotalCostCents,
+          currency: 'USD',
+        });
       }
 
       // Evict cache lock immediately on success

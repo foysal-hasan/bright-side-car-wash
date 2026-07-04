@@ -67,6 +67,17 @@ export class MailProcessor extends WorkerHost {
           });
           break;
 
+        case 'sendBookingConfirmationEmail':
+          this.logger.log('Sending booking confirmation email');
+          await this.mailerService.sendMail({
+            to: job.data.to,
+            from: job.data.from,
+            subject: job.data.subject,
+            template: job.data.template,
+            context: job.data.context,
+          });
+          break;
+
         case 'sendSmsOtpCode':
           this.logger.log('Sending SMS OTP code');
         // console.log("SMS OTP code => ", job.data.otp);

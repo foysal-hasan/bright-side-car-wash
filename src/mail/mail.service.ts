@@ -110,6 +110,41 @@ export class MailService {
     }
   }
 
+  async sendBookingConfirmationEmail(params: {
+    to: string;
+    customerName: string;
+    bookingId: string;
+    startAt: string;
+    services: string[];
+    totalCostCents: number;
+    currency?: string;
+  }) {
+    try {
+      const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
+      const subject = `Booking Confirmed - ${appConfig().app.name}`;
+
+      await this.queue.add('sendBookingConfirmationEmail', {
+        to: params.to,
+        from,
+        subject,
+        template: 'booking-confirmation',
+        context: {
+          customerName: params.customerName,
+          bookingId: params.bookingId,
+          startAt: params.startAt,
+          services: params.services,
+          totalAmount: (params.totalCostCents / 100).toFixed(2),
+          currency: params.currency ?? 'USD',
+          appName: appConfig().app.name,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue booking confirmation email to ${params.to}: ${error?.message ? error.message : error}`,
+      );
+    }
+  }
+
    async sendSmsOtpCode(to: string, otp: string) {
     try {
       await this.queue.add('sendSmsOtpCode', {
