@@ -105,7 +105,7 @@ export class MailService {
           verificationLink,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(`Failed to queue verification link email to ${params.email}: ${error?.message ? error.message : error}`);
     }
   }

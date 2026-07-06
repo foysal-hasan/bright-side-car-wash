@@ -1,9 +1,12 @@
-import { Controller, Get, Post, Body, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ReportsService } from '../services/lead.service';
 import { DynamicStageReportDto, SourceBreakdownDto, StageBreakdownDto } from '../dto/lead-converstion-reports.dto';
-import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
 @ApiTags('Admin Lead Reports')
+@ApiBearerAuth() 
+@UseGuards(JwtAuthGuard) 
 @Controller('admin/reports/leads')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}

@@ -1,10 +1,15 @@
-import { Controller, Get, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { CampaignReportsService } from '../services/campaign.service';
 import { CampaignHighlightsQueryDto, CampaignReportTableQueryDto } from '../dto/campaign-reports.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 
 @ApiTags('Admin Campaign Performance Reports') // Groups endpoints together in Swagger UI
+@ApiBearerAuth() 
+@UseGuards(JwtAuthGuard) 
 @Controller('admin/reports/campaigns')
 export class CampaignReportsController {
   constructor(private readonly campaignReportsService: CampaignReportsService) {}

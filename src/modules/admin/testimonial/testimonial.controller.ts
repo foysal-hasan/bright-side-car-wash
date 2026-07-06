@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Put, Param, Delete, Get, UseInterceptors, UploadedFile, Query, Patch, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
 import { TestimonialService } from './testimonial.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
@@ -15,6 +15,7 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 
 @ApiTags('Admin / Testimonials')
+@ApiBearerAuth()
 @Controller('admin/testimonials')
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @UseInterceptors(TransformResponseInterceptor)

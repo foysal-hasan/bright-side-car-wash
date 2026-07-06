@@ -29,9 +29,9 @@ async function bootstrap() {
     exclude: ['/', '/health', '/stripe/onboarding/refresh', '/stripe/onboarding/return'],
   });
 
-   // Get origins from config service
+  // Get origins from config service
   const corsOrigins = appConfig().app.cross_origins?.split(',') || [];
-  
+
   app.enableCors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, postman)
@@ -53,7 +53,10 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
-  app.use(helmet());
+  app.use(helmet({
+    crossOriginResourcePolicy: false,
+  }));
+
   // Enable it, if special charactrers not encoding perfectly
   // app.use((req, res, next) => {
   //   // Only force content-type for specific API routes, not Swagger or assets
@@ -112,7 +115,7 @@ async function bootstrap() {
     .addTag(`${process.env.APP_NAME}`)
     .addBearerAuth()
     .build();
-  
+
   const document = SwaggerModule.createDocument(app, options, {
     ignoreGlobalPrefix: false,
   });
