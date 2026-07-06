@@ -14,7 +14,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MailService } from 'src/mail/mail.service';
 
 @ApiTags('Square Booking API')
-@Controller('api/appointments')
+@Controller('appointments')
 export class SquareBookingController {
   constructor(
     private readonly bookingService: SquareUpBookingService,

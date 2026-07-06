@@ -4,7 +4,7 @@ import { GalleryService } from './gallery.service';
 import { TransformResponseInterceptor } from 'src/common/interceptors/response.interceptor';
 
 @ApiTags('Application / Public Gallery')
-@Controller('application/gallery')
+@Controller('gallery')
 @UseInterceptors(TransformResponseInterceptor)
 export class AppGalleryController {
   constructor(private readonly galleryService: GalleryService) {}

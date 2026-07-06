@@ -8,7 +8,7 @@ import { TransformResponseInterceptor } from 'src/common/interceptors/response.i
 
 @ApiTags('Application / Testimonials')
 @UseInterceptors(TransformResponseInterceptor)
-@Controller('application/testimonials')
+@Controller('testimonials')
 export class TestimonialController {
   constructor(private readonly testimonialService: TestimonialService) { }
 
