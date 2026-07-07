@@ -15,6 +15,7 @@ import { GalleryModule } from './gallery/gallery.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { PaymentTransactionModule } from './payment-transaction/payment-transaction.module';
 import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
+import { SectionsAdminModule } from './sections/sections.admin.module';
 
 
 @Module({
@@ -34,6 +35,7 @@ import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
     TestimonialModule,
     PaymentTransactionModule,
     NewsAndEventsModule,
+    SectionsAdminModule,
     NotificationModule,
   ],
 })

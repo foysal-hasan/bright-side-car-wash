@@ -259,6 +259,32 @@ model Conversation {
   @@map("conversations")
 }
 
+model Section {
+  id           String   @id @default(cuid())
+  section_key  String   @unique
+  section_type String
+  content      Json
+  is_active    Boolean  @default(true)
+  sort_order   Int      @default(0)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@index([section_key])
+  @@index([is_active, sort_order])
+}
+
+model MediaFile {
+  id         String   @id @default(cuid())
+  filename   String
+  path       String
+  mime_type  String
+  size       Int
+  created_at DateTime @default(now())
+
+  @@index([filename])
+  @@index([mime_type])
+}
+
 // ---------End Chat schema---------
 
 model SocialMedia {

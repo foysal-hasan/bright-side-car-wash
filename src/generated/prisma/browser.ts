@@ -73,6 +73,16 @@ export type Attachment = Prisma.AttachmentModel
  */
 export type Conversation = Prisma.ConversationModel
 /**
+ * Model Section
+ * 
+ */
+export type Section = Prisma.SectionModel
+/**
+ * Model MediaFile
+ * 
+ */
+export type MediaFile = Prisma.MediaFileModel
+/**
  * Model SocialMedia
  * 
  */

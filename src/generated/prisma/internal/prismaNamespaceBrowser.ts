@@ -62,6 +62,8 @@ export const ModelName = {
   Message: 'Message',
   Attachment: 'Attachment',
   Conversation: 'Conversation',
+  Section: 'Section',
+  MediaFile: 'MediaFile',
   SocialMedia: 'SocialMedia',
   WebsiteInfo: 'WebsiteInfo',
   ActivityLog: 'ActivityLog',
@@ -268,6 +270,32 @@ export const ConversationScalarFieldEnum = {
 } as const
 
 export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const SectionScalarFieldEnum = {
+  id: 'id',
+  section_key: 'section_key',
+  section_type: 'section_type',
+  content: 'content',
+  is_active: 'is_active',
+  sort_order: 'sort_order',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type SectionScalarFieldEnum = (typeof SectionScalarFieldEnum)[keyof typeof SectionScalarFieldEnum]
+
+
+export const MediaFileScalarFieldEnum = {
+  id: 'id',
+  filename: 'filename',
+  path: 'path',
+  mime_type: 'mime_type',
+  size: 'size',
+  created_at: 'created_at'
+} as const
+
+export type MediaFileScalarFieldEnum = (typeof MediaFileScalarFieldEnum)[keyof typeof MediaFileScalarFieldEnum]
 
 
 export const SocialMediaScalarFieldEnum = {
@@ -595,6 +623,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: 'JsonNull'
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const NullableJsonNullValueInput = {

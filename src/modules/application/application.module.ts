@@ -5,6 +5,7 @@ import { GalleryModule } from './gallery/gallery.module';
 import { TestimonialModule } from './testimonial/testimonial.module';
 import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
 import { QuoteModule } from './quote/quote.module';
+import { PagesApplicationModule } from './pages/pages.application.module';
 
 
 @Module({
@@ -14,7 +15,8 @@ import { QuoteModule } from './quote/quote.module';
   GalleryModule,
   TestimonialModule,
   NewsAndEventsModule,
-  QuoteModule
+  QuoteModule,
+  PagesApplicationModule,
 ],
 })
 export class ApplicationModule {}
