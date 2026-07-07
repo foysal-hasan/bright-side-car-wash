@@ -19,9 +19,9 @@ export class CreateSectionAdminDto {
   @IsString()
   @IsNotEmpty()
   @Matches(/^[a-z0-9_\-]+$/i, {
-    message: 'sectionKey may only contain letters, numbers, underscores, and dashes',
+    message: 'section_key may only contain letters, numbers, underscores, and dashes',
   })
-  sectionKey: string;
+  section_key: string;
 
   @ApiProperty({
     description: 'Section renderer/type identifier',
@@ -29,7 +29,7 @@ export class CreateSectionAdminDto {
   })
   @IsString()
   @IsNotEmpty()
-  sectionType: string;
+  section_type: string;
 
   @ApiProperty({
     description: 'Arbitrary JSON object used by the frontend section renderer',
@@ -59,7 +59,7 @@ export class CreateSectionAdminDto {
   @IsOptional()
   @Type(() => Boolean)
   @IsBoolean()
-  isActive?: boolean = true;
+  is_active?: boolean = true;
 
   @ApiPropertyOptional({
     description: 'Order within a page response',
@@ -70,5 +70,5 @@ export class CreateSectionAdminDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  sortOrder?: number = 0;
+  sort_order?: number = 0;
 }
