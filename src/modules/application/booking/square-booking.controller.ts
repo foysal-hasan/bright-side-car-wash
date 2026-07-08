@@ -10,8 +10,9 @@ import { ReleaseLockDto } from './dto/release-lock.dto';
 import { CreateBookableServiceDto } from './dto/create-service.dto';
 import { GetServicesQueryDto } from './dto/get-services-query.dto';
 import appConfig from 'src/config/app.config';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MailService } from 'src/mail/mail.service';
+import { GetTaxesDto } from './dto/get-taxes.dto';
 
 @ApiTags('Square Booking API')
 @Controller('appointments')
@@ -143,6 +144,19 @@ export class SquareBookingController {
       data: release,
     };
   }
+
+  // // Get Taxes by varitants ids
+  // @ApiOperation({ summary: 'Get taxes for selected service variation IDs' })
+  // @Post('taxes')
+  // @HttpCode(HttpStatus.OK)
+  // async getTaxes(@Body() body: GetTaxesDto) {
+  //   const taxes = await this.bookingService.getTaxes(body.locationId, body.serviceVariationIds);
+  //   return {
+  //     success: true,
+  //     message: 'Taxes retrieved successfully',
+  //     data: taxes,
+  //   };
+  // }
 
   // 7. Checkout: charge + create booking
   @ApiOperation({ summary: 'Confirm booking and process payment' })

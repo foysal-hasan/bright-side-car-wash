@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { SquareClient, SquareEnvironment, SquareError } from 'square';
+import { Currency, SquareClient, SquareEnvironment, SquareError } from 'square';
 import appConfig from 'src/config/app.config';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { randomUUID } from 'crypto';
@@ -293,14 +293,18 @@ export class SquareUpBookingService {
 
       const subtotalInCents = cartItems.reduce((sum, item) => sum + item.priceInCents, 0);
       const totalDurationMinutes = cartItems.reduce((sum, item) => sum + item.durationMinutes, 0);
+      const totals = await this.calculateOrderTotals(locationId, serviceVariationIds);
 
       return this.toJsonSafe({
         locationId,
         items: cartItems,
+        taxes: totals.order?.taxes ?? [],
         summary: {
           subtotalInCents,
+          taxInCents: totals.taxInCents,
+          totalInCents: totals.totalInCents > 0 ? totals.totalInCents : subtotalInCents + totals.taxInCents,
           totalDurationMinutes,
-          currency: cartItems[0]?.currency ?? 'USD',
+          currency: totals.currency || cartItems[0]?.currency || 'USD',
         },
       });
     } catch (error) {
@@ -463,12 +467,39 @@ export class SquareUpBookingService {
   }
 
 
+  async getTaxes(locationId: string, serviceVariationIds: string[]) {
+    try {
+      const totals = await this.calculateOrderTotals(locationId, serviceVariationIds);
+
+      this.logger.debug(
+        `Calculated taxes for variations: ${serviceVariationIds.join(', ')} => ${JSON.stringify(
+          this.toJsonSafe(totals.order),
+        )}`,
+      );
+
+      return this.toJsonSafe({
+        data: totals.order?.taxes ?? [],
+        summary: {
+          subtotalInCents: totals.subtotalInCents,
+          taxInCents: totals.taxInCents,
+          totalInCents: totals.totalInCents,
+          currency: totals.currency,
+        },
+      });
+    } catch (error) {
+      this.handleSquareError(error);
+    }
+  }
+
 // cnon:card-nonce-ok for test sendbox payment
   async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
     const lockKey = this.getLockKey(payload.locationId, payload.startAt);
     let createdBookingId: string | undefined;
     let createdLeadId: string | undefined;
+    let calculatedSubtotalCostCents = 0;
+    let calculatedTaxCostCents = 0;
     let calculatedTotalCostCents = 0;
+    let calculatedCurrency: Currency = Currency.Usd;
 
     try {
       await this.assertLockOwnership(lockKey, payload.lockToken);
@@ -547,7 +578,7 @@ export class SquareUpBookingService {
           serviceNamesArray.push(`${parentName} (${variationName}) - (${backendDurationMinutes} min)`);
         }
 
-        calculatedTotalCostCents += Number(variationData?.priceMoney?.amount ?? 0);
+        calculatedSubtotalCostCents += Number(variationData?.priceMoney?.amount ?? 0);
 
         return {
           serviceVariationId: item.serviceVariationId,
@@ -557,12 +588,29 @@ export class SquareUpBookingService {
         };
       });
 
-      if (calculatedTotalCostCents <= 0) {
+      if (calculatedSubtotalCostCents <= 0) {
         throw new BadRequestException('Invalid deposit calculation metrics detected.');
       }
 
+      const totals = await this.calculateOrderTotals(payload.locationId, variationIds);
+      calculatedTaxCostCents = totals.taxInCents;
+      calculatedTotalCostCents = totals.totalInCents > 0
+        ? totals.totalInCents
+        : calculatedSubtotalCostCents + calculatedTaxCostCents;
+      calculatedCurrency = totals.currency;
+
+      if (calculatedTotalCostCents <= 0) {
+        throw new BadRequestException('Invalid total charge calculation metrics detected.');
+      }
+
       // 3. PERSIST INITIAL INTENT (Isolated Function)
-      createdLeadId = await this.createInitialLead(payload, serviceNamesArray, calculatedTotalCostCents);
+      createdLeadId = await this.createInitialLead(
+        payload,
+        serviceNamesArray,
+        calculatedTotalCostCents,
+        calculatedCurrency,
+        calculatedTaxCostCents,
+      );
 
       // 4. COMMENCE UPSTREAM ENTITY CREATION IN SQUARE
       const bookingResponse = await this.squareClient.bookings.create({
@@ -584,18 +632,25 @@ export class SquareUpBookingService {
         idempotencyKey: randomUUID(),
         amountMoney: {
           amount: BigInt(calculatedTotalCostCents),
-          currency: 'USD',
+          currency: calculatedCurrency,
         },
         locationId: payload.locationId,
         autocomplete: true,
         referenceId: createdBookingId,
-        note: `Secure deposit for booking ${createdBookingId}`,
+        note: `Secure deposit for booking ${createdBookingId} (subtotal: ${(calculatedSubtotalCostCents / 100).toFixed(2)}, tax: ${(calculatedTaxCostCents / 100).toFixed(2)})`,
       });
 
 
       // 6. PROCESS SUCCESSFUL CONVERSION (Isolated Function)
       if (createdLeadId) {
-        await this.handleLeadConversion(createdLeadId, createdBookingId, paymentResponse.payment?.id, calculatedTotalCostCents, 'USD');
+        await this.handleLeadConversion(
+          createdLeadId,
+          createdBookingId,
+          paymentResponse.payment?.id,
+          calculatedTotalCostCents,
+          calculatedCurrency,
+          calculatedTaxCostCents,
+        );
       }
 
       if (payload.customerEmail && createdBookingId) {
@@ -606,7 +661,7 @@ export class SquareUpBookingService {
           startAt: payload.startAt,
           services: serviceNamesArray,
           totalCostCents: calculatedTotalCostCents,
-          currency: 'USD',
+          currency: calculatedCurrency,
         });
       }
 
@@ -621,13 +676,25 @@ export class SquareUpBookingService {
           email: payload.customerEmail,
           phone: payload.customerPhone,
         },
+        pricing: {
+          subtotalInCents: calculatedSubtotalCostCents,
+          taxInCents: calculatedTaxCostCents,
+          totalInCents: calculatedTotalCostCents,
+          currency: calculatedCurrency,
+        },
       });
     } catch (error) {
       this.logger.error('Secure booking orchestration failure:', error);
 
       // 7. HANDLE DROPPED/FAILED CHECKOUT (Isolated Function)
       if (createdLeadId) {
-        await this.handleLeadFailure(createdLeadId, error, calculatedTotalCostCents, 'USD');
+        await this.handleLeadFailure(
+          createdLeadId,
+          error,
+          calculatedTotalCostCents,
+          calculatedCurrency,
+          calculatedTaxCostCents,
+        );
       }
 
       // Auto-rollback Square booking if payment failed
@@ -843,12 +910,70 @@ export class SquareUpBookingService {
     ) as T;
   }
 
+  private parseMoneyAmount(amount: unknown): number {
+    if (typeof amount === 'number') return amount;
+    if (typeof amount === 'bigint') return Number(amount);
+    if (typeof amount === 'string') {
+      const parsed = Number(amount);
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    return 0;
+  }
+
+  private async calculateOrderTotals(locationId: string, serviceVariationIds: string[]) {
+    const data = await this.squareClient.orders.calculate({
+      order: {
+        locationId,
+        lineItems: serviceVariationIds.map((id) => ({
+          catalogObjectId: id,
+          quantity: '1',
+        })),
+        pricingOptions: {
+          autoApplyTaxes: true,
+        }
+      },
+    });
+
+    const order = data.order;
+    const subtotalInCents = (order?.lineItems ?? []).reduce((sum, item: any) => {
+      const amount = this.parseMoneyAmount(
+        item.grossSalesMoney?.amount ??
+          item.variationTotalPriceMoney?.amount ??
+          item.basePriceMoney?.amount ??
+          0,
+      );
+      return sum + amount;
+    }, 0);
+
+    const taxInCents = this.parseMoneyAmount(
+      order?.totalTaxMoney?.amount ?? order?.netAmounts?.taxMoney?.amount ?? 0,
+    );
+
+    const fallbackTotal = subtotalInCents + taxInCents;
+    const totalInCents = this.parseMoneyAmount(order?.totalMoney?.amount ?? fallbackTotal);
+    const currency =
+      order?.totalMoney?.currency ??
+      order?.totalTaxMoney?.currency ??
+      order?.lineItems?.[0]?.totalMoney?.currency ??
+      'USD';
+
+    return {
+      order,
+      subtotalInCents,
+      taxInCents,
+      totalInCents,
+      currency,
+    };
+  }
+
 
   private async createInitialLead(
     payload: ConfirmBookingDto,
     serviceNames: string[],
     totalCostCents: number,
-    depositCurrency: string = 'USD'
+    depositCurrency: string = 'USD',
+    taxInCents: number = 0,
   ): Promise<string | undefined> {
     if (!payload.customerEmail) {
       this.logger.warn('Skipping unique lead checks because email address is missing.');
@@ -875,6 +1000,8 @@ export class SquareUpBookingService {
       });
 
       const costSummaryText = `$${(totalCostCents / 100).toFixed(2)}`;
+      const taxSummaryText = `$${(taxInCents / 100).toFixed(2)}`;
+      const subtotalSummaryText = `$${((totalCostCents - taxInCents) / 100).toFixed(2)}`;
       const serviceSummary = serviceNames.join(', ') || 'Online Booking Service';
 
       // 3. ATTEMPT TO CREATE A FRESH LEAD
@@ -891,7 +1018,9 @@ export class SquareUpBookingService {
           vehicle: payload.vehicle,
           deposit_amount: totalCostCents,
           deposit_currency: depositCurrency,
-          notes: [`Checkout session initiated via web. Total cost matching variations: ${costSummaryText}`],
+          notes: [
+            `Checkout session initiated via web. Subtotal: ${subtotalSummaryText}, Tax: ${taxSummaryText}, Total: ${costSummaryText}`,
+          ],
           activity_timelines: {
             create: {
               description: `User started checkout for appointment at ${payload.startAt}`,
@@ -913,7 +1042,8 @@ export class SquareUpBookingService {
     bookingId: string | undefined,
     paymentId: string | undefined,
     totalCostCents: number,
-    currency: string = 'USD'
+    currency: string = 'USD',
+    taxInCents: number = 0,
   ): Promise<void> {
     try {
       const currentLead = await this.prisma.lead.findUnique({
@@ -935,7 +1065,7 @@ export class SquareUpBookingService {
           data: {
             deposit_status: DepositStatus.PAID,
             notes: {
-              push: `Payment successful. Square ID: ${paymentId}. Booking ID: ${bookingId}`,
+              push: `Payment successful. Square ID: ${paymentId}. Booking ID: ${bookingId}. Tax: $${(taxInCents / 100).toFixed(2)}.`,
             },
           },
         }),
@@ -973,7 +1103,13 @@ export class SquareUpBookingService {
     }
   }
 
-  private async handleLeadFailure(leadId: string, error: any, totalCostCents: number, currency: string = 'USD'): Promise<void> {
+  private async handleLeadFailure(
+    leadId: string,
+    error: any,
+    totalCostCents: number,
+    currency: string = 'USD',
+    taxInCents: number = 0,
+  ): Promise<void> {
     try {
       const currentLead = await this.prisma.lead.findUnique({
         where: { id: leadId },
@@ -1015,7 +1151,7 @@ export class SquareUpBookingService {
         this.prisma.leadActivityTimeline.create({
           data: {
             lead_id: leadId,
-            description: `Checkout step aborted or failed.`,
+            description: `Checkout step aborted or failed. Tax at failure time: $${(taxInCents / 100).toFixed(2)}.`,
             source: 'SYSTEM_EXCEPTIONS',
           },
         }),
