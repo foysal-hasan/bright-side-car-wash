@@ -1,68 +1,69 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateUserDto } from './create-user.dto';
-import { IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsNotEmpty, IsDateString } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {
+export class UpdateUserDto {
+ 
   @IsOptional()
-  @ApiProperty({
-    description: 'Country',
-    example: 'Nigeria',
+  @ApiPropertyOptional({
+    description: 'First name',
+    example: 'John',
   })
-  country?: string;
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  firstName?: string;
 
   @IsOptional()
-  @ApiProperty({
-    description: 'State',
-    example: 'Lagos',
+  @ApiPropertyOptional({
+    description: 'Last name',
+    example: 'Doe',
   })
-  state?: string;
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => value?.trim())
+  lastName?: string;
 
   @IsOptional()
-  @ApiProperty({
-    description: 'City',
-    example: 'Lagos',
-  })
-  city?: string;
-
-  @IsOptional()
-  @ApiProperty({
-    description: 'Local government',
-    example: 'Lagos',
-  })
-  local_government?: string;
-
-  @IsOptional()
-  @ApiProperty({
-    description: 'Zip code',
-    example: '123456',
-  })
-  zip_code?: string;
-
-  @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Phone number',
     example: '+91 9876543210',
   })
-  phone_number?: string;
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  phoneNumber?: string;
 
   @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Address',
     example: 'New York, USA',
   })
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   address?: string;
 
   @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Gender',
     example: 'male',
   })
+  @IsString()
+  @Transform(({ value }) => value?.trim())
   gender?: string;
 
   @IsOptional()
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Date of birth',
-    example: '14/11/2001',
+    example: '2002-01-01',
   })
-  date_of_birth?: string;
+  @IsString()
+  @Transform(({ value }) => value?.trim())
+  @IsDateString()
+  dateOfBirth?: string;
+
+  @ApiPropertyOptional({
+    description: 'Profile image file',
+    type: 'string',
+    format: 'binary',
+  })
+  image?: File;
 }

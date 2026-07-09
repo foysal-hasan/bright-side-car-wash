@@ -100,7 +100,7 @@ export default () => ({
     package: '/package/',
     destination: '/destination',
     blog: '/blog',
-    avatar: '/avatar',
+    avatar: '/avatar/',
     websiteInfo: '/website-info',
     store: '/store',
     receipt: '/receipt',
@@ -140,6 +140,12 @@ export default () => ({
       email: process.env.SYSTEM_EMAIL,
       password: process.env.SYSTEM_PASSWORD,
     },
+  },
+
+  superUser: {
+    name: process.env.SUPERUSER_NAME,
+    email: process.env.SUPERUSER_EMAIL,
+    password: process.env.SUPERUSER_PASSWORD,
   },
 
   campaign: {

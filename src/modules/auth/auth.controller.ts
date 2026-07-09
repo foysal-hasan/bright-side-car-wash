@@ -16,7 +16,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiExcludeController, ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiExcludeController, ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { memoryStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -425,26 +425,24 @@ export class AuthController {
     //   };
     // }
 
-    @ApiExcludeEndpoint()
     // update user
     @ApiOperation({ summary: 'Update user' })
     @ApiBearerAuth()
+    @ApiConsumes('multipart/form-data')
     @UseGuards(JwtAuthGuard)
     @Patch('update')
     @UseInterceptors(
       FileInterceptor('image', {
-        // storage: diskStorage({
-        //   destination:
-        //     appConfig().storageUrl.rootUrl + appConfig().storageUrl.avatar,
-        //   filename: (req, file, cb) => {
-        //     const randomName = Array(32)
-        //       .fill(null)
-        //       .map(() => Math.round(Math.random() * 16).toString(16))
-        //       .join('');
-        //     return cb(null, `${randomName}${file.originalname}`);
-        //   },
-        // }),
         storage: memoryStorage(),
+        fileFilter: (req, file, cb) => {
+          if (!file.mimetype.startsWith('image/')) {
+            return cb(
+              new BadRequestException('Only image files are allowed!'),
+              false,
+            );
+          }
+          cb(null, true);
+        },
       }),
     )
     async updateUser(
@@ -452,16 +450,9 @@ export class AuthController {
       @Body() data: UpdateUserDto,
       @UploadedFile() image: Express.Multer.File,
     ) {
-      try {
         const user_id = req.user.userId;
         const response = await this.authService.updateUser(user_id, data, image);
         return response;
-      } catch (error) {
-        return {
-          success: false,
-          message: 'Failed to update user',
-        };
-      }
     }
 
     // --------------change password---------

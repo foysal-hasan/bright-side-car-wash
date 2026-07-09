@@ -1,6 +1,7 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
+import { SYSTEM_SUPER_USER_ROLE_NAME } from 'src/common/constants/system-roles';
 import { RedisKeys } from 'src/common/redis/redis-keys';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -152,6 +153,10 @@ async getGroupedPermissions() {
       throw new NotFoundException(`Role with ID "${id}" not found`);
     }
 
+    if (existingRole.name.toLowerCase() === SYSTEM_SUPER_USER_ROLE_NAME.toLowerCase()) {
+      throw new ForbiddenException(`Role "${SYSTEM_SUPER_USER_ROLE_NAME}" is system protected and cannot be edited.`);
+    }
+
     // If name is changing, ensure it doesn't clash with an existing role
     if (name && name !== existingRole.name) {
       const nameClash = await this.prisma.role.findUnique({ where: { name } });
@@ -204,6 +209,10 @@ async getGroupedPermissions() {
 
     if (!existingRole) {
       throw new NotFoundException(`Role with ID "${id}" not found`);
+    }
+
+    if (existingRole.name.toLowerCase() === SYSTEM_SUPER_USER_ROLE_NAME.toLowerCase()) {
+      throw new ForbiddenException(`Role "${SYSTEM_SUPER_USER_ROLE_NAME}" is system protected and cannot be deleted.`);
     }
 
     await this.prisma.role.delete({

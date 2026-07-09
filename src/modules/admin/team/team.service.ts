@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MemberQueryDto } from './dto/member-query.dto';
 import { Prisma } from 'src/generated/prisma/client';
@@ -13,6 +13,18 @@ import appConfig from 'src/config/app.config';
 @Injectable()
 export class TeamService {
   constructor(private readonly prisma: PrismaService, @InjectRedis() private readonly redis: Redis) { }
+
+  private assertNotSuperUser(member: { email?: string | null }) {
+    const superUserEmail = appConfig().superUser?.email?.trim().toLowerCase();
+
+    if (!superUserEmail) {
+      return;
+    }
+
+    if (member.email?.trim().toLowerCase() === superUserEmail) {
+      throw new ForbiddenException('Operation is not allowed for the configured super user account.');
+    }
+  }
 
   /**
    * 1. List of Members
@@ -127,8 +139,13 @@ export class TeamService {
    */
   async changeMemberRolesByName(id: string, dto: ChangeRolesDto) {
     // 1. Verify target user exists
-    const userExists = await this.prisma.user.count({ where: { id, deleted_at: null } });
-    if (!userExists) throw new NotFoundException(`User with ID "${id}" does not exist.`);
+    const targetUser = await this.prisma.user.findFirst({
+      where: { id, deleted_at: null },
+      select: { id: true, email: true },
+    });
+
+    if (!targetUser) throw new NotFoundException(`User with ID "${id}" does not exist.`);
+    this.assertNotSuperUser(targetUser);
 
     // 2. Lookup the roles matching the provided names (Case Insensitive)
     const matchedRoles = await this.prisma.role.findMany({
@@ -181,6 +198,7 @@ export class TeamService {
   async toggleBlockStatus(id: string, block: boolean) {
     const member = await this.prisma.user.findFirst({ where: { id, deleted_at: null } });
     if (!member) throw new NotFoundException(`User with ID "${id}" does not exist.`);
+    this.assertNotSuperUser(member);
 
     // Target status code: 0 for Blocked, 1 for Active Active state
     const targetStatus = block ? 0 : 1;

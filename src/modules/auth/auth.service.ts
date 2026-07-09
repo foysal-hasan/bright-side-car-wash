@@ -1,5 +1,5 @@
 import { randomInt, createHash } from 'crypto';
-import { BadRequestException, ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
@@ -18,11 +18,14 @@ import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { DeviceInfo } from 'src/common/decorator/get-device-info.decorator';
+import { SYSTEM_ADMIN_ROLE_NAME, SYSTEM_SUPER_USER_ROLE_NAME } from 'src/common/constants/system-roles';
+import { RedisKeys } from 'src/common/redis/redis-keys';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
   private readonly forgotPasswordOtpExpirySeconds = 3 * 60;
   private readonly forgotPasswordOtpVerifiedExpirySeconds = 5 * 60;
+  private readonly logger = new Logger(AuthService.name);
 
   constructor(
     private jwtService: JwtService,
@@ -38,6 +41,123 @@ export class AuthService {
     return `forgot_password_otp:${email.trim().toLowerCase()}`;
   }
 
+  async onModuleInit() {
+    await this.ensureSuperUser();
+  }
+
+  private async ensureSuperUser() {
+    const configuredName = appConfig().superUser?.name?.trim();
+    const configuredEmail = appConfig().superUser?.email?.trim().toLowerCase();
+    const configuredPassword = appConfig().superUser?.password;
+
+    if (!configuredEmail || !configuredPassword) {
+      this.logger.warn('SUPERUSER_EMAIL or SUPERUSER_PASSWORD not set; super user bootstrap skipped.');
+      return;
+    }
+
+    const firstName = configuredName?.split(' ')[0] || 'Super';
+    const lastName = configuredName?.split(' ')[1] || 'User';
+    const username = configuredEmail.split('@')[0] || 'superuser';
+    const hashedPassword = await bcrypt.hash(configuredPassword, appConfig().security?.salt ?? 10);
+
+    const adminRole = await this.prisma.role.upsert({
+      where: { name: SYSTEM_ADMIN_ROLE_NAME },
+      update: {},
+      create: {
+        name: SYSTEM_ADMIN_ROLE_NAME,
+        description: 'Full system access',
+      },
+    });
+
+    const superUserRole = await this.prisma.role.upsert({
+      where: { name: SYSTEM_SUPER_USER_ROLE_NAME },
+      update: {
+        description: 'System protected super user role with unrestricted permissions',
+      },
+      create: {
+        name: SYSTEM_SUPER_USER_ROLE_NAME,
+        description: 'System protected super user role with unrestricted permissions',
+      },
+    });
+
+    const allPermissionIds = await this.prisma.permission.findMany({
+      select: { id: true, name: true },
+    });
+
+    await this.prisma.rolePermission.deleteMany({
+      where: { role_id: superUserRole.id },
+    });
+
+    if (allPermissionIds.length > 0) {
+      await this.prisma.rolePermission.createMany({
+        data: allPermissionIds.map((permission) => ({
+          role_id: superUserRole.id,
+          permission_id: permission.id,
+        })),
+      });
+    }
+
+    const superUser = await this.prisma.user.upsert({
+      where: { email: configuredEmail },
+      update: {
+        first_name: firstName,
+        last_name: lastName,
+        username: username,
+        password: hashedPassword,
+        status: 1,
+        isActive: true,
+        email_verified_at: new Date(),
+      },
+      create: {
+        email: configuredEmail,
+        first_name: firstName,
+        last_name: lastName,
+        username: username,
+        password: hashedPassword,
+        status: 1,
+        isActive: true,
+        email_verified_at: new Date(),
+      },
+      select: { id: true, email: true },
+    });
+
+    await this.prisma.roleUser.upsert({
+      where: {
+        user_id_role_id: {
+          user_id: superUser.id,
+          role_id: superUserRole.id,
+        },
+      },
+      update: {},
+      create: {
+        user_id: superUser.id,
+        role_id: superUserRole.id,
+      },
+    });
+
+    // Ensure super user can still access Admin policies if some areas explicitly check Admin role.
+    await this.prisma.roleUser.upsert({
+      where: {
+        user_id_role_id: {
+          user_id: superUser.id,
+          role_id: adminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        user_id: superUser.id,
+        role_id: adminRole.id,
+      },
+    });
+
+    await this.redis.set(
+      RedisKeys.rolePermissions(superUserRole.name),
+      JSON.stringify(allPermissionIds.map((permission) => permission.name)),
+    );
+
+    this.logger.log(`Super user ensured: ${superUser.email}`);
+  }
+
   async me(userId: string) {
     try {
       const user = await this.prisma.user.findFirst({
@@ -50,6 +170,8 @@ export class AuthService {
           last_name: true,
           email: true,
           avatar: true,
+          gender: true,
+          date_of_birth: true,
           created_at: true,
           updated_at: true,
           roleUsers: {
@@ -101,34 +223,15 @@ export class AuthService {
     updateUserDto: UpdateUserDto,
     image?: Express.Multer.File,
   ) {
-    try {
       const data: any = {};
-      if (updateUserDto.name) {
-        data.name = updateUserDto.name;
+      if (updateUserDto.firstName) {
+        data.first_name = updateUserDto.firstName;
       }
-      if (updateUserDto.first_name) {
-        data.first_name = updateUserDto.first_name;
+      if (updateUserDto.lastName) {
+        data.last_name = updateUserDto.lastName;
       }
-      if (updateUserDto.last_name) {
-        data.last_name = updateUserDto.last_name;
-      }
-      if (updateUserDto.phone_number) {
-        data.phone_number = updateUserDto.phone_number;
-      }
-      if (updateUserDto.country) {
-        data.country = updateUserDto.country;
-      }
-      if (updateUserDto.state) {
-        data.state = updateUserDto.state;
-      }
-      if (updateUserDto.local_government) {
-        data.local_government = updateUserDto.local_government;
-      }
-      if (updateUserDto.city) {
-        data.city = updateUserDto.city;
-      }
-      if (updateUserDto.zip_code) {
-        data.zip_code = updateUserDto.zip_code;
+      if (updateUserDto.phoneNumber) {
+        data.phone_number = updateUserDto.phoneNumber;
       }
       if (updateUserDto.address) {
         data.address = updateUserDto.address;
@@ -136,15 +239,17 @@ export class AuthService {
       if (updateUserDto.gender) {
         data.gender = updateUserDto.gender;
       }
-      if (updateUserDto.date_of_birth) {
-        data.date_of_birth = DateHelper.format(updateUserDto.date_of_birth);
+      if (updateUserDto.dateOfBirth) {
+        data.date_of_birth = DateHelper.format(updateUserDto.dateOfBirth);
       }
+
       if (image) {
         // delete old image from storage
         const oldImage = await this.prisma.user.findFirst({
           where: { id: userId },
           select: { avatar: true },
         });
+
         if (oldImage.avatar) {
           await SojebStorage.delete(
             appConfig().storageUrl.avatar + oldImage.avatar,
@@ -152,7 +257,7 @@ export class AuthService {
         }
 
         // upload file
-        const fileName = `${StringHelper.randomString()}${image.originalname}`;
+        const fileName = `${StringHelper.randomString(16)}${image.originalname}`;
         await SojebStorage.put(
           appConfig().storageUrl.avatar + fileName,
           image.buffer,
@@ -160,6 +265,7 @@ export class AuthService {
 
         data.avatar = fileName;
       }
+
       const user = await this.userRepository.getUserDetails(userId);
       if (user) {
         await this.prisma.user.update({
@@ -179,12 +285,6 @@ export class AuthService {
           message: 'User not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   async validateUser(
@@ -214,7 +314,7 @@ export class AuthService {
 
     if (user) {
       // check user status
-      if(user.status === 0) {
+      if (user.status === 0) {
         throw new UnauthorizedException('Your account is blocked. Please contact support.');
       }
 
@@ -324,7 +424,7 @@ export class AuthService {
     );
   }
 
-  
+
 
   async refreshToken(user_id: string, sessionId: string, refreshToken: string, deviceInfo: DeviceInfo) {
     const storedToken = await this.redis.get(`refresh_token:${sessionId}`);
@@ -359,7 +459,7 @@ export class AuthService {
 
     // delete old refresh token
     await this.redis.del(`refresh_token:${newSession.id}`);
- 
+
     const payload = { email: userDetails.email, sub: userDetails.id, sessionId: newSession.id, roles: userDetails.roleUsers.map(item => item.role.name) };
     const accessToken = this.jwtService.sign(payload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').unixSeconds, secret: appConfig().jwt.access_token_secret });
 
