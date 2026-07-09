@@ -13,8 +13,8 @@ export class BrevoMailProvider implements IMailProvider {
   }
 
   async send(options: MailSendOptions): Promise<string> {
-    const senderEmail = appConfig().campaign.brevo.senderEmail;
-    const senderName = options.from?.name || appConfig().campaign.brevo.senderName || appConfig().app.name;
+    const senderEmail = appConfig().mail.sender_email.trim().toLowerCase();
+    const senderName = options.from?.name || appConfig().mail.sender_name || appConfig().app.name;
 
     const result = await this.client.transactionalEmails.sendTransacEmail({
       sender: { email: senderEmail, name: senderName },

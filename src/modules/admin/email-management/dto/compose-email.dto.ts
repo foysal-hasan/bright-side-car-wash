@@ -3,15 +3,6 @@ import { IsString, IsNotEmpty, IsEmail, IsArray, IsOptional } from 'class-valida
 import { Transform } from 'class-transformer';
 
 export class ComposeEmailDto {
-  @ApiPropertyOptional({ example: 'Bright Side Car Wash' })
-  @IsString()
-  @IsNotEmpty()
-  sender_name?: string = 'Bright Side Car Wash';
-
-  @ApiProperty({ example: 'foysalhasan.bdcalling@gmail.com' })
-  @IsEmail()
-  @IsNotEmpty()
-  sender_mail: string;
 
   @ApiProperty({ example: 'client@example.com' })
   @IsEmail()

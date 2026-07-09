@@ -5,6 +5,7 @@ import { ComposeEmailDto } from './dto/compose-email.dto';
 import { EmailLogQueryDto } from './dto/email-log-query.dto';
 import { EMAIL_PROVIDER_TOKEN } from './constants';
 import { EmailStatus } from 'src/generated/prisma/browser';
+import appConfig from 'src/config/app.config';
 
 @Injectable()
 export class EmailManagementService {
@@ -20,10 +21,13 @@ export class EmailManagementService {
         select: { id: true }
       });
 
+      const mailSenderName = appConfig().mail.sender_email.trim();
+      const mailSenderEmail = appConfig().mail.sender_email.trim().toLowerCase();
+
     try {
       // 1. Call your modular, pluggable email provider strategy instance
       const messageId = await this.emailProvider.send({
-        from: { email: dto.sender_mail, name: dto.sender_name },
+        from: { email: mailSenderEmail, name: mailSenderName },
         to: dto.to,
         cc: dto.cc,
         bcc: dto.bcc,
@@ -35,8 +39,8 @@ export class EmailManagementService {
       // 2. Persist comprehensive database history tracking audit logs
       return await this.prisma.emailLog.create({
         data: {
-          sender_name: dto.sender_name,
-          sender_mail: dto.sender_mail,
+          sender_name: mailSenderName,
+          sender_mail: mailSenderEmail,
           to: dto.to,
           cc: dto.cc || [],
           bcc: dto.bcc || [],
@@ -52,8 +56,8 @@ export class EmailManagementService {
     } catch (error) {
       await this.prisma.emailLog.create({
         data: {
-          sender_name: dto.sender_name,
-          sender_mail: dto.sender_mail,
+          sender_name: mailSenderName,
+          sender_mail: mailSenderEmail,
           to: dto.to,
           cc: dto.cc || [],
           bcc: dto.bcc || [],
@@ -77,7 +81,7 @@ export class EmailManagementService {
     const whereCondition: any = search ? {
       OR: [
         { to: { contains: search, mode: 'insensitive' } },
-        { sendFrom: { contains: search, mode: 'insensitive' } },
+        { sender_name: { contains: search, mode: 'insensitive' } },
         { subject: { contains: search, mode: 'insensitive' } },
       ]
     } : {};

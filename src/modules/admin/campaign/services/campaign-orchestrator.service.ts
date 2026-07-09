@@ -21,8 +21,8 @@ export class CampaignOrchestratorService {
     ) { }
 
     async createCampaign(createCampaignDto: CreateCampaignDto) {
-        const senderEmail = appConfig().campaign.brevo.senderEmail.trim().toLowerCase();
-        const senderName = appConfig().campaign.brevo.senderName.trim();
+        const senderEmail = appConfig().mail.sender_email.trim().toLowerCase();
+        const senderName = appConfig().mail.sender_name.trim();
 
         const template = await this.prisma.template.findUnique({
             where: { id: createCampaignDto.templateId },
@@ -132,188 +132,120 @@ export class CampaignOrchestratorService {
         }, defaultSummary);
     }
 
-    // async findAll(query: CampaignPaginationQueryDto) {
-    //     const page = Number(query.page) || 1;
-    //     const limit = Number(query.limit) || 10;
-    //     const skip = (page - 1) * limit;
-    //     const search = query.search?.trim();
+    async findAll(query: any) {
+        const page = Number(query.page) || 1;
+        const limit = Number(query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const search = query.search?.trim();
 
-    //     const whereClause: Prisma.CampaignWhereInput = {
-    //         ...(query.status && { status: query.status }),
-    //         ...(search && { name: { contains: search, mode: 'insensitive' } }),
-    //     };
+        const whereClause: Prisma.CampaignWhereInput = {
+            ...(query.status && { status: query.status }),
+            ...(search && { name: { contains: search, mode: 'insensitive' } }),
+        };
 
-    //     const [totalItems, data] = await this.prisma.$transaction([
-    //         this.prisma.campaign.count({ where: whereClause }),
-    //         this.prisma.campaign.findMany({
-    //             where: whereClause,
-    //             skip,
-    //             take: limit,
-    //             orderBy: { createdAt: 'desc' },
-    //             include: {
-    //                 emailConfig: {
-    //                     select: {
-    //                         subject: true,
-    //                         senderEmail: true,
-    //                         leadGroup: { select: { name: true } },
-    //                     },
-    //                 },
-    //             },
-    //         }),
-    //     ]);
+        // Step 1: Fetch the paginated campaigns row chunk
+        const [totalItems, campaigns] = await this.prisma.$transaction([
+            this.prisma.campaign.count({ where: whereClause }),
+            this.prisma.campaign.findMany({
+                where: whereClause,
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    emailConfig: {
+                        select: {
+                            subject: true,
+                            senderEmail: true,
+                            leadGroup: { select: { name: true } },
+                        },
+                    },
+                },
+            }),
+        ]);
 
-    //     const totalPages = Math.ceil(totalItems / limit);
+        // Step 2: Extract just the IDs for the current page
+        const campaignIds = campaigns.map((c) => c.id);
 
-    //     return {
-    //         data,
-    //         meta: {
-    //             totalItems,
-    //             itemCount: data.length,
-    //             itemsPerPage: limit,
-    //             totalPages,
-    //             currentPage: page,
-    //             hasNextPage: page < totalPages,
-    //             hasPreviousPage: page > 1,
-    //         },
-    //     };
-    // }
+        // Step 3: Batch gather all logs counts for these campaigns in exactly ONE query
+        const rawAnalytics = campaignIds.length > 0
+            ? await this.prisma.deliveryLog.groupBy({
+                by: ['campaignId', 'status'],
+                where: { campaignId: { in: campaignIds } },
+                _count: { status: true },
+            })
+            : [];
 
-    // async findOne(id: string) {
-    //     const campaign = await this.prisma.campaign.findUnique({
-    //         where: { id },
-    //         include: {
-    //             emailConfig: {
-    //                 include: {
-    //                     leadGroup: {
-    //                         select: { id: true, name: true, brevoListId: true },
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     });
+        // Step 4: Map the flat grouped array into an optimized lookup dictionary
+        // Structure: { [campaignId]: { PENDING: X, SENT: Y, ... } }
+        const analyticsLookup: Record<string, Record<string, number>> = {};
 
-    //     if (!campaign) {
-    //         throw new NotFoundException(`Campaign with ID "${id}" could not be found.`);
-    //     }
+        // Initialize defaults for every campaign on the page
+        campaignIds.forEach((id) => {
+            analyticsLookup[id] = { PENDING: 0, SENT: 0, DELIVERED: 0, OPENED: 0, CLICKED: 0, BOUNCED: 0, FAILED: 0 };
+        });
 
-    //     return campaign;
-    // }
+        // Populate with real values from the database single batch result
+        rawAnalytics.forEach((row) => {
+            if (analyticsLookup[row.campaignId]) {
+                analyticsLookup[row.campaignId][row.status] = row._count.status;
+            }
+        });
 
+        // Step 5: Merge analytics back into rows entirely in-memory
+        const data = campaigns.map((campaign) => ({
+            ...campaign,
+            analytics: analyticsLookup[campaign.id],
+        }));
 
-  async findAll(query: any) {
-    const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 10;
-    const skip = (page - 1) * limit;
-    const search = query.search?.trim();
+        const totalPages = Math.ceil(totalItems / limit);
 
-    const whereClause: Prisma.CampaignWhereInput = {
-      ...(query.status && { status: query.status }),
-      ...(search && { name: { contains: search, mode: 'insensitive' } }),
-    };
-
-    // Step 1: Fetch the paginated campaigns row chunk
-    const [totalItems, campaigns] = await this.prisma.$transaction([
-      this.prisma.campaign.count({ where: whereClause }),
-      this.prisma.campaign.findMany({
-        where: whereClause,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          emailConfig: {
-            select: {
-              subject: true,
-              senderEmail: true,
-              leadGroup: { select: { name: true } },
+        return {
+            data,
+            meta: {
+                totalItems,
+                itemCount: data.length,
+                itemsPerPage: limit,
+                totalPages,
+                currentPage: page,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1,
             },
-          },
-        },
-      }),
-    ]);
-
-    // Step 2: Extract just the IDs for the current page
-    const campaignIds = campaigns.map((c) => c.id);
-
-    // Step 3: Batch gather all logs counts for these campaigns in exactly ONE query
-    const rawAnalytics = campaignIds.length > 0 
-      ? await this.prisma.deliveryLog.groupBy({
-          by: ['campaignId', 'status'],
-          where: { campaignId: { in: campaignIds } },
-          _count: { status: true },
-        })
-      : [];
-
-    // Step 4: Map the flat grouped array into an optimized lookup dictionary
-    // Structure: { [campaignId]: { PENDING: X, SENT: Y, ... } }
-    const analyticsLookup: Record<string, Record<string, number>> = {};
-    
-    // Initialize defaults for every campaign on the page
-    campaignIds.forEach((id) => {
-      analyticsLookup[id] = { PENDING: 0, SENT: 0, DELIVERED: 0, OPENED: 0, CLICKED: 0, BOUNCED: 0, FAILED: 0 };
-    });
-
-    // Populate with real values from the database single batch result
-    rawAnalytics.forEach((row) => {
-      if (analyticsLookup[row.campaignId]) {
-        analyticsLookup[row.campaignId][row.status] = row._count.status;
-      }
-    });
-
-    // Step 5: Merge analytics back into rows entirely in-memory
-    const data = campaigns.map((campaign) => ({
-      ...campaign,
-      analytics: analyticsLookup[campaign.id],
-    }));
-
-    const totalPages = Math.ceil(totalItems / limit);
-
-    return {
-      data,
-      meta: {
-        totalItems,
-        itemCount: data.length,
-        itemsPerPage: limit,
-        totalPages,
-        currentPage: page,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
-      },
-    };
-  }
-
-  async findOne(id: string) {
-    const campaign = await this.prisma.campaign.findUnique({
-      where: { id },
-      include: {
-        emailConfig: {
-          include: {
-            leadGroup: {
-              select: { id: true, name: true, brevoListId: true },
-            },
-          },
-        },
-      },
-    });
-
-    if (!campaign) {
-      throw new NotFoundException(`Campaign with ID "${id}" could not be found.`);
+        };
     }
 
-    // Reuse the fast single lookup mapping
-    const defaultMap = { PENDING: 0, SENT: 0, DELIVERED: 0, OPENED: 0, CLICKED: 0, BOUNCED: 0, FAILED: 0 };
-    const logsGroupBy = await this.prisma.deliveryLog.groupBy({
-      by: ['status'],
-      where: { campaignId: id },
-      _count: { status: true },
-    });
+    async findOne(id: string) {
+        const campaign = await this.prisma.campaign.findUnique({
+            where: { id },
+            include: {
+                emailConfig: {
+                    include: {
+                        leadGroup: {
+                            select: { id: true, name: true, brevoListId: true },
+                        },
+                    },
+                },
+            },
+        });
 
-    const analytics = logsGroupBy.reduce((acc, curr) => {
-      acc[curr.status] = curr._count.status;
-      return acc;
-    }, defaultMap);
+        if (!campaign) {
+            throw new NotFoundException(`Campaign with ID "${id}" could not be found.`);
+        }
 
-    return { ...campaign, analytics };
-  }
+        // Reuse the fast single lookup mapping
+        const defaultMap = { PENDING: 0, SENT: 0, DELIVERED: 0, OPENED: 0, CLICKED: 0, BOUNCED: 0, FAILED: 0 };
+        const logsGroupBy = await this.prisma.deliveryLog.groupBy({
+            by: ['status'],
+            where: { campaignId: id },
+            _count: { status: true },
+        });
+
+        const analytics = logsGroupBy.reduce((acc, curr) => {
+            acc[curr.status] = curr._count.status;
+            return acc;
+        }, defaultMap);
+
+        return { ...campaign, analytics };
+    }
 
     async update(id: string, dto: UpdateCampaignDto) {
         const campaign = await this.findOne(id);
@@ -363,7 +295,7 @@ export class CampaignOrchestratorService {
 
         // schedule also need to update the provider campaign if it was already launched with a schedule
         if (campaign.emailConfig?.providerCampaignId && Object.keys(updateMarketingCampaign).length > 0) {
-        await this.brevoProvider.updateMarketingCampaign(campaign.emailConfig.providerCampaignId, updateMarketingCampaign);
+            await this.brevoProvider.updateMarketingCampaign(campaign.emailConfig.providerCampaignId, updateMarketingCampaign);
         }
 
         return this.prisma.campaign.update({
@@ -375,54 +307,6 @@ export class CampaignOrchestratorService {
         });
     }
 
-    // async changeCampaignStatus(id: string, action: CampaignAction) {
-    //     const campaign = await this.prisma.campaign.findUnique({
-    //         where: { id },
-    //         include: { emailConfig: true },
-    //     });
-
-    //     if (!campaign) throw new NotFoundException('Campaign not found.');
-
-    //     const providerId = campaign.emailConfig?.providerCampaignId;
-    //     if (!providerId) {
-    //         throw new BadRequestException('This campaign has not been launched or initialized in Brevo yet.');
-    //     }
-
-    //     // ==================== SUSPEND ACTION ====================
-    //     if (action === CampaignAction.SUSPEND) {
-    //         // if (campaign.status !== CampaignStatus.SCHEDULED) {
-    //         //     throw new BadRequestException('Only future-scheduled campaigns can be suspended.');
-    //         // }
-
-    //         // Tell Brevo to stop deployment checks
-    //         await this.brevoProvider.updateRemoteCampaignStatus(providerId, 'suspended');
-
-    //         // Update local state to SUSPENDED
-    //         return this.prisma.campaign.update({
-    //             where: { id },
-    //             data: { status: CampaignStatus.SUSPENDED },
-    //         });
-    //     }
-
-    //     // ==================== RESTART ACTION ====================
-    //     if (action === CampaignAction.RESTART) {
-    //         if (campaign.status !== CampaignStatus.SUSPENDED || !campaign.scheduledAt) {
-    //             throw new BadRequestException('Campaign must be a suspended draft with a scheduled time to restart.');
-    //         }
-
-    //         if (new Date(campaign.scheduledAt) <= new Date()) {
-    //             throw new BadRequestException('The scheduled date has passed. Please update the scheduled date first.');
-    //         }
-
-    //         // Tell Brevo to put it back into the active queue
-    //         await this.brevoProvider.updateRemoteCampaignStatus(providerId, 'queued');
-
-    //         return this.prisma.campaign.update({
-    //             where: { id },
-    //             data: { status: CampaignStatus.SCHEDULED },
-    //         });
-    //     }
-    // }
 
     async changeCampaignStatus(id: string, action: CampaignAction, newScheduleDate?: string) {
         const campaign = await this.prisma.campaign.findUnique({

@@ -1,6 +1,6 @@
 import { BrevoClient } from '@getbrevo/brevo';
 import { IEmailProvider } from '../interfaces/email-provider.interface';
-import { CampaignResult, CreateCampaignPayload } from '../types/email.types';
+import { CampaignResult, CreateCampaignPayload, EmailOptions } from '../types/email.types';
 import appConfig from 'src/config/app.config';
 import { BadRequestException, Logger } from '@nestjs/common';
 
@@ -16,10 +16,10 @@ export class BrevoProvider implements IEmailProvider {
     this.logger = new Logger(BrevoProvider.name);
   }
 
-  async send(options: any): Promise<String> {
+  async send(options: EmailOptions): Promise<String> {
     // Dynamic provider implementation goes here (e.g., transporter.sendMail)
     const result = await this.client.transactionalEmails.sendTransacEmail({
-      sender: { email: options.from.email, name: options.from.name },
+      sender: { email: options.from.email, name: options.from.name},
       to: [{ email: options.to }],
       subject: options.subject,
       htmlContent: options.html,

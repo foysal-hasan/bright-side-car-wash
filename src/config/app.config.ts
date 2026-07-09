@@ -58,6 +58,8 @@ export default () => ({
     user: process.env.MAIL_USERNAME,
     password: process.env.MAIL_PASSWORD,
     from: process.env.MAIL_FROM_ADDRESS,
+    sender_name: process.env.MAIL_SENDER_NAME,
+    sender_email: process.env.MAIL_SENDER_EMAIL,
   },
 
   auth: {
