@@ -5,6 +5,7 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import { PERMISSION_KEY, PERMISSION_RESOURCE_KEY } from '../decorators/require-permission.decorator';
 import { Request } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RedisKeys } from 'src/common/redis/redis-keys';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -78,7 +79,7 @@ export class PermissionGuard implements CanActivate {
     // console.log(`👤 User roles: ${userRoles.join(', ')}`);
 
     // Get permissions from Redis
-    const redisKeys = userRoles.map(role => `role:${role.toLowerCase()}`);
+    const redisKeys = userRoles.map((role) => RedisKeys.rolePermissions(role));
     const rawRolePermissions = await this.redis.mget(...redisKeys);
 
     // defug
@@ -141,7 +142,12 @@ export class PermissionGuard implements CanActivate {
         const permissions = rolePermissionsMap.get(normalizedRole) ?? [];
 
         permissions.forEach((permission) => flattenedPermissions.add(permission));
-        cacheWrites.push(this.redis.set(`role:${normalizedRole}`, JSON.stringify(permissions)));
+        cacheWrites.push(
+          this.redis.set(
+            RedisKeys.rolePermissions(normalizedRole),
+            JSON.stringify(permissions),
+          ),
+        );
       });
 
       if (cacheWrites.length > 0) {

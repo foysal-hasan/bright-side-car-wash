@@ -1,4 +1,7 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
+import { RedisKeys } from 'src/common/redis/redis-keys';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -6,7 +9,29 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class RoleService {
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
+
+  private async cacheRolePermissions(
+    roleName: string,
+    permissions: Array<{ permission?: { name?: string | null } }>,
+  ) {
+    const permissionNames = Array.from(
+      new Set(
+        permissions
+          .map((item) => item.permission?.name)
+          .filter((name): name is string => Boolean(name)),
+      ),
+    );
+
+    await this.redis.set(
+      RedisKeys.rolePermissions(roleName),
+      JSON.stringify(permissionNames),
+    );
+  }
+
   async create(createRoleDto: CreateRoleDto) {
     const { name, description, permissionIds } = createRoleDto;
 
@@ -17,7 +42,7 @@ export class RoleService {
     }
 
     // Create the role and map the static permission relationships
-    return this.prisma.role.create({
+    const createdRole = await this.prisma.role.create({
       data: {
         name,
         description,
@@ -35,6 +60,10 @@ export class RoleService {
         },
       },
     });
+
+    await this.cacheRolePermissions(createdRole.name, createdRole.permissions);
+
+    return createdRole;
   }
 
   async findAll() {
@@ -132,7 +161,7 @@ async getGroupedPermissions() {
     }
 
     // Perform the update
-    return this.prisma.role.update({
+    const updatedRole = await this.prisma.role.update({
       where: { id },
       data: {
         name,
@@ -157,12 +186,32 @@ async getGroupedPermissions() {
         },
       },
     });
+
+    await this.cacheRolePermissions(updatedRole.name, updatedRole.permissions);
+
+    if (existingRole.name.toLowerCase() !== updatedRole.name.toLowerCase()) {
+      await this.redis.del(RedisKeys.rolePermissions(existingRole.name));
+    }
+
+    return updatedRole;
   }
 
   async remove(id: string) {
+    const existingRole = await this.prisma.role.findUnique({
+      where: { id },
+      select: { name: true },
+    });
+
+    if (!existingRole) {
+      throw new NotFoundException(`Role with ID "${id}" not found`);
+    }
+
     await this.prisma.role.delete({
       where: { id },
     });
+
+    await this.redis.del(RedisKeys.rolePermissions(existingRole.name));
+
     return null;
   }
 }
