@@ -36,22 +36,6 @@ export class CreateCampaignDto {
   templateId: string;
 
   @ApiProperty({
-    description: 'The public display identifier label showing who sent the email',
-    example: 'Synapse Automations Team',
-  })
-  @IsString()
-  @IsNotEmpty()
-  senderName: string;
-
-  @ApiProperty({
-    description: 'The configured fully authenticated sender domain address matching outbound DNS profiles',
-    example: 'support@yourbrand.com',
-  })
-  @IsEmail()
-  @IsNotEmpty()
-  senderEmail: string;
-
-  @ApiProperty({
     description: 'The local CUID profile reference identifying the primary source LeadGroup segmentation target',
     example: 'clg123456000008mn8z7b6v5a',
   })

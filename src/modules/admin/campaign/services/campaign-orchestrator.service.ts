@@ -10,6 +10,7 @@ import { CampaignPaginationQueryDto } from '../dto/campaign-pagination-query.dto
 import { Prisma } from 'src/generated/prisma/browser';
 import { CampaignAction } from '../dto/campaign-status-action.dto';
 import { CreateCampaignDto } from '../dto/create-campaign.dto';
+import appConfig from 'src/config/app.config';
 
 
 @Injectable()
@@ -20,6 +21,9 @@ export class CampaignOrchestratorService {
     ) { }
 
     async createCampaign(createCampaignDto: CreateCampaignDto) {
+        const senderEmail = appConfig().campaign.brevo.senderEmail.trim().toLowerCase();
+        const senderName = appConfig().campaign.brevo.senderName.trim();
+
         const template = await this.prisma.template.findUnique({
             where: { id: createCampaignDto.templateId },
             select: {
@@ -41,8 +45,8 @@ export class CampaignOrchestratorService {
                     create: {
                         subject: createCampaignDto.subject,
                         htmlContent: template.emailBody.htmlContent,
-                        senderName: createCampaignDto.senderName,
-                        senderEmail: createCampaignDto.senderEmail,
+                        senderName: senderName,
+                        senderEmail: senderEmail,
                         leadGroupId: createCampaignDto.leadGroupId,
                     },
                 },
@@ -343,8 +347,6 @@ export class CampaignOrchestratorService {
                 update: {
                     ...(dto.subject && { subject: dto.subject }),
                     ...(htmlContentFromTemplate && { htmlContent: htmlContentFromTemplate }),
-                    ...(dto.senderName && { senderName: dto.senderName }),
-                    ...(dto.senderEmail && { senderEmail: dto.senderEmail }),
                     ...(dto.leadGroupId && { leadGroupId: dto.leadGroupId }),
                 },
             },
@@ -354,8 +356,6 @@ export class CampaignOrchestratorService {
             ...(dto.name && { name: dto.name }),
             ...(dto.subject && { subject: dto.subject }),
             ...(htmlContentFromTemplate && { htmlContent: htmlContentFromTemplate }),
-            ...(dto.senderName && { senderName: dto.senderName }),
-            ...(dto.senderEmail && { senderEmail: dto.senderEmail }),
             ...(dto.leadGroupId && { brevoListId: campaign.emailConfig?.leadGroup.brevoListId }),
             ...(dto.scheduledAt !== undefined && { scheduledAt: dto.scheduledAt ? new Date(dto.scheduledAt) : undefined }),
         }
