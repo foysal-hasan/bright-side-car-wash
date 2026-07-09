@@ -4,12 +4,14 @@ import { Redis } from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { PERMISSION_KEY, PERMISSION_RESOURCE_KEY } from '../decorators/require-permission.decorator';
 import { Request } from 'express';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     @InjectRedis() private readonly redis: Redis,
+    private readonly prisma: PrismaService,
   ) {}
 
   // Map HTTP methods to standard permission actions
@@ -85,7 +87,9 @@ export class PermissionGuard implements CanActivate {
 
     // Parse and flatten permissions
     const flattenedPermissions = new Set<string>();
-    rawRolePermissions.forEach((permissionString) => {
+    const missingRoleNames: string[] = [];
+
+    rawRolePermissions.forEach((permissionString, index) => {
       if (permissionString) {
         try {
           const permissions = JSON.parse(permissionString);
@@ -94,8 +98,56 @@ export class PermissionGuard implements CanActivate {
           // If not JSON, treat as string
           flattenedPermissions.add(permissionString);
         }
+      } else {
+        const roleName = userRoles[index];
+        if (roleName) {
+          missingRoleNames.push(roleName);
+        }
       }
     });
+
+    // Fallback: if Redis does not have permissions for one/more roles, fetch from DB and rehydrate cache.
+    if (missingRoleNames.length > 0) {
+      const dbRoles = await this.prisma.role.findMany({
+        where: {
+          OR: missingRoleNames.map((roleName) => ({
+            name: { equals: roleName, mode: 'insensitive' },
+          })),
+        },
+        include: {
+          permissions: {
+            include: {
+              permission: {
+                select: { name: true },
+              },
+            },
+          },
+        },
+      });
+
+      const rolePermissionsMap = new Map<string, string[]>();
+      dbRoles.forEach((role) => {
+        const permissionNames = role.permissions
+          .map((item) => item.permission?.name)
+          .filter((name): name is string => Boolean(name));
+
+        rolePermissionsMap.set(role.name.toLowerCase(), permissionNames);
+      });
+
+      const cacheWrites: Promise<unknown>[] = [];
+
+      missingRoleNames.forEach((roleName) => {
+        const normalizedRole = roleName.toLowerCase();
+        const permissions = rolePermissionsMap.get(normalizedRole) ?? [];
+
+        permissions.forEach((permission) => flattenedPermissions.add(permission));
+        cacheWrites.push(this.redis.set(`role:${normalizedRole}`, JSON.stringify(permissions)));
+      });
+
+      if (cacheWrites.length > 0) {
+        await Promise.all(cacheWrites);
+      }
+    }
 
     // console.log(`✅ User permissions: ${Array.from(flattenedPermissions).join(', ')}`);
     // console.log(`🎯 Required: ${requiredPermission}`);
