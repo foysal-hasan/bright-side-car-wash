@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { InjectQueue } from '@nestjs/bullmq';
-import { MailerService } from '@nestjs-modules/mailer';
 import appConfig from '../config/app.config';
 
 @Injectable()
@@ -10,14 +9,13 @@ export class MailService {
 
   constructor(
     @InjectQueue('mail-queue') private queue: Queue,
-    private mailerService: MailerService,
   ) {
    
   }
 
   async sendMemberInvitation({ user, member, url }) {
     try {
-      const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`;
       const subject = `${user.fname} is inviting you to ${appConfig().app.name}`;
 
       // add to queue
@@ -40,7 +38,7 @@ export class MailService {
   // send invite email to staff
   async sendInviteEmail({ to, firstName, inviteUrl }) {
     try {
-      const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`;
       const subject = `You're invited to join ${appConfig().app.name}`;
 
       // add to queue
@@ -58,7 +56,7 @@ export class MailService {
       });
 
     } catch (error) {
-      this.logger.error(`Failed to queue invite email to ${to}: ${error?.message ? error.message : error}`);
+      this.logger.error(`Failed to queue invite email to ${to}: ${ error instanceof Error ? error.message : error}`);
     }
   }
 
@@ -67,8 +65,8 @@ export class MailService {
   // send otp code for email verification
   async sendOtpCodeToEmail({ first_name, email, otp }) {
     try {
-      const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
-      const subject = 'Email Verification';
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`;
+      const subject = 'Verification Code';
 
       // add to queue
       await this.queue.add('sendOtpCodeToEmail', {
@@ -82,7 +80,7 @@ export class MailService {
         },
       });
     } catch (err) {
-      this.logger.error(`Failed to queue OTP email to ${email}: ${err?.message ? err.message : err}`);
+      this.logger.error(`Failed to queue OTP email to ${email}: ${ err instanceof Error ? err.message : err}`);
     }
   }
 
@@ -120,7 +118,7 @@ export class MailService {
     currency?: string;
   }) {
     try {
-      const from = `${process.env.APP_NAME} <${appConfig().mail.from}>`;
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`;
       const subject = `Booking Confirmed - ${appConfig().app.name}`;
 
       await this.queue.add('sendBookingConfirmationEmail', {
@@ -140,7 +138,7 @@ export class MailService {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to queue booking confirmation email to ${params.to}: ${error?.message ? error.message : error}`,
+        `Failed to queue booking confirmation email to ${params.to}: ${error instanceof Error ? error.message : error}`,
       );
     }
   }
@@ -152,7 +150,7 @@ export class MailService {
         otp: otp,
       });
     } catch (error) {
-      this.logger.error(`Failed to queue SMS OTP to ${to}: ${error?.message ? error.message : error}`);
+      this.logger.error(`Failed to queue SMS OTP to ${to}: ${error instanceof Error ? error.message : error}`);
     }
   }
 }

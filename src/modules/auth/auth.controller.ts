@@ -298,7 +298,7 @@ export class AuthController {
     }, deviceInfo
     );
 
-    console.log('Login response:', response);
+
 
     // store to secure cookies
     res.cookie('refresh_token', response.authorization.refresh_token, {

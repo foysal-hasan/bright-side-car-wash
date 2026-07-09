@@ -1,0 +1,3 @@
+export const MAIL_PROVIDER_TOKEN = 'MAIL_PROVIDER_TOKEN';
+
+export type MailProviderName = 'brevo' | 'smtp';

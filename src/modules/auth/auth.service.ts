@@ -284,9 +284,6 @@ export class AuthService {
       const accessTokenPayload = { email: email, sub: userId, sessionId: userSession.id, roles: roles };
       const refreshTokenPayload = { sessionId: userSession.id, sub: userId };
 
-      // log access token expiry for debugging
-      console.log("Access token expiry:", appConfig().jwt.access_token_expiry);
-      console.log("Refresh token expiry:", appConfig().jwt.refresh_token_expiry);
 
       const accessToken = this.jwtService.sign(accessTokenPayload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').unixSeconds, secret: appConfig().jwt.access_token_secret });
       const refreshToken = this.jwtService.sign(refreshTokenPayload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '30d').unixSeconds, secret: appConfig().jwt.refresh_token_secret });

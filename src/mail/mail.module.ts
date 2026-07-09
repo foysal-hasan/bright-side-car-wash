@@ -5,6 +5,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailService } from './mail.service';
 import { BullModule } from '@nestjs/bullmq';
 import { MailProcessor } from './processors/mail.processor';
+import { BrevoMailProvider } from './providers/brevo-mail.provider';
+import { SmtpMailProvider } from './providers/smtp-mail.provider';
+import { MAIL_PROVIDER_TOKEN, MailProviderName } from './constants';
+import { TemplateRendererService } from './template-renderer.service';
+import appConfig from 'src/config/app.config';
 
 @Global()
 @Module({
@@ -64,7 +69,30 @@ import { MailProcessor } from './processors/mail.processor';
       },
     }),
   ],
-  providers: [MailService, MailProcessor],
+  providers: [
+    MailService,
+    MailProcessor,
+    TemplateRendererService,
+    BrevoMailProvider,
+    SmtpMailProvider,
+    {
+      provide: MAIL_PROVIDER_TOKEN,
+      inject: [BrevoMailProvider, SmtpMailProvider],
+      useFactory: (
+        brevoProvider: BrevoMailProvider,
+        smtpProvider: SmtpMailProvider,
+      ) => {
+        const provider =
+          ((appConfig().mail.provider || 'brevo').toLowerCase() as MailProviderName);
+
+        if (provider === 'smtp') {
+          return smtpProvider;
+        }
+
+        return brevoProvider;
+      },
+    },
+  ],
   exports: [MailService],
 })
 export class MailModule {}

@@ -1,12 +1,26 @@
-import { MailerService } from '@nestjs-modules/mailer';
+import { Inject, Logger } from '@nestjs/common';
 import { Processor, WorkerHost, OnWorkerEvent } from '@nestjs/bullmq';
-import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
+import { MAIL_PROVIDER_TOKEN } from '../constants';
+import { IMailProvider } from '../interfaces/mail-provider.interface';
+import { TemplateRendererService } from '../template-renderer.service';
 
 @Processor('mail-queue')
 export class MailProcessor extends WorkerHost {
   private readonly logger = new Logger(MailProcessor.name);
-  constructor(private mailerService: MailerService) {
+  private readonly mailJobs = new Set([
+    'sendMemberInvitation',
+    'sendInviteEmail',
+    'sendOtpCodeToEmail',
+    'sendVerificationLink',
+    'sendBookingConfirmationEmail',
+  ]);
+
+  constructor(
+    @Inject(MAIL_PROVIDER_TOKEN)
+    private readonly mailProvider: IMailProvider,
+    private readonly templateRenderer: TemplateRendererService,
+  ) {
     super();
   }
 
@@ -24,71 +38,35 @@ export class MailProcessor extends WorkerHost {
 
   async process(job: Job): Promise<any> {
     this.logger.log(`Processing job ${job.id} with name ${job.name}`);
+
     try {
-      switch (job.name) {
-        case 'sendMemberInvitation':
-          this.logger.log('Sending member invitation email');
-          await this.mailerService.sendMail({
-            to: job.data.to,
-            from: job.data.from,
-            subject: job.data.subject,
-            template: job.data.template,
-            context: job.data.context,
-          });
-          break;
-        case 'sendInviteEmail':
-          this.logger.log('Sending invite email');
-          await this.mailerService.sendMail({
-            to: job.data.to,
-            from: job.data.from,
-            subject: job.data.subject,
-            template: job.data.template,
-            context: job.data.context,
-          });
-          break;
-        case 'sendOtpCodeToEmail': /////
-          this.logger.log('Sending OTP code to email');
-            // console.log("OTP code => ", job.data.context.otp," to => ", job.data.to);
-          await this.mailerService.sendMail({
-            to: job.data.to,
-            from: job.data.from,
-            subject: job.data.subject,
-            template: job.data.template,
-            context: job.data.context,
-          });
-          break;
-        case 'sendVerificationLink':
-          this.logger.log('Sending verification link');
-          await this.mailerService.sendMail({
-            to: job.data.to,
-            subject: job.data.subject,
-            template: job.data.template,
-            context: job.data.context,
-          });
-          break;
+      if (this.mailJobs.has(job.name)) {
+        const html = await this.templateRenderer.render(
+          job.data.template,
+          job.data.context ?? {},
+        );
 
-        case 'sendBookingConfirmationEmail':
-          this.logger.log('Sending booking confirmation email');
-          await this.mailerService.sendMail({
-            to: job.data.to,
-            from: job.data.from,
-            subject: job.data.subject,
-            template: job.data.template,
-            context: job.data.context,
-          });
-          break;
+        const from = this.parseFrom(job.data.from);
+        const messageId = await this.mailProvider.send({
+          to: job.data.to,
+          from,
+          cc: job.data.cc,
+          bcc: job.data.bcc,
+          subject: job.data.subject,
+          html,
+          attachments: job.data.attachments,
+        });
 
-        case 'sendSmsOtpCode':
-          this.logger.log('Sending SMS OTP code');
-        // console.log("SMS OTP code => ", job.data.otp);
-        // await this.smsService.sendSms(job.data.to,`${job.data.otp} is your ${appConfig().app.name} verification code.
-        // Do not share it. Expires in 5 minutes.`
-        //           );
-
-        default:
-          this.logger.log('Unknown job name');
-          return;
+        return { messageId };
       }
+
+      if (job.name === 'sendSmsOtpCode') {
+        this.logger.log('Sending SMS OTP code');
+        return;
+      }
+
+      this.logger.warn(`Unknown job name: ${job.name}`);
+      return;
     } catch (error) {
       this.logger.error(
         `Error processing job ${job.id} with name ${job.name}`,
@@ -96,5 +74,23 @@ export class MailProcessor extends WorkerHost {
       );
       throw error;
     }
+  }
+
+  private parseFrom(from?: string | { email: string; name?: string }) {
+    if (!from) return undefined;
+
+    if (typeof from !== 'string') {
+      return from;
+    }
+
+    const matched = from.match(/^(.*)<(.+)>$/);
+    if (!matched) {
+      return { email: from.trim() };
+    }
+
+    return {
+      name: matched[1].trim().replace(/^"|"$/g, ''),
+      email: matched[2].trim(),
+    };
   }
 }

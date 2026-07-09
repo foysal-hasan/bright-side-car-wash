@@ -52,6 +52,7 @@ export default () => ({
   },
 
   mail: {
+    provider: process.env.MAIL_PROVIDER || 'brevo',
     host: process.env.MAIL_HOST || 'smtp.gmail.com',
     port: process.env.MAIL_PORT || 587,
     user: process.env.MAIL_USERNAME,
