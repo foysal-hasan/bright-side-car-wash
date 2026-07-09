@@ -245,6 +245,7 @@ export class SquareUpBookingService {
             id: object.id,
             name: object.itemData?.name,
             description: object.itemData?.description,
+            descriptionHtml: object.itemData?.descriptionHtml,
             variations,
             images: resolveImageUrls(itemImageIds),
           };
