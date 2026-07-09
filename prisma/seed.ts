@@ -4,6 +4,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import 'dotenv/config';
 import * as bcrypt from 'bcrypt';
 import Redis from 'ioredis';
+import { RedisKeys } from '../src/common/redis/redis-keys';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL
@@ -35,7 +36,7 @@ const redis = new Redis({
 
 
 async function main() {
-  
+
   await seedRoleAndPermission()
   await seedUsers();
 
@@ -52,6 +53,7 @@ main()
     process.exit(1);
   })
   .finally(async () => {
+    await redis.quit();
     await prisma.$disconnect();
   });
 
@@ -88,7 +90,7 @@ async function seedUsers() {
     await prisma.user.upsert({
       where: { email: userData.email },
       update: {},
-      create: { 
+      create: {
         email: userData.email,
         username: userData.username,
         password: userData.password,
@@ -104,117 +106,162 @@ async function seedUsers() {
   }
 }
 
-  async function seedRoleAndPermission() {
-    const RESOURCES = [
-      'user', 
-      'billing', 
-      'lead', 
-      'stage', 
-      'campaign', 
-      'activity-log', 
-      'template', 
-      'lead_group', 
-      'role',
-      'faq',
-      'gallery',
-      'testimonial',
-    ];
+async function seedRoleAndPermission() {
+  const RESOURCES = [
+    'user',
+    'billing',
+    'lead',
+    'stage',
+    'campaign',
+    'activity-log',
+    'template',
+    'lead_group',
+    'role',
+    'faq',
+    'gallery',
+    'testimonial',
+  ];
 
-    const ACTIONS = ['create', 'read', 'update', 'delete'];
-    const SPECIAL_PERMISSIONS = [
-      'admin_override:delete', 
-      'system:maintenance', 
-      'staff:invite', 
-      'lead:import',
-      'lead:export',
-      'lead:assign',
-      'lead:unassign',
-      'lead_group:connect',
-      'lead_group:disconnect',
-      'permission:read',
-      'member:read',
-      'member:roles_update',
-      'member:block',
-      'member:unblock',
-      'mail-management:send_email',
-      'mail-management:view_logs',
-      'payment-transaction:read',
-      'payment-transaction:export',
-      'news-and-events:manage',
-      'news-and-events-category:manage',
-    ];
+  const ACTIONS = ['create', 'read', 'update', 'delete'];
+  const SPECIAL_PERMISSIONS = [
+    'admin_override:delete',
+    'system:maintenance',
+    'staff:invite',
+    'lead:import',
+    'lead:export',
+    'lead:assign',
+    'lead:unassign',
+    'lead_group:connect',
+    'lead_group:disconnect',
+    'permission:read',
+    'member:read',
+    'member:roles_update',
+    'member:block',
+    'member:unblock',
+    'mail-management:send_email',
+    'mail-management:view_logs',
+    'payment-transaction:read',
+    'payment-transaction:export',
+    'news-and-events:manage',
+    'news-and-events-category:manage',
+  ];
 
-    console.log('🔄 Starting permission seeding with ioredis...');
+  console.log('🔄 Starting permission seeding with ioredis...');
 
-    // 1. Build permissions list
-    const permissionStrings: string[] = [];
-    for (const resource of RESOURCES) {
-      for (const action of ACTIONS) {
-        permissionStrings.push(`${resource}:${action}`);
-      }
+  // 1. Build permissions list
+  const permissionStrings: string[] = [];
+  for (const resource of RESOURCES) {
+    for (const action of ACTIONS) {
+      permissionStrings.push(`${resource}:${action}`);
     }
-    permissionStrings.push(...SPECIAL_PERMISSIONS);
-
-    // 2. Sync to PostgreSQL
-    console.log(`📦 Upserting ${permissionStrings.length} permissions into PostgreSQL...`);
-    const upsertedPermissions = await Promise.all(
-      permissionStrings.map((permName) =>
-        prisma.permission.upsert({
-          where: { name: permName },
-          update: {},
-          create: {
-            name: permName,
-            description: `Allows action ${permName.split(':')[1]} on ${permName.split(':')[0]}`,
-          },
-        })
-      )
-    );
-
-    // 3. Upsert Roles
-    const adminRole = await prisma.role.upsert({
-      where: { name: 'Admin' },
-      update: {},
-      create: { name: 'Admin', description: 'Full system access' },
-    });
-
-    const managerRole = await prisma.role.upsert({
-      where: { name: 'Manager' },
-      update: {},
-      create: { name: 'Manager', description: 'Manage site' },
-    });
-
-    // 4. Map connections in DB
-    await prisma.rolePermission.deleteMany({});
-    await prisma.rolePermission.createMany({
-      data: upsertedPermissions.map((p) => ({ role_id: adminRole.id, permission_id: p.id })),
-    });
-
-    const managerAllowedPerms = upsertedPermissions.filter(
-      (p) => p.name.startsWith('lead:') || p.name.startsWith('lead_group:')
-    );
-    await prisma.rolePermission.createMany({
-      data: managerAllowedPerms.map((p) => ({ role_id: managerRole.id, permission_id: p.id })),
-    });
-
-    // 5. Sync to Redis via ioredis
-    console.log('🚀 Syncing fresh roles cache to Redis...');
-
-    const oldKeys = await redis.keys('role:*');
-    if (oldKeys.length > 0) {
-      // ioredis accepts an array of keys directly to perform a multi-delete
-      await redis.del(oldKeys);
-    }
-
-    // Stringify arrays and store them
-    await redis.set('role:admin', JSON.stringify(permissionStrings));
-    await redis.set(
-      'role:manager',
-      JSON.stringify(managerAllowedPerms.map((p) => p.name))
-    );
-
-    // debug
-      // const value = await redis.get('role:admin');
-      // console.log(`🔑 Redis value for role:admin: ${value}`);
-
-    console.log('✅ Synchronization complete!');
   }
+  permissionStrings.push(...SPECIAL_PERMISSIONS);
+
+  // Ensure unique permission names and stable ordering for deterministic seeding.
+  const desiredPermissions = Array.from(new Set(permissionStrings)).sort();
+
+  // 2. Sync to PostgreSQL
+  console.log(`📦 Reconciling ${desiredPermissions.length} permissions in PostgreSQL...`);
+
+  // Remove permissions that are no longer declared in seed constants.
+  const removed = await prisma.permission.deleteMany({
+    where: {
+      name: {
+        notIn: desiredPermissions,
+      },
+    },
+  });
+
+  if (removed.count > 0) {
+    console.log(`🧹 Removed ${removed.count} stale permissions from PostgreSQL`);
+  }
+
+  const upsertedPermissions = await Promise.all(
+    desiredPermissions.map((permName) =>
+      prisma.permission.upsert({
+        where: { name: permName },
+        update: {
+          description: `Allows action ${permName.split(':')[1]} on ${permName.split(':')[0]}`,
+        },
+        create: {
+          name: permName,
+          description: `Allows action ${permName.split(':')[1]} on ${permName.split(':')[0]}`,
+        },
+      })
+    )
+  );
+
+  // 3. Upsert Roles
+  const adminRole = await prisma.role.upsert({
+    where: { name: 'Admin' },
+    update: {},
+    create: { name: 'Admin', description: 'Full system access' },
+  });
+
+  const managerRole = await prisma.role.upsert({
+    where: { name: 'Manager' },
+    update: {},
+    create: { name: 'Manager', description: 'Manage site' },
+  });
+
+  // 4. Map connections in DB
+  await prisma.rolePermission.deleteMany({
+    where: {
+      role_id: {
+        in: [adminRole.id, managerRole.id],
+      },
+    },
+  });
+
+  await prisma.rolePermission.createMany({
+    data: upsertedPermissions.map((p) => ({ role_id: adminRole.id, permission_id: p.id })),
+  });
+
+  const managerAllowedPerms = upsertedPermissions.filter(
+    (p) => p.name.startsWith('lead:') || p.name.startsWith('lead_group:')
+  );
+  await prisma.rolePermission.createMany({
+    data: managerAllowedPerms.map((p) => ({ role_id: managerRole.id, permission_id: p.id })),
+  });
+
+  // 5. Sync to Redis via ioredis
+  console.log('🚀 Syncing fresh roles cache to Redis...');
+
+  const oldKeys: string[] = [];
+  let cursor = '0';
+
+  do {
+    const [nextCursor, keys] = await redis.scan(
+      cursor,
+      'MATCH',
+      RedisKeys.rolePermissionsPattern(),
+      'COUNT',
+      '100',
+    );
+
+    cursor = nextCursor;
+    if (keys.length > 0) {
+      oldKeys.push(...keys);
+    }
+  } while (cursor !== '0');
+
+  if (oldKeys.length > 0) {
+    await redis.del(...oldKeys);
+  }
+
+  // Stringify arrays and store them
+  await redis.set(
+    RedisKeys.rolePermissions(adminRole.name),
+    JSON.stringify(desiredPermissions),
+  );
+  await redis.set(
+    RedisKeys.rolePermissions(managerRole.name),
+    JSON.stringify(managerAllowedPerms.map((p) => p.name))
+  );
+
+  // debug
+  // const value = await redis.get('role:admin');
+  // console.log(`🔑 Redis value for role:admin: ${value}`);
+
+  console.log('✅ Synchronization complete!');
+}

@@ -3,6 +3,10 @@ export const RedisKeys = {
     return `role:${roleName.trim().toLowerCase()}`;
   },
 
+  rolePermissionsPattern(): string {
+    return 'role:*';
+  },
+
   refreshToken(sessionId: string): string {
     return `refresh_token:${sessionId}`;
   },
