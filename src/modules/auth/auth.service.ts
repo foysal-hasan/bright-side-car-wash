@@ -159,7 +159,6 @@ export class AuthService implements OnModuleInit {
   }
 
   async me(userId: string) {
-    try {
       const user = await this.prisma.user.findFirst({
         where: {
           id: userId,
@@ -209,12 +208,6 @@ export class AuthService implements OnModuleInit {
           success: false,
           message: 'User not found',
         };
-      }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
     }
   }
 

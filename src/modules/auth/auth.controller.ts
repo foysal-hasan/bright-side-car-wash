@@ -95,7 +95,7 @@ export class AuthController {
       const last_name = data.last_name;
       const email = data.email;
       const password = data.password;
-      const type = data.type;
+      // const type = data.type;
 
       const avatar = image; //
       let userRole = null;
@@ -137,20 +137,20 @@ export class AuthController {
           last_name: last_name,
           email: email,
           password: password,
-          type: type,
+          // type: type,
           gender: data.gender,
           date_of_birth: data.date_of_birth,
           phone_number: data.phone_number,
-          userRole: userRole,
+          // userRole: userRole,
         },
         avatar,
       );
 
       return response;
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
-        message: error.message,
+        message: error?.message || 'Something went wrong',
       };
     }
   }
@@ -650,10 +650,10 @@ export class AuthController {
           otp: otp,
           newPassword: newPassword,
         });
-      } catch (error) {
+      } catch (error: any) {
         return {
           success: false,
-          message: error.message || 'Something went wrong',
+          message: error?.message || 'Something went wrong',
         };
       }
     }
@@ -773,10 +773,10 @@ export class AuthController {
       try {
         const user_id = req.user.userId;
         return await this.authService.generate2FASecret(user_id);
-      } catch (error) {
+      } catch (error: any) {
         return {
           success: false,
-          message: error.message,
+          message: error?.message || 'Something went wrong',
         };
       }
     }
@@ -791,10 +791,10 @@ export class AuthController {
         const user_id = req.user.userId;
         const token = data.token;
         return await this.authService.verify2FA(user_id, token);
-      } catch (error) {
+      } catch (error: any) {
         return {
           success: false,
-          message: error.message,
+          message: error?.message || 'Something went wrong',
         };
       }
     }
@@ -808,10 +808,10 @@ export class AuthController {
       try {
         const user_id = req.user.userId;
         return await this.authService.enable2FA(user_id);
-      } catch (error) {
+      } catch (error: any) {
         return {
           success: false,
-          message: error.message,
+          message: error?.message || 'Something went wrong',
         };
       }
     }
@@ -825,10 +825,10 @@ export class AuthController {
       try {
         const user_id = req.user.userId;
         return await this.authService.disable2FA(user_id);
-      } catch (error) {
+      } catch (error: any) {
         return {
           success: false,
-          message: error.message,
+          message: error?.message || 'Something went wrong',
         };
       }
     }
