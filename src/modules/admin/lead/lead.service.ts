@@ -3,7 +3,7 @@ import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
-import { DepositStatus, LeadPriority, NotificationChannel, PaymentStatus, Prisma } from 'src/generated/prisma/browser';
+import { DepositStatus, LeadPriority, NotificationChannel, PaymentStatus, Prisma } from 'src/generated/prisma/client';
 import { AssignLeadDto } from './dto/assign-lead.dto';
 import * as XLSX from 'xlsx';
 import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
