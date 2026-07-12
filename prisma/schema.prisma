@@ -476,7 +476,9 @@ enum PaymentStatus {
 
 model Payment {
   id             String        @id @default(cuid())
-  transaction_id String        @unique @map("transaction_id")
+  transaction_id String        @unique
+  booking_id     String?
+
   customer_name  String?       @map("customer_name")
   service        String?       
   

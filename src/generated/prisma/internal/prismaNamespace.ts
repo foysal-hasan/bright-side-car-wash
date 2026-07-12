@@ -3305,6 +3305,7 @@ export type LeadActivityTimelineScalarFieldEnum = (typeof LeadActivityTimelineSc
 export const PaymentScalarFieldEnum = {
   id: 'id',
   transaction_id: 'transaction_id',
+  booking_id: 'booking_id',
   customer_name: 'customer_name',
   service: 'service',
   amount: 'amount',

@@ -606,13 +606,15 @@ export class SquareUpBookingService {
       }
 
       // PERSIST INITIAL INTENT (Isolated Function)
-      createdLeadId = await this.createInitialLead(
-        payload,
-        serviceNamesArray,
-        calculatedTotalCostCents,
-        calculatedCurrency,
-        calculatedTaxCostCents,
-      );
+      // createdLeadId = await this.createInitialLead(
+      //   payload,
+      //   serviceNamesArray,
+      //   calculatedTotalCostCents,
+      //   calculatedCurrency,
+      //   calculatedTaxCostCents,
+      // );
+
+      createdLeadId = await this.createLead({ payload, serviceNames: serviceNamesArray });
 
       // COMMENCE UPSTREAM ENTITY CREATION IN SQUARE
       const bookingResponse = await this.squareClient.bookings.create({
@@ -643,17 +645,26 @@ export class SquareUpBookingService {
       });
 
 
+      await this.createPaymentRecord(
+        createdLeadId,
+        bookingResponse.booking?.id,
+        paymentResponse.payment?.id,
+        calculatedTotalCostCents,
+        calculatedCurrency,
+      );
+
+
       // PROCESS SUCCESSFUL CONVERSION (Isolated Function)
-      if (createdLeadId) {
-        await this.handleLeadConversion(
-          createdLeadId,
-          createdBookingId,
-          paymentResponse.payment?.id,
-          calculatedTotalCostCents,
-          calculatedCurrency,
-          calculatedTaxCostCents,
-        );
-      }
+      // if (createdLeadId) {
+      //   await this.handleLeadConversion(
+      //     createdLeadId,
+      //     createdBookingId,
+      //     paymentResponse.payment?.id,
+      //     calculatedTotalCostCents,
+      //     calculatedCurrency,
+      //     calculatedTaxCostCents,
+      //   );
+      // }
 
 
 
@@ -690,16 +701,16 @@ export class SquareUpBookingService {
     } catch (error) {
       this.logger.error('Secure booking orchestration failure:', error);
 
-      // 7. HANDLE DROPPED/FAILED CHECKOUT (Isolated Function)
-      if (createdLeadId) {
-        await this.handleLeadFailure(
-          createdLeadId,
-          error,
-          calculatedTotalCostCents,
-          calculatedCurrency,
-          calculatedTaxCostCents,
-        );
-      }
+      // HANDLE DROPPED/FAILED CHECKOUT (Isolated Function)
+      // if (createdLeadId) {
+      //   await this.handleLeadFailure(
+      //     createdLeadId,
+      //     error,
+      //     calculatedTotalCostCents,
+      //     calculatedCurrency,
+      //     calculatedTaxCostCents,
+      //   );
+      // }
 
       // Auto-rollback Square booking if payment failed
       if (createdBookingId) {
@@ -714,6 +725,17 @@ export class SquareUpBookingService {
           // Suppress rollback failures to bubble original checkout exceptions
         }
       }
+
+      const failedTxnId = `TXN-FAIL-${randomUUID().substring(0, 8).toUpperCase()}`;
+
+      await this.createPaymentRecord(
+        createdLeadId,
+        createdBookingId,
+        failedTxnId,
+        calculatedTotalCostCents,
+        calculatedCurrency,
+        false
+      );
 
       this.handleSquareError(error);
     }
@@ -970,6 +992,53 @@ export class SquareUpBookingService {
   }
 
 
+  private async createLead(data: {
+    payload: ConfirmBookingDto;
+    serviceNames: string[];
+  }
+  ) {
+    try {
+      // 1. FAST PATH CHECK: If it already exists, return it immediately without any updates
+      const existingLead = await this.prisma.lead.findUnique({
+        where: { email: data.payload.customerEmail },
+        select: { id: true }
+      });
+
+      if (existingLead) {
+        this.logger.log(`Lead already exists for email ${data.payload.customerEmail}. Skipping all database changes.`);
+        return existingLead.id;
+      }
+
+      // 2. FETCH OR CREATE THE TARGET STAGE (Only for a brand new record)
+      const targetStage = await this.prisma.stage.upsert({
+        where: { name: 'New' },
+        update: {},
+        create: { name: 'New', color: '#0098E8' },
+      });
+
+      const serviceSummary = data.serviceNames.join(', ') || 'Online Booking Service';
+
+      // 3. ATTEMPT TO CREATE A FRESH LEAD
+      const leadRecord = await this.prisma.lead.create({
+        data: {
+          name: data.payload.customerName,
+          email: data.payload.customerEmail,
+          phone: data.payload.customerPhone,
+          service: serviceSummary,
+          source: 'Online Booking Widget',
+          priority: LeadPriority.LOW,
+          stage_id: targetStage.id,
+          vehicle: data.payload.vehicle,
+        },
+      });
+
+      return leadRecord.id;
+    } catch (dbError) {
+      this.logger.error('Failed to process conditional lead entry synchronization:', dbError);
+      return undefined;
+    }
+  }
+
   private async createInitialLead(
     payload: ConfirmBookingDto,
     serviceNames: string[],
@@ -1057,9 +1126,6 @@ export class SquareUpBookingService {
         return;
       }
 
-      // Reference identifier falls back cleanly to prevent primary key failures
-      const secureTxnId = paymentId || `TXN-FALLBACK-${randomUUID().substring(0, 8).toUpperCase()}`;
-
       await this.prisma.$transaction([
         // Update core lead fields
         this.prisma.lead.update({
@@ -1070,18 +1136,6 @@ export class SquareUpBookingService {
               push: `Payment successful. Square ID: ${paymentId}. Booking ID: ${bookingId}. Tax: $${(taxInCents / 100).toFixed(2)}.`,
             },
           },
-        }),
-        // Generate transaction entry mapping to image_15eb60.png data layout
-        this.prisma.payment.create({
-          data: {
-            transaction_id: secureTxnId,
-            customer_name: currentLead?.name || 'Guest User',
-            service: currentLead?.service || 'Online Booking',
-            amount: totalCostCents,
-            currency: currency,
-            status: PaymentStatus.PAID,
-            lead_id: leadId
-          }
         }),
         this.prisma.leadActivityTimeline.create({
           data: {
@@ -1102,6 +1156,37 @@ export class SquareUpBookingService {
       ]);
     } catch (err) {
       this.logger.error('Failed to update converted lead database states:', err);
+    }
+  }
+
+  private async createPaymentRecord(
+    leadId: string,
+    bookingId: string | undefined,
+    paymentId: string,
+    totalCostCents: number,
+    currency: string = 'USD',
+    isSuccess: boolean = true,
+  ): Promise<void> {
+    try {
+      const currentLead = await this.prisma.lead.findUnique({
+        where: { id: leadId },
+        select: { name: true, service: true }
+      });
+
+      await this.prisma.payment.create({
+        data: {
+          transaction_id: paymentId,
+          booking_id: bookingId,
+          customer_name: currentLead?.name || 'Guest User',
+          service: currentLead?.service || 'Online Booking',
+          amount: totalCostCents,
+          currency: currency,
+          status: isSuccess ? PaymentStatus.PAID : PaymentStatus.FAILED,
+          lead_id: leadId
+        }
+      });
+    } catch (err) {
+      this.logger.error('Failed to create payment record for lead:', err);
     }
   }
 
@@ -1128,8 +1213,6 @@ export class SquareUpBookingService {
         create: { name: 'Abandoned Checkout', color: '#FF0000' },
       });
 
-      const failedTxnId = `TXN-FAIL-${randomUUID().substring(0, 8).toUpperCase()}`;
-
       await this.prisma.$transaction([
         this.prisma.lead.update({
           where: { id: leadId },
@@ -1137,18 +1220,6 @@ export class SquareUpBookingService {
             deposit_status: DepositStatus.FAILED,
             stage_id: failedStage.id,
           },
-        }),
-        // Create a record of the failed transaction attempt
-        this.prisma.payment.create({
-          data: {
-            transaction_id: failedTxnId,
-            customer_name: currentLead?.name || 'Guest User',
-            service: currentLead?.service || 'Online Booking',
-            amount: totalCostCents,
-            currency: currency,
-            status: PaymentStatus.FAILED,
-            lead_id: leadId
-          }
         }),
         this.prisma.leadActivityTimeline.create({
           data: {

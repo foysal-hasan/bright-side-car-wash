@@ -37,6 +37,7 @@ export type PaymentSumAggregateOutputType = {
 export type PaymentMinAggregateOutputType = {
   id: string | null
   transaction_id: string | null
+  booking_id: string | null
   customer_name: string | null
   service: string | null
   amount: runtime.Decimal | null
@@ -50,6 +51,7 @@ export type PaymentMinAggregateOutputType = {
 export type PaymentMaxAggregateOutputType = {
   id: string | null
   transaction_id: string | null
+  booking_id: string | null
   customer_name: string | null
   service: string | null
   amount: runtime.Decimal | null
@@ -63,6 +65,7 @@ export type PaymentMaxAggregateOutputType = {
 export type PaymentCountAggregateOutputType = {
   id: number
   transaction_id: number
+  booking_id: number
   customer_name: number
   service: number
   amount: number
@@ -86,6 +89,7 @@ export type PaymentSumAggregateInputType = {
 export type PaymentMinAggregateInputType = {
   id?: true
   transaction_id?: true
+  booking_id?: true
   customer_name?: true
   service?: true
   amount?: true
@@ -99,6 +103,7 @@ export type PaymentMinAggregateInputType = {
 export type PaymentMaxAggregateInputType = {
   id?: true
   transaction_id?: true
+  booking_id?: true
   customer_name?: true
   service?: true
   amount?: true
@@ -112,6 +117,7 @@ export type PaymentMaxAggregateInputType = {
 export type PaymentCountAggregateInputType = {
   id?: true
   transaction_id?: true
+  booking_id?: true
   customer_name?: true
   service?: true
   amount?: true
@@ -212,6 +218,7 @@ export type PaymentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type PaymentGroupByOutputType = {
   id: string
   transaction_id: string
+  booking_id: string | null
   customer_name: string | null
   service: string | null
   amount: runtime.Decimal
@@ -248,6 +255,7 @@ export type PaymentWhereInput = {
   NOT?: Prisma.PaymentWhereInput | Prisma.PaymentWhereInput[]
   id?: Prisma.StringFilter<"Payment"> | string
   transaction_id?: Prisma.StringFilter<"Payment"> | string
+  booking_id?: Prisma.StringNullableFilter<"Payment"> | string | null
   customer_name?: Prisma.StringNullableFilter<"Payment"> | string | null
   service?: Prisma.StringNullableFilter<"Payment"> | string | null
   amount?: Prisma.DecimalFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -262,6 +270,7 @@ export type PaymentWhereInput = {
 export type PaymentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   transaction_id?: Prisma.SortOrder
+  booking_id?: Prisma.SortOrderInput | Prisma.SortOrder
   customer_name?: Prisma.SortOrderInput | Prisma.SortOrder
   service?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -279,6 +288,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.PaymentWhereInput | Prisma.PaymentWhereInput[]
   OR?: Prisma.PaymentWhereInput[]
   NOT?: Prisma.PaymentWhereInput | Prisma.PaymentWhereInput[]
+  booking_id?: Prisma.StringNullableFilter<"Payment"> | string | null
   customer_name?: Prisma.StringNullableFilter<"Payment"> | string | null
   service?: Prisma.StringNullableFilter<"Payment"> | string | null
   amount?: Prisma.DecimalFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -293,6 +303,7 @@ export type PaymentWhereUniqueInput = Prisma.AtLeast<{
 export type PaymentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   transaction_id?: Prisma.SortOrder
+  booking_id?: Prisma.SortOrderInput | Prisma.SortOrder
   customer_name?: Prisma.SortOrderInput | Prisma.SortOrder
   service?: Prisma.SortOrderInput | Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -314,6 +325,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
   NOT?: Prisma.PaymentScalarWhereWithAggregatesInput | Prisma.PaymentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Payment"> | string
   transaction_id?: Prisma.StringWithAggregatesFilter<"Payment"> | string
+  booking_id?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   customer_name?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   service?: Prisma.StringNullableWithAggregatesFilter<"Payment"> | string | null
   amount?: Prisma.DecimalWithAggregatesFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -327,6 +339,7 @@ export type PaymentScalarWhereWithAggregatesInput = {
 export type PaymentCreateInput = {
   id?: string
   transaction_id: string
+  booking_id?: string | null
   customer_name?: string | null
   service?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -340,6 +353,7 @@ export type PaymentCreateInput = {
 export type PaymentUncheckedCreateInput = {
   id?: string
   transaction_id: string
+  booking_id?: string | null
   customer_name?: string | null
   service?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -353,6 +367,7 @@ export type PaymentUncheckedCreateInput = {
 export type PaymentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -366,6 +381,7 @@ export type PaymentUpdateInput = {
 export type PaymentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -379,6 +395,7 @@ export type PaymentUncheckedUpdateInput = {
 export type PaymentCreateManyInput = {
   id?: string
   transaction_id: string
+  booking_id?: string | null
   customer_name?: string | null
   service?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -392,6 +409,7 @@ export type PaymentCreateManyInput = {
 export type PaymentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -404,6 +422,7 @@ export type PaymentUpdateManyMutationInput = {
 export type PaymentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -427,6 +446,7 @@ export type PaymentOrderByRelationAggregateInput = {
 export type PaymentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transaction_id?: Prisma.SortOrder
+  booking_id?: Prisma.SortOrder
   customer_name?: Prisma.SortOrder
   service?: Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -444,6 +464,7 @@ export type PaymentAvgOrderByAggregateInput = {
 export type PaymentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transaction_id?: Prisma.SortOrder
+  booking_id?: Prisma.SortOrder
   customer_name?: Prisma.SortOrder
   service?: Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -457,6 +478,7 @@ export type PaymentMaxOrderByAggregateInput = {
 export type PaymentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   transaction_id?: Prisma.SortOrder
+  booking_id?: Prisma.SortOrder
   customer_name?: Prisma.SortOrder
   service?: Prisma.SortOrder
   amount?: Prisma.SortOrder
@@ -528,6 +550,7 @@ export type EnumPaymentStatusFieldUpdateOperationsInput = {
 export type PaymentCreateWithoutLeadInput = {
   id?: string
   transaction_id: string
+  booking_id?: string | null
   customer_name?: string | null
   service?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -540,6 +563,7 @@ export type PaymentCreateWithoutLeadInput = {
 export type PaymentUncheckedCreateWithoutLeadInput = {
   id?: string
   transaction_id: string
+  booking_id?: string | null
   customer_name?: string | null
   service?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -581,6 +605,7 @@ export type PaymentScalarWhereInput = {
   NOT?: Prisma.PaymentScalarWhereInput | Prisma.PaymentScalarWhereInput[]
   id?: Prisma.StringFilter<"Payment"> | string
   transaction_id?: Prisma.StringFilter<"Payment"> | string
+  booking_id?: Prisma.StringNullableFilter<"Payment"> | string | null
   customer_name?: Prisma.StringNullableFilter<"Payment"> | string | null
   service?: Prisma.StringNullableFilter<"Payment"> | string | null
   amount?: Prisma.DecimalFilter<"Payment"> | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -594,6 +619,7 @@ export type PaymentScalarWhereInput = {
 export type PaymentCreateManyLeadInput = {
   id?: string
   transaction_id: string
+  booking_id?: string | null
   customer_name?: string | null
   service?: string | null
   amount: runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -606,6 +632,7 @@ export type PaymentCreateManyLeadInput = {
 export type PaymentUpdateWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -618,6 +645,7 @@ export type PaymentUpdateWithoutLeadInput = {
 export type PaymentUncheckedUpdateWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -630,6 +658,7 @@ export type PaymentUncheckedUpdateWithoutLeadInput = {
 export type PaymentUncheckedUpdateManyWithoutLeadInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   transaction_id?: Prisma.StringFieldUpdateOperationsInput | string
+  booking_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer_name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   amount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
@@ -644,6 +673,7 @@ export type PaymentUncheckedUpdateManyWithoutLeadInput = {
 export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transaction_id?: boolean
+  booking_id?: boolean
   customer_name?: boolean
   service?: boolean
   amount?: boolean
@@ -658,6 +688,7 @@ export type PaymentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transaction_id?: boolean
+  booking_id?: boolean
   customer_name?: boolean
   service?: boolean
   amount?: boolean
@@ -672,6 +703,7 @@ export type PaymentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   transaction_id?: boolean
+  booking_id?: boolean
   customer_name?: boolean
   service?: boolean
   amount?: boolean
@@ -686,6 +718,7 @@ export type PaymentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type PaymentSelectScalar = {
   id?: boolean
   transaction_id?: boolean
+  booking_id?: boolean
   customer_name?: boolean
   service?: boolean
   amount?: boolean
@@ -696,7 +729,7 @@ export type PaymentSelectScalar = {
   lead_id?: boolean
 }
 
-export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transaction_id" | "customer_name" | "service" | "amount" | "currency" | "status" | "created_at" | "updated_at" | "lead_id", ExtArgs["result"]["payment"]>
+export type PaymentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "transaction_id" | "booking_id" | "customer_name" | "service" | "amount" | "currency" | "status" | "created_at" | "updated_at" | "lead_id", ExtArgs["result"]["payment"]>
 export type PaymentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   lead?: boolean | Prisma.Payment$leadArgs<ExtArgs>
 }
@@ -715,6 +748,7 @@ export type $PaymentPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     transaction_id: string
+    booking_id: string | null
     customer_name: string | null
     service: string | null
     amount: runtime.Decimal
@@ -1149,6 +1183,7 @@ export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends runtime.
 export interface PaymentFieldRefs {
   readonly id: Prisma.FieldRef<"Payment", 'String'>
   readonly transaction_id: Prisma.FieldRef<"Payment", 'String'>
+  readonly booking_id: Prisma.FieldRef<"Payment", 'String'>
   readonly customer_name: Prisma.FieldRef<"Payment", 'String'>
   readonly service: Prisma.FieldRef<"Payment", 'String'>
   readonly amount: Prisma.FieldRef<"Payment", 'Decimal'>
