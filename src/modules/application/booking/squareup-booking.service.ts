@@ -20,6 +20,7 @@ import { DepositStatus, LeadPriority, PaymentStatus } from 'src/generated/prisma
 import Redis from 'ioredis';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { MailService } from 'src/mail/mail.service';
+import { RedisKeys } from 'src/common/redis/redis-keys';
 
 
 @Injectable()
@@ -337,7 +338,7 @@ export class SquareUpBookingService {
 
       const availableSlots = [];
       for (const slot of availabilityResponse.availabilities ?? []) {
-        const lockKey = this.getLockKey(locationId, slot.startAt ?? '');
+        const lockKey = RedisKeys.getLockKey(locationId, slot.startAt ?? '');
         const isLocked = await this.redis.get(lockKey);
         if (!isLocked) {
           availableSlots.push(slot);
@@ -362,7 +363,7 @@ export class SquareUpBookingService {
     serviceVariationIds: string[],
     teamMemberId?: string,
   ) {
-    const lockKey = this.getLockKey(locationId, startAt);
+    const lockKey = RedisKeys.getLockKey(locationId, startAt);
 
     // 1. Fetch existing lock from Redis
     const rawLock = await this.redis.get(lockKey);
@@ -443,7 +444,7 @@ export class SquareUpBookingService {
   }
 
   async releaseLock(locationId: string, startAt: string, lockToken: string) {
-    const lockKey = this.getLockKey(locationId, startAt);
+    const lockKey = RedisKeys.getLockKey(locationId, startAt);
     await this.assertLockOwnership(lockKey, lockToken);
 
     await this.redis.del(lockKey);
@@ -492,9 +493,9 @@ export class SquareUpBookingService {
     }
   }
 
-// cnon:card-nonce-ok for test sendbox payment
+  // cnon:card-nonce-ok for test sendbox payment
   async confirmBookingWithDeposit(payload: ConfirmBookingDto) {
-    const lockKey = this.getLockKey(payload.locationId, payload.startAt);
+    const lockKey = RedisKeys.getLockKey(payload.locationId, payload.startAt);
     let createdBookingId: string | undefined;
     let createdLeadId: string | undefined;
     let calculatedSubtotalCostCents = 0;
@@ -536,19 +537,19 @@ export class SquareUpBookingService {
         throw new BadRequestException('A valid customer profile is required.');
       }
 
-      // 2. SECURE BACKEND VALIDATION & VARIATION PARSING
+      // SECURE BACKEND VALIDATION & VARIATION PARSING
       const variationIds = payload.cartItems.map((item) => item.serviceVariationId);
 
-      // 1. CRITICAL: Include related objects to fetch parent items along with variations
+      // Include related objects to fetch parent items along with variations
       const catalogResponse = await this.squareClient.catalog.batchGet({
         objectIds: variationIds,
-        includeRelatedObjects: true // ◄— Added this
+        includeRelatedObjects: true
       });
 
       const fetchedObjects = catalogResponse.objects ?? [];
       const catalogMap = new Map<string, any>(fetchedObjects.map((obj) => [obj.id, obj]));
 
-      // 2. Map the related parent items by their ID for lightning-fast lookup
+      // Map the related parent items by their ID for lightning-fast lookup
       const relatedObjectsMap = new Map<string, any>(
         (catalogResponse.relatedObjects ?? []).map((obj) => [obj.id, obj])
       );
@@ -604,7 +605,7 @@ export class SquareUpBookingService {
         throw new BadRequestException('Invalid total charge calculation metrics detected.');
       }
 
-      // 3. PERSIST INITIAL INTENT (Isolated Function)
+      // PERSIST INITIAL INTENT (Isolated Function)
       createdLeadId = await this.createInitialLead(
         payload,
         serviceNamesArray,
@@ -613,7 +614,7 @@ export class SquareUpBookingService {
         calculatedTaxCostCents,
       );
 
-      // 4. COMMENCE UPSTREAM ENTITY CREATION IN SQUARE
+      // COMMENCE UPSTREAM ENTITY CREATION IN SQUARE
       const bookingResponse = await this.squareClient.bookings.create({
         idempotencyKey: randomUUID(),
         booking: {
@@ -627,7 +628,7 @@ export class SquareUpBookingService {
 
       createdBookingId = bookingResponse.booking?.id;
 
-      // 5. PROCESS CHARGE VIA SQUARE PAYMENTS
+      // PROCESS CHARGE VIA SQUARE PAYMENTS
       const paymentResponse = await this.squareClient.payments.create({
         sourceId: payload.sourceId,
         idempotencyKey: randomUUID(),
@@ -642,7 +643,7 @@ export class SquareUpBookingService {
       });
 
 
-      // 6. PROCESS SUCCESSFUL CONVERSION (Isolated Function)
+      // PROCESS SUCCESSFUL CONVERSION (Isolated Function)
       if (createdLeadId) {
         await this.handleLeadConversion(
           createdLeadId,
@@ -653,6 +654,8 @@ export class SquareUpBookingService {
           calculatedTaxCostCents,
         );
       }
+
+
 
       if (payload.customerEmail && createdBookingId) {
         await this.mailService.sendBookingConfirmationEmail({
@@ -666,7 +669,7 @@ export class SquareUpBookingService {
         });
       }
 
-      // Evict cache lock immediately on success
+      // EVICT CACHE LOCK IMMEDIATELY ON SUCCESS
       await this.redis.del(lockKey).catch(() => { });
 
       return this.toJsonSafe({
@@ -717,7 +720,7 @@ export class SquareUpBookingService {
   }
 
   async rescheduleBooking(bookingId: string, payload: RescheduleBookingDto) {
-    const lockKey = this.getLockKey(payload.locationId, payload.newStartAt);
+    const lockKey = RedisKeys.getLockKey(payload.locationId, payload.newStartAt);
 
     try {
       await this.assertLockOwnership(lockKey, payload.lockToken);
@@ -851,9 +854,7 @@ export class SquareUpBookingService {
     };
   }
 
-  private getLockKey(locationId: string, startAt: string) {
-    return `lock:${locationId}:${startAt}`;
-  }
+
 
 
   private isVariationAvailableAtLocation(variation: any, locationId?: string) {
@@ -940,9 +941,9 @@ export class SquareUpBookingService {
     const subtotalInCents = (order?.lineItems ?? []).reduce((sum, item: any) => {
       const amount = this.parseMoneyAmount(
         item.grossSalesMoney?.amount ??
-          item.variationTotalPriceMoney?.amount ??
-          item.basePriceMoney?.amount ??
-          0,
+        item.variationTotalPriceMoney?.amount ??
+        item.basePriceMoney?.amount ??
+        0,
       );
       return sum + amount;
     }, 0);
