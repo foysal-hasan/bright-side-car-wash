@@ -502,6 +502,7 @@ export class SquareUpBookingService {
     let calculatedTaxCostCents = 0;
     let calculatedTotalCostCents = 0;
     let calculatedCurrency: Currency = Currency.Usd;
+    const serviceNamesArray: string[] = [];
 
     try {
       await this.assertLockOwnership(lockKey, payload.lockToken);
@@ -555,7 +556,7 @@ export class SquareUpBookingService {
       );
 
 
-      const serviceNamesArray: string[] = [];
+      
 
       const appointmentSegments = payload.cartItems.map((item) => {
         const catalogVariation = catalogMap.get(item.serviceVariationId);
@@ -645,13 +646,14 @@ export class SquareUpBookingService {
       });
 
 
-      await this.createPaymentRecord(
-        createdLeadId,
-        bookingResponse.booking?.id,
-        paymentResponse.payment?.id,
-        calculatedTotalCostCents,
-        calculatedCurrency,
-      );
+      await this.createPaymentRecord({
+                leadId: createdLeadId,
+                bookingId: bookingResponse.booking?.id,
+                paymentId: paymentResponse.payment?.id,
+                service: serviceNamesArray.join(', '),
+                totalCostCents: calculatedTotalCostCents,
+                currency: calculatedCurrency,
+              });
 
 
       // PROCESS SUCCESSFUL CONVERSION (Isolated Function)
@@ -728,14 +730,15 @@ export class SquareUpBookingService {
 
       const failedTxnId = `TXN-FAIL-${randomUUID().substring(0, 8).toUpperCase()}`;
 
-      await this.createPaymentRecord(
-        createdLeadId,
-        createdBookingId,
-        failedTxnId,
-        calculatedTotalCostCents,
-        calculatedCurrency,
-        false
-      );
+      await this.createPaymentRecord({
+        leadId: createdLeadId,
+        bookingId: createdBookingId,
+        paymentId: failedTxnId,
+        service: serviceNamesArray.join(', '),
+        totalCostCents: calculatedTotalCostCents,
+        currency: calculatedCurrency,
+        isSuccess: false,
+      });
 
       this.handleSquareError(error);
     }
@@ -1159,14 +1162,23 @@ export class SquareUpBookingService {
     }
   }
 
-  private async createPaymentRecord(
+  private async createPaymentRecord({
+    leadId,
+    bookingId,
+    paymentId,
+    service,
+    totalCostCents,
+    currency = 'USD',
+    isSuccess = true,
+  }: {
     leadId: string,
     bookingId: string | undefined,
     paymentId: string,
+    service: string,
     totalCostCents: number,
-    currency: string = 'USD',
-    isSuccess: boolean = true,
-  ): Promise<void> {
+    currency?: string,
+    isSuccess?: boolean,
+  }): Promise<void> {
     try {
       const currentLead = await this.prisma.lead.findUnique({
         where: { id: leadId },
@@ -1178,7 +1190,7 @@ export class SquareUpBookingService {
           transaction_id: paymentId,
           booking_id: bookingId,
           customer_name: currentLead?.name || 'Guest User',
-          service: currentLead?.service || 'Online Booking',
+          service: service,
           amount: totalCostCents,
           currency: currency,
           status: isSuccess ? PaymentStatus.PAID : PaymentStatus.FAILED,
