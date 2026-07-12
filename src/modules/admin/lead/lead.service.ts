@@ -3,7 +3,7 @@ import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
-import { DepositStatus, LeadPriority, NotificationChannel, Prisma } from 'src/generated/prisma/browser';
+import { DepositStatus, LeadPriority, NotificationChannel, PaymentStatus, Prisma } from 'src/generated/prisma/browser';
 import { AssignLeadDto } from './dto/assign-lead.dto';
 import * as XLSX from 'xlsx';
 import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
@@ -268,9 +268,18 @@ export class LeadService {
       this.prisma.lead.count({ where: { stage: { name: { equals: 'Converted', mode: 'insensitive' } }, deleted_at: null } }),
       this.prisma.lead.count({ where: { stage: { name: { equals: 'Converted', mode: 'insensitive' } }, created_at: { lte: lastMonthEnd }, deleted_at: null } }),
 
-      // == CARD 4: REVENUE ==
-      this.prisma.lead.count({ where: { deposit_status: DepositStatus.PAID, deleted_at: null } }),
-      this.prisma.lead.count({ where: { deposit_status: DepositStatus.PAID, created_at: { lte: lastMonthEnd }, deleted_at: null } }),
+      // == CARD 4: REVENUE (based on payments table) ==
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: { status: PaymentStatus.PAID },
+      }),
+      this.prisma.payment.aggregate({
+        _sum: { amount: true },
+        where: {
+          status: PaymentStatus.PAID,
+          created_at: { lte: lastMonthEnd },
+        },
+      }),
 
       // == COMPONENT 1: STAGE DISTRIBUTION BREAKDOWN ==
       this.prisma.stage.findMany({
@@ -309,6 +318,9 @@ export class LeadService {
     const currentConversionRate = totalLeadsCurrent > 0 ? (convertedLeadsCurrent / totalLeadsCurrent) * 100 : 0;
     const previousConversionRate = totalLeadsPrevious > 0 ? (convertedLeadsPrevious / totalLeadsPrevious) * 100 : 0;
     const conversionSuccessRateChange = Math.round((currentConversionRate - previousConversionRate) * 10) / 10;
+
+    const revenueCurrentAmount = Number(revenueCurrent._sum.amount ?? 0);
+    const revenuePreviousAmount = Number(revenuePrevious._sum.amount ?? 0);
 
     // --- Process Rolling 12-Month Performance Trend Line ---
     const monthsShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -363,8 +375,8 @@ export class LeadService {
           percentageChange: conversionSuccessRateChange
         },
         depositRevenueCollected: {
-          current: revenueCurrent * 40, // Base calculation multiplier value matching $3680 pattern layouts
-          percentageChange: calculatePctChange(revenueCurrent, revenuePrevious)
+          current: revenueCurrentAmount,
+          percentageChange: calculatePctChange(revenueCurrentAmount, revenuePreviousAmount)
         }
       },
       // Array returned matches step chart intervals [ { month: 'Jan', total: X, converted: Y }, ... ]
