@@ -17,7 +17,6 @@ export class GetPaymentsTransactionQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
   limit?: number = 10;
 
   @ApiPropertyOptional({ description: 'Search by Customer Name, Service, or Transaction ID' })

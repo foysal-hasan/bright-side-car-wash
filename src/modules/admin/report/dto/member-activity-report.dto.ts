@@ -29,7 +29,6 @@ export class MemberTableQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
   limit?: number = 10;
 
   @ApiPropertyOptional({ description: 'Search staff by name', example: 'Sasha' })

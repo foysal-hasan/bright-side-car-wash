@@ -24,7 +24,6 @@ export class QueryNewsAndEventDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
   @IsOptional()
   limit?: number = 10;
 }

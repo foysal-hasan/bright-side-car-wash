@@ -14,7 +14,6 @@ export class OffsetPaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
   @IsOptional()
   limit?: number = 10;
 }
@@ -29,7 +28,6 @@ export class CursorPaginationDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(100)
   @IsOptional()
   limit?: number = 10;
 }

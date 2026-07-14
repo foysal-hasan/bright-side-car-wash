@@ -27,6 +27,5 @@ export class GetServicesQueryDto {
     @Type(() => Number)
     @IsInt()
     @Min(1)
-    @Max(100) // Square's maximum page processing size for item-specific searches is 100
     limit?: number = 100; // Defaults to 100 per page if not provided by client
 }
