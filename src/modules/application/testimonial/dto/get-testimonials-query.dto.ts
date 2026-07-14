@@ -16,9 +16,8 @@ export class GetTestimonialsQueryDto {
   page?: number = 1;
 
   @ApiPropertyOptional({ 
-    description: 'Number of records per page (defaults to 10, max 100)', 
+    description: 'Number of records per page (defaults to 10)', 
     minimum: 1, 
-    maximum: 100, 
     default: 10, 
     example: 10 
   })

@@ -61,7 +61,6 @@ export class QueryLeadDto {
     description: 'Number of items per page (offset pagination)',
     example: 10,
     minimum: 1,
-    maximum: 100,
     default: 10,
   })
   @IsOptional()
@@ -83,7 +82,6 @@ export class QueryLeadDto {
     description: 'Number of items to return (cursor pagination)',
     example: 10,
     minimum: 1,
-    maximum: 100,
     default: 10,
   })
   @IsOptional()

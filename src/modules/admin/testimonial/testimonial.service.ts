@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 import { UpdateTestimonialDto } from './dto/update-testimonial.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { GetTestimonialsQueryDto } from './dto/get-testimonials-query.dto';
+import { GetTestimonialsQueryDto, TestimonialSortField } from './dto/get-testimonials-query.dto';
 import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
@@ -23,32 +23,61 @@ export class TestimonialService {
   }
 
 
-  async findAll(query: GetTestimonialsQueryDto) {
-    const page = query.page ?? 1;
-    const limit = query.limit ?? 10;
+async findAll(query: GetTestimonialsQueryDto) {
+    const { search, ratings, is_active, sort_by, sort_order, page, limit } = query;
+
+    const where: Prisma.TestimonialWhereInput = {};
+
+    // 1. Structural multi-field text search filters
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { designation: { contains: search, mode: 'insensitive' } },
+        { review_text: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    // 2. Exact match filters (Integer Ratings)
+    if (ratings) {
+      where.ratings = ratings;
+    }
+
+    // 3. Boolean mapping filters
+    if (is_active !== undefined) {
+      where.is_active = is_active === 'true';
+    }
+
+    // 4. Dynamic sorting resolution
+    const orderByField = sort_by || TestimonialSortField.CREATED_AT;
+    const orderByDirection = sort_order || 'desc';
+
+    const orderBy: Prisma.TestimonialOrderByWithRelationInput = {
+      [orderByField]: orderByDirection,
+    };
+
+    // 5. Pagination offset execution
     const skip = (page - 1) * limit;
 
-    const [totalItems, testimonials] = await this.prisma.$transaction([
-      this.prisma.testimonial.count(),
+    // 6. Database transaction coordination
+    const [total, testimonials] = await this.prisma.$transaction([
+      this.prisma.testimonial.count({ where }),
       this.prisma.testimonial.findMany({
+        where,
+        orderBy,
         skip,
         take: limit,
-        orderBy: { created_at: 'desc' },
       }),
     ]);
-
-    const totalPages = Math.ceil(totalItems / limit);
 
     return {
       testimonials,
       meta: {
-        totalItems,
-        itemCount: testimonials.length,
-        itemsPerPage: limit,
-        totalPages,
-        currentPage: page,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
+        total_items: total,
+        current_page: page,
+        per_page: limit,
+        total_pages: Math.ceil(total / limit),
+        has_next_page: page * limit < total,
+        has_previous_page: page > 1,
       },
     };
   }

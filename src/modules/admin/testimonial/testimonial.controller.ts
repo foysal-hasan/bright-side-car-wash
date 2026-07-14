@@ -61,7 +61,7 @@ export class TestimonialController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all testimonials with full metadata for management backend' })
+  @ApiOperation({ summary: 'Retrieve a paginated, sorted, and filtered list of testimonials' })
   @LogActivity({ action: 'view', entity: 'testimonial' })
   async findAll(@Query() query: GetTestimonialsQueryDto) {
     const result = await this.testimonialService.findAll(query);

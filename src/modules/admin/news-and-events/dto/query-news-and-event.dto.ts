@@ -20,7 +20,7 @@ export class QueryNewsAndEventDto {
   @IsOptional()
   page?: number = 1;
 
-  @ApiPropertyOptional({ minimum: 1, maximum: 100, default: 10 })
+  @ApiPropertyOptional({ minimum: 1, default: 10 })
   @Type(() => Number)
   @IsInt()
   @Min(1)
