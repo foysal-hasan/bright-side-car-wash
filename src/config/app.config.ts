@@ -131,6 +131,7 @@ export default () => ({
 
     // news and events images
     newsAndEvents: '/news-and-events/',
+    newsAndEventsBodyImages: '/news-and-events-body-images/',
 
     // dynamic section media uploads
     sectionMedia: '/section-media/',

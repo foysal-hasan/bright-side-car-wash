@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFile, UseGuards, BadRequestException, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiConsumes, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiConsumes, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CreateNewsAndEventDto } from './dto/create-news-and-event.dto';
@@ -18,6 +18,7 @@ import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-lo
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 import { OnlyApiTags } from 'src/common/decorator/only-api-tag.decorator';
 import { Request } from 'express';
+import { UploadImageDto } from './dto/upload-image.dto';
 
 @ApiTags('Admin / News & Events')
 @ApiBearerAuth()
@@ -73,6 +74,41 @@ export class NewsAndEventsController {
   // ==========================================
   // NEWS & EVENTS ENDPOINTS
   // ==========================================
+
+  // upload image for news and events body
+  @ApiOperation({
+    summary: 'Upload image for news and events body',
+    description: 'Uploads an image to be used in the body of a news or event entry. Returns the URL of the uploaded image.'
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Image uploaded successfully.' })
+  @LogActivity({ action: 'upload', entity: 'template' })
+  @Post('upload-image')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 25 * 1024 * 1024, // 25MB
+      },
+    }),
+  )
+  async uploadImage(@Body() _: UploadImageDto, @UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('file is required');
+    }
+    const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+    const key = `${appConfig().storageUrl.newsAndEventsBodyImages}${generatedFilename}`;
+    await SojebStorage.put(key, file.buffer);
+
+    return {
+      success: true,
+      message: 'File uploaded successfully',
+      data: {
+        url: SojebStorage.url(key),
+      }
+    }
+  }
+
   @Post()
   @RequirePermission('news-and-events:manage')
   @ApiConsumes('multipart/form-data')
