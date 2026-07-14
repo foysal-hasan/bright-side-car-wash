@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GalleryService } from './gallery.service';
 import { TransformResponseInterceptor } from 'src/common/interceptors/response.interceptor';
@@ -13,6 +13,7 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
+import { QueryGalleryDto } from './dto/query-gallery.dto';
 
 @ApiTags('Admin / Gallery Management')
 @ApiBearerAuth()
@@ -61,9 +62,9 @@ export class AdminGalleryController {
   @Get()
   @ApiOperation({ summary: 'Fetch all operational gallery images' })
   @LogActivity({ action: 'view', entity: 'gallery' })
-  async findAll() {
-    const result = await this.galleryService.findAllAdmin();
-    result.forEach(gallery => {
+  async findAll(@Query() query: QueryGalleryDto) {
+    const result = await this.galleryService.findAll(query);
+    result.galleries.forEach(gallery => {
       if (gallery.image) {
         const key = `${appConfig().storageUrl.gallery}${gallery.image}`;
         gallery.image = SojebStorage.url(key);

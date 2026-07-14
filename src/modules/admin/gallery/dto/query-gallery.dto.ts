@@ -2,11 +2,10 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsInt, Min, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export enum FaqSortField {
-  QUESTION = 'question',
-  ANSWER = 'answer',
-  DISPLAY_ORDER = 'display_order',
+export enum GallerySortField {
+  NAME = 'name',
   CREATED_AT = 'created_at',
+  UPDATED_AT = 'updated_at',
 }
 
 export enum SortOrder {
@@ -14,26 +13,26 @@ export enum SortOrder {
   DESC = 'desc',
 }
 
-export class QueryFaqDto {
-  @ApiPropertyOptional({ description: 'Search term for matching text in questions or answers' })
+export class QueryGalleryDto {
+  @ApiPropertyOptional({ description: 'Search term for matching gallery names' })
   @IsOptional()
   @IsString()
   search?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by active status' })
+  @ApiPropertyOptional({ description: 'Filter by publication status' })
   @IsOptional()
-  @IsString()
-  is_active?: string;
+  @IsString() 
+  is_published?: string;
 
-  @ApiPropertyOptional({ description: 'Field to sort by', enum: FaqSortField, default: FaqSortField.DISPLAY_ORDER })
+  @ApiPropertyOptional({ description: 'Field to sort by', enum: GallerySortField, default: GallerySortField.CREATED_AT })
   @IsOptional()
-  @IsEnum(FaqSortField)
-  sort_by?: FaqSortField = FaqSortField.DISPLAY_ORDER;
+  @IsEnum(GallerySortField)
+  sort_by?: GallerySortField = GallerySortField.CREATED_AT;
 
-  @ApiPropertyOptional({ description: 'Direction of sorting', enum: SortOrder, default: SortOrder.ASC })
+  @ApiPropertyOptional({ description: 'Direction of sorting', enum: SortOrder, default: SortOrder.DESC })
   @IsOptional()
   @IsEnum(SortOrder)
-  sort_order?: SortOrder = SortOrder.ASC;
+  sort_order?: SortOrder = SortOrder.DESC;
 
   @ApiPropertyOptional({ description: 'Page number for pagination', default: 1 })
   @IsOptional()
