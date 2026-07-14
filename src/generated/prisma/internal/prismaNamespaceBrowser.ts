@@ -549,10 +549,11 @@ export type FaqScalarFieldEnum = (typeof FaqScalarFieldEnum)[keyof typeof FaqSca
 
 export const GalleryScalarFieldEnum = {
   id: 'id',
+  updated_at: 'updated_at',
+  created_at: 'created_at',
   name: 'name',
   image: 'image',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
+  is_published: 'is_published'
 } as const
 
 export type GalleryScalarFieldEnum = (typeof GalleryScalarFieldEnum)[keyof typeof GalleryScalarFieldEnum]

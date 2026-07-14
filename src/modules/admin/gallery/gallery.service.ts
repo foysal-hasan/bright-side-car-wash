@@ -26,6 +26,7 @@ export class GalleryService {
       data: {
         name: dto.name,
         image: dto.image!,
+        is_published: dto.is_published ?? true,
       }
     });
   }
