@@ -133,6 +133,7 @@ async function seedRoleAndPermission() {
     'lead:unassign',
     'lead_group:connect',
     'lead_group:disconnect',
+    'lead_group:export',
     'permission:read',
     'member:read',
     'member:roles_update',
@@ -144,6 +145,7 @@ async function seedRoleAndPermission() {
     'payment-transaction:export',
     'news-and-events:manage',
     'news-and-events-category:manage',
+
   ];
 
   console.log('🔄 Starting permission seeding with ioredis...');

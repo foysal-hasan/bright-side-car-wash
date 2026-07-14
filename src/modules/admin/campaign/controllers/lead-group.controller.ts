@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Delete, Query, UseGuards, UseInterceptors, Put, Patch } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Delete, Query, UseGuards, UseInterceptors, Put, Patch, Res } from '@nestjs/common';
 import { CampaignOrchestratorService } from '../services/campaign-orchestrator.service';
 import { LeadGroupService } from '../services/lead-group.service';
 import { CreateGroupDto } from '../dto/create-group.dto';
@@ -13,6 +13,8 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
+import { Response } from 'express';
+import { ExportLeadGroupDto } from '../dto/export-lead-group.dto';
 
 @ApiTags('Admin Lead Group Management')
 @ApiBearerAuth()
@@ -62,6 +64,30 @@ export class LeadGroupController {
       message: 'Leads disconnected successfully',
       data: result,
     };
+  }
+
+  // export leads from a group
+  @ApiOperation({ summary: 'Export leads from a lead group based on filters and format' })
+  @ApiResponse({ status: 200, description: 'Leads exported successfully.' })
+  @Get(':id/export-leads')
+  @LogActivity({ action: 'export', entity: 'lead_group' })
+  @RequirePermission('lead_group:export')
+  async exportGroupLeads(
+    @Param('id') groupId: string,
+    @Query() query: ExportLeadGroupDto,
+    @Res() res: Response
+  ) {
+    const { buffer, mimeType, extension, groupName } = await this.groupService.exportGroupLeadsToBuffer(groupId, query);
+
+    const filename = `lead_group_${groupName}_${Date.now()}.${extension}`;
+
+    // Set standard browser content headers to trigger immediate download windows
+    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', buffer.length);
+
+    // Send binary buffer directly down the pipeline stream connection
+    return res.end(buffer);
   }
 
   @LogActivity({ action: 'view', entity: 'lead_group' })
