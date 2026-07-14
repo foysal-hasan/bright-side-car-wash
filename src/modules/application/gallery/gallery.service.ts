@@ -10,6 +10,7 @@ export class GalleryService {
   constructor(private readonly prisma: PrismaService) { }
   async findAll() {
     const result = await this.prisma.gallery.findMany({
+      where: { is_published: true },
       orderBy: { created_at: 'desc' },
       select: {
         id: true,
