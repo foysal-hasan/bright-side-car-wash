@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FaqService } from './faq.service';
 import { CreateFaqDto } from './dto/create-faq.dto';
@@ -7,6 +7,7 @@ import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
+import { QueryFaqDto } from './dto/query-faq.dto';
 
 @ApiTags('Admin / FAQ Management')
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -33,8 +34,8 @@ export class AdminFaqController {
   @ApiOperation({ summary: 'Fetch all absolute FAQs (Active + Inactive) for data-grids' })
   @ApiResponse({ status: 200, description: 'Array of all FAQs.' })
   @LogActivity({ action: 'read', entity: 'faq' })
-  async findAll() {
-    const faqs = await this.faqService.findAllAdmin();
+  async findAll(@Query() query: QueryFaqDto) {
+    const faqs = await this.faqService.findAll(query);
     return {
       success: true,
       message: 'FAQs retrieved successfully',
