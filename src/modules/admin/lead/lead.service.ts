@@ -170,14 +170,14 @@ export class LeadService {
       orderBy,
       include: {
         stage: { select: { name: true } },
-        assignee: { select: { name: true } },
+        assignee: { select: { first_name: true, last_name: true } },
       },
     });
 
     // 3. Flatten complex database models into table spreadsheet columns
     const flattenedRows = leads.map((lead) => ({
       ID: lead.id,
-      Name: lead.name || '',
+      Name: `${lead.assignee?.first_name || ''} ${lead.assignee?.last_name || ''}`.trim() || lead.name || '',
       Email: lead.email || '',
       Phone: lead.phone || '',
       Service: lead.service || '',

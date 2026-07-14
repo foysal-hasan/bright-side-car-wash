@@ -2,8 +2,9 @@ import { Injectable, NotFoundException, ConflictException } from '@nestjs/common
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CreateNewsAndEventDto } from './dto/create-news-and-event.dto';
 import { UpdateNewsAndEventDto } from './dto/update-news-and-event.dto';
-import { QueryNewsAndEventDto } from './dto/query-news-and-event.dto';
+import { NewsAndEventSortField, QueryNewsAndEventDto } from './dto/query-news-and-event.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class NewsAndEventsService {
@@ -103,43 +104,76 @@ export class NewsAndEventsService {
     });
   }
 
-  async find_all(query: QueryNewsAndEventDto) {
-    const { search, category_id, page, limit } = query;
-    const skip = (page - 1) * limit;
 
-    const where_clause: any = {};
-    if (category_id) where_clause.category_id = category_id;
+  async findAll(query: QueryNewsAndEventDto) {
+    const { search, category_id, is_published, sort_by, sort_order, page, limit } = query;
+
+    const where: Prisma.NewsAndEventWhereInput = {};
+
+    // 1. Text Search across structural text details
     if (search) {
-      where_clause.OR = [
+      where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { summary: { contains: search, mode: 'insensitive' } },
       ];
     }
 
-    const [data, total] = await this.prisma.$transaction([
+    // 2. Exact Foreign Key Target Match
+    if (category_id) {
+      where.category_id = category_id;
+    }
+
+    // 3. Boolean Mapping Status Evaluation
+    if (is_published !== undefined) {
+      where.is_published = is_published === 'true';
+    }
+
+    // 4. Dynamic Ordering Selection
+    const orderByField = sort_by || NewsAndEventSortField.CREATED_AT;
+    const orderByDirection = sort_order || 'desc';
+
+    const orderBy: Prisma.NewsAndEventOrderByWithRelationInput = {
+      [orderByField]: orderByDirection,
+    };
+
+    // 5. Pagination Calculation
+    const skip = (page - 1) * limit;
+
+    // 6. Execution Loop mapping structural includes for relational tracking
+    const [total, items] = await this.prisma.$transaction([
+      this.prisma.newsAndEvent.count({ where }),
       this.prisma.newsAndEvent.findMany({
-        where: where_clause,
+        where,
+        orderBy,
         skip,
         take: limit,
-        include: { 
-          category: true,
-          creator: { select: { first_name: true, last_name: true, email: true } }
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          creator: {
+            select: {
+              id: true,
+              first_name: true,
+              last_name: true
+            },
+          },
         },
-        orderBy: { created_at: 'desc' },
       }),
-      this.prisma.newsAndEvent.count({ where: where_clause }),
     ]);
 
-    return { 
-      items: data, 
-      meta: { 
-        total, 
-        page, 
-        limit, 
+    return {
+      items,
+      meta: {
+        total_items: total,
+        current_page: page,
+        per_page: limit,
         total_pages: Math.ceil(total / limit),
-        next_page: page * limit < total ? page + 1 : null,
-        prev_page: page > 1 ? page - 1 : null,
-      } 
+      },
     };
   }
 

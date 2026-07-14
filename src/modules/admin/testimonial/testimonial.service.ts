@@ -23,7 +23,7 @@ export class TestimonialService {
   }
 
 
-async findAll(query: GetTestimonialsQueryDto) {
+  async findAll(query: GetTestimonialsQueryDto) {
     const { search, ratings, is_active, sort_by, sort_order, page, limit } = query;
 
     const where: Prisma.TestimonialWhereInput = {};

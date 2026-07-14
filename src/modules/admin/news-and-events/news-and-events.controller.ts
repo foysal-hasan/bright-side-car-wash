@@ -158,7 +158,7 @@ export class NewsAndEventsController {
   @ApiOperation({ summary: 'Filter administrative dashboard records' })
   @LogActivity({ action: 'read', entity: 'news-and-events' })
   async find_all(@Query() query: QueryNewsAndEventDto) {
-    const result = await this.service.find_all(query);
+    const result = await this.service.findAll(query);
     // Update image URLs for each entry
     result.items.forEach(item => {
       if (item.image_url) {

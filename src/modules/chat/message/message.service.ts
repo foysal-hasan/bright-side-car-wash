@@ -161,14 +161,16 @@ export class MessageService {
           sender: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
           receiver: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },

@@ -36,14 +36,16 @@ export class ConversationService {
           creator: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
           participant: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
@@ -83,14 +85,16 @@ export class ConversationService {
           creator: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
           participant: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
@@ -161,14 +165,16 @@ export class ConversationService {
           creator: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,  
               avatar: true,
             },
           },
           participant: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
@@ -225,14 +231,16 @@ export class ConversationService {
           creator: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },
           participant: {
             select: {
               id: true,
-              name: true,
+              first_name: true,
+              last_name: true,
               avatar: true,
             },
           },

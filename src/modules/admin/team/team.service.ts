@@ -55,8 +55,8 @@ export class TeamService {
         take: limit,
         select: {
           id: true,
-          name: true,
-          username: true,
+          first_name: true,
+          last_name: true,
           email: true,
           avatar: true,
           status: true,
@@ -95,7 +95,8 @@ export class TeamService {
       where: { id, deleted_at: null },
       select: {
         id: true,
-        username: true,
+        first_name: true,
+        last_name: true,
         email: true,
         avatar: true,
         status: true,
