@@ -150,12 +150,19 @@ export class LeadService {
     });
   }
 
-  async exportLeadsToBuffer(query: ExportLeadDto) {
+  async exportLeadsToBuffer(body: ExportLeadDto) {
     // 1. Compile filters using your existing where clause builder framework
     // (Replace `this.buildWhereClause` with your service's structural path reference)
-    const { sort_by, sort_order } = query;
-    const where = this.buildWhereClause(query);
+    const { sort_by, sort_order, leadIds } = body;
+
+    let where = {};
+    if (leadIds && leadIds.length > 0) {
+      where = { id: { in: leadIds } };
+    } else {
+      where = this.buildWhereClause(body);
+    }
     const orderBy = this.buildOrderBy(sort_by, sort_order);
+
 
     // 2. Fetch all matching leads from DB
     const leads = await this.prisma.lead.findMany({
@@ -174,11 +181,11 @@ export class LeadService {
       Email: lead.email || '',
       Phone: lead.phone || '',
       Service: lead.service || '',
-      Vehicle: lead.vehicle || '',
+      // Vehicle: lead.vehicle || '',
       Source: lead.source || '',
       Stage: lead.stage?.name || 'N/A',
-      'Deposit Status': lead.deposit_status || 'PENDING',
-      Priority: lead.priority || 'LOW',
+      // 'Deposit Status': lead.deposit_status || 'PENDING',
+      // Priority: lead.priority || 'LOW',
       'Created At': lead.created_at.toISOString(),
     }));
 
@@ -188,10 +195,10 @@ export class LeadService {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads Export');
 
     // 5. Compile sheet layouts down to binary buffers matching requested formats
-    if (query.format === ExportFormat.EXCEL) {
+    if (body.format === ExportFormat.EXCEL) {
       const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
       return { buffer, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', extension: 'xlsx' };
-    } else if (query.format === ExportFormat.CSV) {
+    } else if (body.format === ExportFormat.CSV) {
       const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'csv' });
       return { buffer, mimeType: 'text/csv', extension: 'csv', };
     }

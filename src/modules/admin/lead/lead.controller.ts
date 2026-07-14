@@ -147,7 +147,7 @@ export class LeadController {
   }
 
 
-  @Get('export')
+  @Post('export')
   @RequirePermission('lead:export')
   @ApiOperation({
     summary: 'Export filtered leads to Excel or CSV file download',
@@ -155,10 +155,10 @@ export class LeadController {
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'File download stream initiated successfully.' })
   async exportLeads(
-    @Query() query: ExportLeadDto,
+    @Body() body: ExportLeadDto,
     @Res() res: Response
   ) {
-    const { buffer, mimeType, extension } = await this.leadService.exportLeadsToBuffer(query);
+    const { buffer, mimeType, extension } = await this.leadService.exportLeadsToBuffer(body);
     
     const filename = `leads_export_${Date.now()}.${extension}`;
 
