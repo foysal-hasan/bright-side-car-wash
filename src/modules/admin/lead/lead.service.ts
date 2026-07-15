@@ -898,6 +898,7 @@ export class LeadService {
         source: true,
         deposit_status: true,
         priority: true,
+        attachments: true,
       },
     });
 
@@ -981,7 +982,7 @@ export class LeadService {
         minorFieldsChanged.push('notes');
       }
       if (updateLeadDto.attachments !== undefined) {
-        data.attachments = updateLeadDto.attachments;
+        data.attachments = [...existingLead.attachments, ...updateLeadDto.attachments].filter(Boolean);
         minorFieldsChanged.push('attachments');
       }
 
@@ -1008,6 +1009,37 @@ export class LeadService {
         data: data,
       });
     });
+  }
+
+  async removeAttachment(leadId: string, pathToDelete: string) {
+    // 1. Find the existing lead
+    const lead = await this.prisma.lead.findUnique({
+      where: { id: leadId },
+      select: { attachments: true },
+    });
+
+    if (!lead) {
+      throw new NotFoundException(`Lead with ID ${leadId} not found`);
+    }
+
+    // 2. Check if the attachment actually exists in the array
+    if (!lead.attachments.includes(pathToDelete)) {
+      throw new NotFoundException(`Attachment path not found in this lead`);
+    }
+
+    // 3. Filter out the specific attachment path
+    const updatedAttachments = lead.attachments.filter(
+      (path) => path !== pathToDelete,
+    );
+
+    // 4. Update the lead in the database
+    return this.prisma.lead.update({
+      where: { id: leadId },
+      data: {
+        attachments: updatedAttachments,
+      },
+    });
+    
   }
 
   async assignLead(id: string, assignLeadDto: AssignLeadDto) {

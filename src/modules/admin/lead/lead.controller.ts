@@ -20,6 +20,7 @@ import { SpreadsheetUploadDto } from './dto/spreadsheet-upload.dto';
 import { ExportLeadDto } from './dto/export-lead.dto';
 import { OnlyApiTags } from 'src/common/decorator/only-api-tag.decorator';
 import { UnassignLeadDto } from './dto/unassign-lead.dto';
+import { DeleteAttachmentDto } from './dto/delete-attachment.dto';
 
 
 
@@ -380,6 +381,24 @@ export class LeadController {
       }
       throw error;
     }
+  }
+
+  @Delete(':id/attachments')
+  async deleteAttachment(
+    @Param('id') id: string,
+    @Body() deleteAttachmentDto: DeleteAttachmentDto,
+  ) {
+    const result = await this.leadService.removeAttachment(id, deleteAttachmentDto.path);
+
+    // delete the file from storage
+    const key = `${appConfig().storageUrl.lead}${deleteAttachmentDto.path}`;
+    await SojebStorage.delete(key);
+
+    return {
+      success: true,
+      message: 'Attachment deleted successfully',
+      data: result,
+    };
   }
 
   // Asign lead to a user and log the activity
