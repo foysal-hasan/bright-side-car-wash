@@ -78,9 +78,13 @@ export class LeadController {
       createLeadDto.source = createLeadDto.source || 'Admin Panel';
       const result = await this.leadService.create(createLeadDto);
 
-      result.attachments = result.attachments?.map(filename => {
-        const key = `${appConfig().storageUrl.lead}${filename}`;
-        return SojebStorage.url(key);
+      result['attachments_url_paths'] = result.attachments?.map(filename => {
+         const key = `${appConfig().storageUrl.lead}${filename}`;
+        const url = SojebStorage.url(key);
+        return {
+          filename,
+          url
+        }
       });
 
       return {
@@ -217,9 +221,10 @@ export class LeadController {
     const result = await this.leadService.findAll(query);
 
     result.data.forEach(lead => {
-      lead.attachments = lead.attachments?.map(filename => {
+      lead['attachments_url_paths'] = lead.attachments?.map(filename => {
         const key = `${appConfig().storageUrl.lead}${filename}`;
-        return SojebStorage.url(key);
+        const url = SojebStorage.url(key);
+        return { filename, url };
       });
     });
     return {
@@ -257,9 +262,10 @@ export class LeadController {
     const result = await this.leadService.findAll(query);
 
     result.data.forEach(lead => {
-      lead.attachments = lead.attachments?.map(filename => {
+      lead['attachments_url_paths'] = lead.attachments?.map(filename => {
         const key = `${appConfig().storageUrl.lead}${filename}`;
-        return SojebStorage.url(key);
+        const url = SojebStorage.url(key);
+        return { filename, url };
       });
     });
 
@@ -305,9 +311,10 @@ export class LeadController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const lead = await this.leadService.findOne(id);
-    lead.attachments = lead.attachments?.map(filename => {
+    lead['attachments_url_paths'] = lead.attachments?.map(filename => {
       const key = `${appConfig().storageUrl.lead}${filename}`;
-      return SojebStorage.url(key);
+      const url = SojebStorage.url(key);
+      return { filename, url };
     });
     return {
       success: true,
@@ -360,9 +367,10 @@ export class LeadController {
 
       const result = await this.leadService.update(id, updateLeadDto);
 
-      result.attachments = result.attachments?.map(filename => {
+      result['attachments_url_paths'] = result.attachments?.map(filename => {
         const key = `${appConfig().storageUrl.lead}${filename}`;
-        return SojebStorage.url(key);
+        const url = SojebStorage.url(key);
+        return { filename, url };
       });
       
       return {
