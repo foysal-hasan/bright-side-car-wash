@@ -8,6 +8,7 @@ export default () => ({
     onboarding_refresh_url: process.env.ONBOARDING_REFRESH_URL,
     port: parseInt(process.env.PORT, 10) || 3000,
     environment: process.env.NODE_ENV || 'development',
+    file_storage: process.env.FILE_STORAGE || 'local', // local, s3, gcs
   },
 
   fileSystems: {
@@ -18,7 +19,6 @@ export default () => ({
       secret: process.env.AWS_SECRET_ACCESS_KEY,
       region: process.env.AWS_DEFAULT_REGION,
       bucket: process.env.AWS_BUCKET,
-      url: process.env.AWS_URL,
       endpoint: process.env.AWS_ENDPOINT,
     },
     gcs: {

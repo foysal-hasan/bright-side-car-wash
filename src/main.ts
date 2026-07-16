@@ -12,6 +12,7 @@ import appConfig from './config/app.config';
 import { CustomExceptionFilter } from './common/exception/custom-exception.filter';
 import { SojebStorage } from './common/lib/Disk/SojebStorage';
 import { PrismaExceptionFilter } from './common/exception/prisma-exception-filter';
+import { DiskType } from './common/lib/Disk/Option';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -88,7 +89,7 @@ async function bootstrap() {
 
   // storage setup
   SojebStorage.config({
-    driver: 'local',
+    driver: appConfig().app.file_storage as DiskType,
     connection: {
       rootUrl: appConfig().storageUrl.rootUrl,
       publicUrl: appConfig().storageUrl.rootUrlPublic,
