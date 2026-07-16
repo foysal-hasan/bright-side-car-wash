@@ -113,7 +113,11 @@ export class EmailManagementController {
 
     log.files = log.files.map(filename => SojebStorage.url(`${appConfig().storageUrl.emailAttachments}${filename}`));
 
-    return log;
+    return {
+      success: true,
+      message: 'Email log retrieved successfully',
+      data: log,
+    };
   }
 
   @Delete('logs/:id')
@@ -125,7 +129,11 @@ export class EmailManagementController {
       const key = `${appConfig().storageUrl.emailAttachments}${filename}`;
       await SojebStorage.delete(key);
     });
-    return null;
+    return {
+      success: true,
+      message: 'Email log deleted successfully',
+      data: null,
+    };
   }
 
 }
