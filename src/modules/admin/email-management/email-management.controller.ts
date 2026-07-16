@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Query, Body, UseInterceptors, UploadedFiles, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Get, Query, Body, UseInterceptors, UploadedFiles, HttpCode, HttpStatus, UseGuards, Req, Param, Delete } from '@nestjs/common';
 import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiConsumes, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { EmailManagementService } from './email-management.service';
@@ -104,4 +104,28 @@ export class EmailManagementController {
       data: result,
     }
   }
+
+  @Get('logs/:id')
+  @LogActivity({ action: 'view', entity: 'email_log' })
+  @ApiOperation({ summary: 'Retrieve a specific email log by ID' })
+  async getLogById(@Param('id') id: string) {
+    const log = await this.emailManagementService.getLogById(id);
+
+    log.files = log.files.map(filename => SojebStorage.url(`${appConfig().storageUrl.emailAttachments}${filename}`));
+
+    return log;
+  }
+
+  @Delete('logs/:id')
+  @LogActivity({ action: 'delete', entity: 'email_log' })
+  @ApiOperation({ summary: 'Delete a specific email log by ID' })
+  async deleteLogById(@Param('id') id: string) {
+    const log = await this.emailManagementService.deleteLogById(id);
+    log.files.forEach(async filename => {
+      const key = `${appConfig().storageUrl.emailAttachments}${filename}`;
+      await SojebStorage.delete(key);
+    });
+    return null;
+  }
+
 }

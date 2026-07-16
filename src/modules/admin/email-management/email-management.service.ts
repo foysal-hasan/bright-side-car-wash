@@ -111,4 +111,20 @@ export class EmailManagementService {
       }
     };
   }
+
+  async getLogById(id: string) {
+    return this.prisma.emailLog.findUnique({
+      where: { id },
+      include: {
+        creator: { select: { first_name: true, last_name: true, email: true } },
+        lead: { select: { name: true } }
+      }
+    });
+  }
+
+  // Delete a specific email log by ID
+  async deleteLogById(id: string) {
+    const log = await this.prisma.emailLog.delete({ where: { id } });
+    return log;
+  }
 }

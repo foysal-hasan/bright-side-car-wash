@@ -391,6 +391,8 @@ export class LeadController {
     }
   }
 
+  @ApiOperation({ summary: 'Delete an attachment from a lead' })
+  @ApiBody({ type: DeleteAttachmentDto })
   @Delete(':id/attachments')
   async deleteAttachment(
     @Param('id') id: string,
