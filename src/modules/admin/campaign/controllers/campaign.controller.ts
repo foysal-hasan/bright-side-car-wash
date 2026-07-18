@@ -23,6 +23,7 @@ import appConfig from 'src/config/app.config';
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @RequirePermission('campaign')
 @UseInterceptors(ActivityLogInterceptor)
+@RequirePermission('campaign')
 @Controller('admin/campaigns')
 export class CampaignController {
   constructor(
@@ -48,6 +49,7 @@ export class CampaignController {
   @ApiResponse({ status: 200, description: 'Campaign launched successfully.' })
   @Post('campaigns/:id/launch')
   @LogActivity({ action: 'launch', entity: 'campaign' })
+  @RequirePermission('campaign:launch')
   async launchCampaign(@Param('id') id: string) {
     const result = await this.orchestrator.finalizeAndLaunch(id);
     return {
@@ -62,6 +64,7 @@ export class CampaignController {
   @ApiOperation({ summary: 'Get campaign report' })
   @ApiResponse({ status: 200, description: 'Campaign report retrieved successfully.' })
   @LogActivity({ action: 'view', entity: 'campaign' })
+  @RequirePermission('campaign:report')
   async getReport(@Param('id') id: string) {
     const result = await this.orchestrator.getCampaignAnalytics(id);
     return {
@@ -122,6 +125,7 @@ export class CampaignController {
   @ApiResponse({ status: 200, description: 'Campaign status updated successfully.' })
   @LogActivity({ action: 'update', entity: 'campaign' })
   @Post('campaigns/:id/status-action')
+  @RequirePermission('campaign:change_status')
   async changeStatus(
     @Param('id') id: string,
     @Body() dto: CampaignStatusActionDto,

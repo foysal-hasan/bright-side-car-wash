@@ -5,11 +5,12 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { CampaignReportsService } from '../services/campaign.service';
 import { CampaignHighlightsQueryDto, CampaignReportTableQueryDto } from '../dto/campaign-reports.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 
 @ApiTags('Admin Campaign Performance Reports') // Groups endpoints together in Swagger UI
 @ApiBearerAuth() 
-@UseGuards(JwtAuthGuard) 
+@UseGuards(JwtAuthGuard, PermissionGuard) 
 @Controller('admin/reports/campaigns')
 export class CampaignReportsController {
   constructor(private readonly campaignReportsService: CampaignReportsService) {}
@@ -28,6 +29,7 @@ export class CampaignReportsController {
       ]
     }
   })
+  @RequirePermission('report:campaign')
   async getHighlights(@Query() query: CampaignHighlightsQueryDto) {
     const result = await this.campaignReportsService.getTopPerformanceCards(query);
     return {
@@ -40,6 +42,7 @@ export class CampaignReportsController {
   @Get('table')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get paginated campaign performance list', description: 'Returns a paginated data array with open and click rates for a table view grid.' })
+  @RequirePermission('report:campaign')
   async getTableData(@Query() query: CampaignReportTableQueryDto) {
     const result = await this.campaignReportsService.getCampaignReportTable(query);
     return {

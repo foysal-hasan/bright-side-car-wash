@@ -217,6 +217,7 @@ export class LeadController {
     description: 'Invalid query parameters',
   })
   @LogActivity({ action: 'read', entity: 'lead' })
+  @RequirePermission('lead:view_all')
   async findAll(@Query() query: QueryLeadDto) {
     const result = await this.leadService.findAll(query);
 
@@ -391,8 +392,10 @@ export class LeadController {
     }
   }
 
+  
   @ApiOperation({ summary: 'Delete an attachment from a lead' })
   @ApiBody({ type: DeleteAttachmentDto })
+  @RequirePermission('lead:update')
   @Delete(':id/attachments')
   async deleteAttachment(
     @Param('id') id: string,

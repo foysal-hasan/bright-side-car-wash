@@ -44,6 +44,7 @@ export class LeadGroupController {
   @ApiBody({ type: ConnectLeadsDto })
   @Post('connect-leads')
   @LogActivity({ action: 'connect', entity: 'lead_group' })
+  @RequirePermission('lead_group:connect')
   async connectLeads(@Body() connectLeadsDto: ConnectLeadsDto) {
     const result = await this.groupService.addLeadsToGroup(connectLeadsDto.groupId, connectLeadsDto.leadIds);
     return {
@@ -57,6 +58,7 @@ export class LeadGroupController {
   @ApiBody({ type: DisconnectLeadsDto })
   @LogActivity({ action: 'disconnect', entity: 'lead_group' })
   @Post('disconnect-leads')
+  @RequirePermission('lead_group:disconnect')
   async disconnectLeads(@Body() disconnectLeadsDto: DisconnectLeadsDto) {
     const result = await this.groupService.removeLeadsFromGroup(disconnectLeadsDto.groupId, disconnectLeadsDto.leadIds);
     return {

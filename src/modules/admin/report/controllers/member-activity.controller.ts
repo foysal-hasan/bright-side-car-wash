@@ -3,14 +3,17 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { MemberActivityService } from '../services/member-activity.service';
 import { MemberHighlightsQueryDto, MemberTableQueryDto } from '../dto/member-activity-report.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 @ApiTags('Admin Member Activity Analytics')
 @ApiBearerAuth() 
-@UseGuards(JwtAuthGuard) 
+@UseGuards(JwtAuthGuard, PermissionGuard) 
 @Controller('admin/reports/member-activity')
 export class MemberActivityController {
   constructor(private readonly memberActivityService: MemberActivityService) {}
 
+  @RequirePermission('report:member')
   @Get('highlights')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get core top performance card metrics (Supports Dates)' })
@@ -23,6 +26,7 @@ export class MemberActivityController {
     }
   }
 
+  @RequirePermission('report:member')
   @Get('table')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get paginated cumulative staff performance records tracking all active stages (No Dates)' })

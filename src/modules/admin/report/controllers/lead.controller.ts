@@ -3,14 +3,17 @@ import { ReportsService } from '../services/lead.service';
 import { DynamicStageReportDto, SourceBreakdownDto, StageBreakdownDto } from '../dto/lead-converstion-reports.dto';
 import { ApiBearerAuth, ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 @ApiTags('Admin Lead Reports')
 @ApiBearerAuth() 
-@UseGuards(JwtAuthGuard) 
+@UseGuards(JwtAuthGuard, PermissionGuard) 
 @Controller('admin/reports/leads')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
+  @RequirePermission('report:stage')
   @ApiOperation({ summary: 'Get dynamic stage summary report' })
   @Get('stage-summary')
   async getStageSummary(@Query() query: DynamicStageReportDto) {
@@ -22,7 +25,8 @@ export class ReportsController {
     }
   }
 
-
+  
+  @RequirePermission('report:stage')
   @ApiOperation({ summary: 'Get stage breakdown report' })
   @Post('stage-breakdown')
   @HttpCode(HttpStatus.OK)
@@ -35,6 +39,8 @@ export class ReportsController {
     };
   }
 
+  
+  @RequirePermission('report:stage')
   @ApiOperation({ summary: 'Get lead sources breakdown report' })
   @Get('sources')
   async getLeadSources(@Query() query: SourceBreakdownDto) {

@@ -5,16 +5,19 @@ import { CursorPaginationDto, OffsetPaginationDto } from './dto/get-notification
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { TransformResponseInterceptor } from 'src/common/interceptors/response.interceptor';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 
 
 @ApiTags('Admin / User Notifications')
 @ApiBearerAuth()
 @Controller('admin/notifications')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 @UseInterceptors(TransformResponseInterceptor)
 export class NotificationController {
     constructor(private readonly service: NotificationService) { }
 
+    @RequirePermission('notification:metrics')
     @Get('metrics')
     @ApiOperation({ summary: 'Get notification metrics for a specific recipient' })
     get_notification_metrics(@Req() req: Request) {
@@ -55,6 +58,4 @@ export class NotificationController {
     ) {
         return this.service.mark_as_read(id, req.user?.userId);
     }
-
-
 }

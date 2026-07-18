@@ -26,6 +26,7 @@ export class PaymentTransactionController {
   @ApiOperation({ summary: 'Get overview analytics cards data' })
   @ApiResponse({ status: 200, description: 'Returns counter stats vs last month indicators' })
   @LogActivity({ action: 'get', entity: 'payment-transaction-stats' })
+  @RequirePermission('payment-transaction:metrics')
   getTransactionStats() {
     return this.paymentTransactionService.getTransactionStats();
   }
@@ -34,6 +35,7 @@ export class PaymentTransactionController {
   @ApiOperation({ summary: 'Get paginated list of all payment transactions' })
   @ApiResponse({ status: 200, description: 'Returns a list of payments matching filters' })
   @LogActivity({ action: 'get', entity: 'payment-transaction-list' })
+  @RequirePermission('payment-transaction:read')
   findAll(@Query() query: GetPaymentsTransactionQueryDto) {
     return this.paymentTransactionService.findAll(query);
   }

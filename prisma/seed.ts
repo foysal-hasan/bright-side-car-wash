@@ -120,6 +120,8 @@ async function seedRoleAndPermission() {
     'faq',
     'gallery',
     'testimonial',
+    'news-and-events-category',
+    'news-and-events',
   ];
 
   const ACTIONS = ['create', 'read', 'update', 'delete'];
@@ -131,6 +133,7 @@ async function seedRoleAndPermission() {
     'lead:export',
     'lead:assign',
     'lead:unassign',
+    'lead:view_all',
     'lead_group:connect',
     'lead_group:disconnect',
     'lead_group:export',
@@ -141,11 +144,19 @@ async function seedRoleAndPermission() {
     'member:unblock',
     'mail-management:send_email',
     'mail-management:view_logs',
+    'mail-management:delete_logs',
     'payment-transaction:read',
     'payment-transaction:export',
-    'news-and-events:manage',
-    'news-and-events-category:manage',
-
+    'payment-transaction:metrics',
+    'payment-transaction:read',
+    'campaign:launch',
+    'campaign:report',
+    'campaign:change_status',
+    'notification:metrics',
+    'report:campaign',
+    'report:deposit_revenue',
+    'report:stage',
+    'report:member',
   ];
 
   console.log('🔄 Starting permission seeding with ioredis...');

@@ -32,7 +32,7 @@ export class NewsAndEventsController {
   // CATEGORIES ENDPOINTS
   // ==========================================
   @Post('categories')
-  @RequirePermission('news-and-events-category:manage')
+  @RequirePermission('news-and-events-category:create')
   @ApiOperation({ summary: 'Create a new content category' })
   @LogActivity({ action: 'create', entity: 'news-and-events-category' })
   create_category(@Body() dto: CreateCategoryDto) {
@@ -40,7 +40,7 @@ export class NewsAndEventsController {
   }
 
   @Get('categories')
-  @RequirePermission('news-and-events-category:manage')
+  @RequirePermission('news-and-events-category:read')
   @ApiOperation({ summary: 'Get all active categories' })
   @LogActivity({ action: 'read', entity: 'news-and-events-category' })
   find_all_categories() {
@@ -48,7 +48,7 @@ export class NewsAndEventsController {
   }
 
   @Get('categories/:id')
-  @RequirePermission('news-and-events-category:manage')
+  @RequirePermission('news-and-events-category:read')
   @ApiOperation({ summary: 'Get category by ID' })
   @LogActivity({ action: 'read', entity: 'news-and-events-category' })
   find_one_category(@Param('id') id: string) {
@@ -56,7 +56,7 @@ export class NewsAndEventsController {
   }
 
   @Patch('categories/:id')
-  @RequirePermission('news-and-events-category:manage')
+  @RequirePermission('news-and-events-category:update')
   @ApiOperation({ summary: 'Update a specific category' })
   @LogActivity({ action: 'update', entity: 'news-and-events-category' })
   update_category(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
@@ -64,7 +64,7 @@ export class NewsAndEventsController {
   }
 
   @Delete('categories/:id')
-  @RequirePermission('news-and-events-category:manage')
+  @RequirePermission('news-and-events-category:delete')
   @ApiOperation({ summary: 'Delete a category if no entries depend on it' })
   @LogActivity({ action: 'delete', entity: 'news-and-events-category' })
   remove_category(@Param('id') id: string) {
@@ -110,7 +110,6 @@ export class NewsAndEventsController {
   }
 
   @Post()
-  @RequirePermission('news-and-events:manage')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -154,7 +153,7 @@ export class NewsAndEventsController {
   }
 
   @Get()
-  @RequirePermission('news-and-events:manage')
+  @RequirePermission('news-and-events:read')
   @ApiOperation({ summary: 'Filter administrative dashboard records' })
   @LogActivity({ action: 'read', entity: 'news-and-events' })
   async find_all(@Query() query: QueryNewsAndEventDto) {
@@ -170,7 +169,7 @@ export class NewsAndEventsController {
   }
 
   @Get(':id')
-  @RequirePermission('news-and-events:manage')
+  @RequirePermission('news-and-events:read')
   @ApiOperation({ summary: 'Get a specific news/event entry by ID' })
   @LogActivity({ action: 'read', entity: 'news-and-events' })
   async find_one(@Param('id') id: string) {
@@ -183,7 +182,7 @@ export class NewsAndEventsController {
   }
 
   @Patch(':id')
-  @RequirePermission('news-and-events:manage')
+  @RequirePermission('news-and-events:update')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -230,7 +229,7 @@ export class NewsAndEventsController {
   }
 
   @Delete(':id')
-  @RequirePermission('news-and-events:manage')
+  @RequirePermission('news-and-events:delete')
   @LogActivity({ action: 'delete', entity: 'news-and-events' })
   @ApiOperation({ summary: 'Delete a specific news/event entry by ID' })
   async remove(@Param('id') id: string) {

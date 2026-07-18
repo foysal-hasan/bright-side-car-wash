@@ -108,6 +108,7 @@ export class EmailManagementController {
   @Get('logs/:id')
   @LogActivity({ action: 'view', entity: 'email_log' })
   @ApiOperation({ summary: 'Retrieve a specific email log by ID' })
+  @RequirePermission('mail-management:view_logs')
   async getLogById(@Param('id') id: string) {
     const log = await this.emailManagementService.getLogById(id);
 
@@ -123,6 +124,7 @@ export class EmailManagementController {
   @Delete('logs/:id')
   @LogActivity({ action: 'delete', entity: 'email_log' })
   @ApiOperation({ summary: 'Delete a specific email log by ID' })
+  @RequirePermission('mail-management:delete_logs')
   async deleteLogById(@Param('id') id: string) {
     const log = await this.emailManagementService.deleteLogById(id);
     log.files.forEach(async filename => {

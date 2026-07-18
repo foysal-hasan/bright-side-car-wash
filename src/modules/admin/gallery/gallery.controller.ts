@@ -117,7 +117,7 @@ export class AdminGalleryController {
       result.updatedGallery.image = SojebStorage.url(key);
     }
 
-    if(updateGalleryDto.image && result.existingImage) {
+    if (updateGalleryDto.image && result.existingImage) {
       const existingImageKey = `${appConfig().storageUrl.gallery}${result.existingImage}`;
       await SojebStorage.delete(existingImageKey);
     }
