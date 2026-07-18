@@ -13,16 +13,27 @@ export class EmailManagementService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(EMAIL_PROVIDER_TOKEN) private readonly emailProvider: IEmailProvider // Injected via decoupled token
-  ) {}
+  ) { }
 
   async sendEmail(dto: ComposeEmailDto, currentUserId: string, fileUrls: string[]) {
     const existingLead = await this.prisma.lead.findFirst({
-        where: { email: { equals: dto.to, mode: 'insensitive' }, deleted_at: null },
-        select: { id: true }
-      });
+      where: { email: { equals: dto.to, mode: 'insensitive' }, deleted_at: null },
+      select: { id: true, email: true, name: true }
+    });
 
-      const mailSenderName = appConfig().mail.sender_email.trim();
-      const mailSenderEmail = appConfig().mail.sender_email.trim().toLowerCase();
+    const mailSenderName = appConfig().mail.sender_email.trim();
+    const mailSenderEmail = appConfig().mail.sender_email.trim().toLowerCase();
+
+    let firstName = 'Valued Customer';
+    let lastName = '';
+
+    if (existingLead?.name?.split?.(' ')?.[0]) {
+      firstName = existingLead.name.split(' ')[0];
+    }
+
+    if (existingLead?.name?.split?.(' ')?.[1]) {
+      lastName = existingLead.name.split(' ')[1];
+    }
 
     try {
       // 1. Call your modular, pluggable email provider strategy instance
@@ -33,7 +44,11 @@ export class EmailManagementService {
         bcc: dto.bcc,
         subject: dto.subject,
         html: dto.body,
-        attachments: fileUrls
+        attachments: fileUrls,
+        params: {
+          FIRSTNAME: firstName,
+          LASTNAME: lastName
+        }
       });
 
       // 2. Persist comprehensive database history tracking audit logs

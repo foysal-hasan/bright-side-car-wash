@@ -19,4 +19,5 @@ export interface EmailOptions {
   subject: string;
   html: string;
   attachments?: string[];
+  params?: { [key: string]: unknown };
 } 

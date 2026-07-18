@@ -26,9 +26,10 @@ export class BrevoProvider implements IEmailProvider {
       ...options.cc && options.cc.length ? { cc: options.cc.map(email => ({ email })) } : {},
       ...options.bcc && options.bcc.length ? { bcc: options.bcc.map(email => ({ email })) } : {},
       ...options.attachments && options.attachments.length ? { attachment: options.attachments.map(file => ({ url: file })) } : {},
+      params: options.params || {},
     });
 
-    this.logger.log(`Email sent to ${options.to} with subject "${options.subject} => Brevo response: ${JSON.stringify(result)}`);
+    this.logger.debug(`Email sent to ${options.to} with subject "${options.subject}" => Brevo response: ${JSON.stringify(result)}`);
     
     return result.messageId; // Return the message ID for tracking
   }

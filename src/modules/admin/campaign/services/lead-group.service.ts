@@ -42,9 +42,30 @@ export class LeadGroupService {
     });
 
     // Extract emails and push them to Brevo instantly
+    // const emailsToSync = updatedGroup.leads
+    //   .map((l) => l.email)
+    //   .filter((e): e is string => !!e);
     const emailsToSync = updatedGroup.leads
-      .map((l) => l.email)
-      .filter((e): e is string => !!e);
+      .map((l) => {
+        let firstName = 'Valued Customer';
+        let lastName = '';
+
+        if (l?.name?.split?.(' ')?.[0]) {
+          firstName = l.name.split(' ')[0];
+        }
+
+        if (l?.name?.split?.(' ')?.[1]) {
+          lastName = l.name.split(' ')[1];
+        }
+
+        return {
+          email: l.email,
+          firstName,
+          lastName
+        }
+      }
+      )
+      .filter((c): c is { email: string; firstName: string; lastName: string } => !!c.email);
 
     if (emailsToSync.length > 0) {
       await this.emailProvider.addContactsToList(group.brevoListId, emailsToSync);
@@ -281,3 +302,5 @@ export class LeadGroupService {
     };
   }
 }
+
+

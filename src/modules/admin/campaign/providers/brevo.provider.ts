@@ -78,7 +78,7 @@ export class BrevoProvider implements IEmailProvider {
   /**
    * Syncs emails to a reusable list. Creates it if missing, syncs contacts if it exists.
    */
-  async createContactList(listName: string, emails: string[], existingBrevoListId?: number | null): Promise<number> {
+  async createContactList(listName: string, contacts: { email: string, firstName: string, lastName: string }[], existingBrevoListId?: number | null): Promise<number> {
     let brevoListId = existingBrevoListId;
 
     // 1. Create the list if it doesn't exist yet
@@ -112,12 +112,16 @@ export class BrevoProvider implements IEmailProvider {
     }
 
     // 3. Batch insert/update the new active emails into this list
-    for (const email of emails) {
+    for (const contact of contacts) {
       try {
         await this.client.contacts.createContact({
-          email,
+          email: contact.email,
           listIds: [Number(brevoListId)],
           updateEnabled: true,
+          attributes: {
+            FIRSTNAME: contact.firstName,
+            LASTNAME: contact.lastName,
+          },
         });
       } catch (err) {
         // Ignore single malformed rows to prevent crashing the whole pipeline
@@ -299,13 +303,17 @@ export class BrevoProvider implements IEmailProvider {
   }
 
   // Add a single contact or batch of contacts to a list
-  async addContactsToList(brevoListId: number, emails: string[]): Promise<void> {
-    for (const email of emails) {
+  async addContactsToList(brevoListId: number, contacts: { email: string, firstName: string, lastName: string }[]): Promise<void> {
+    for (const contact of contacts) {
       try {
         await this.client.contacts.createContact({
-          email,
+          email: contact.email,
           listIds: [brevoListId],
           updateEnabled: true,
+          attributes: {
+            FIRSTNAME: contact.firstName,
+            LASTNAME: contact.lastName,
+          },
         });
       } catch (err) {
         // Suppress individual errors (e.g., if email is malformed)

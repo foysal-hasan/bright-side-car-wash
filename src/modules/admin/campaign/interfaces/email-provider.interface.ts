@@ -6,7 +6,7 @@ export interface IEmailProvider {
   sendCampaign(providerCampaignId: string): Promise<boolean>;
   getCampaignReport(providerCampaignId: string): Promise<any>;
   // createContactList(listName: string, emails: string[]): Promise<number>;
-  createContactList(listName: string, emails: string[], existingListId?: number | null): Promise<number>;
+  createContactList(listName: string, emails: { email: string, firstName: string, lastName: string }[], existingListId?: number | null): Promise<number>;
   createMarketingCampaign(payload: { name: string;
     subject: string;
     htmlContent: string;
@@ -28,7 +28,7 @@ export interface IEmailProvider {
   launchCampaign(providerCampaignId: string, scheduledAt?: Date): Promise<boolean>;
 
   createRemoteList(listName: string): Promise<number>;
-  addContactsToList(brevoListId: number, emails: string[]): Promise<void>;
+  addContactsToList(brevoListId: number, contacts: { email: string, firstName: string, lastName: string }[]): Promise<void>;
   removeContactsFromList(brevoListId: number, emails: string[]): Promise<void>;
   deleteRemoteList(brevoListId: number): Promise<void>;
 }
