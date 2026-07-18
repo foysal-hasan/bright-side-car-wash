@@ -13,11 +13,13 @@ import { extname } from 'path';
 import { GetTestimonialsQueryDto } from './dto/get-testimonials-query.dto';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 @ApiTags('Admin / Testimonials')
 @ApiBearerAuth()
 @Controller('admin/testimonials')
 @UseGuards(JwtAuthGuard, PermissionGuard)
+@RequirePermission('testimonial')
 @UseInterceptors(TransformResponseInterceptor)
 export class TestimonialController {
   constructor(private readonly testimonialService: TestimonialService) { }

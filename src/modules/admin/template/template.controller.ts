@@ -21,7 +21,7 @@ import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 @ApiTags('Templates Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
-@RequirePermission('stage')
+@RequirePermission('template')
 @UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/templates')
 export class TemplatesController {
@@ -41,7 +41,6 @@ export class TemplatesController {
       data: template,
     };
   }
-
 
   @ApiOperation({ summary: 'Retrieve all templates with filters', description: 'Supports pagination, string searching, architecture typing filtering, and archival status views.' })
   @ApiResponse({ status: 200, description: 'List of templates matching criteria fetched successfully.' })
