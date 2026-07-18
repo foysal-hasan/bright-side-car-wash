@@ -12,7 +12,6 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 @ApiTags('Team Member Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
-@RequirePermission('member')
 @UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/members')
 export class TeamController {

@@ -23,15 +23,18 @@ import { FilesAdminService } from './files.admin.service';
 import { QueryMediaFilesAdminDto } from './dto/query-media-files.admin.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { UpdateMediaFileAdminDto } from './dto/update-media-file.admin.dto';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 @ApiTags('Admin / Files')
 @ApiBearerAuth()
 @UseInterceptors(TransformResponseInterceptor)
 @Controller('admin/files')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class FilesAdminController {
   constructor(private readonly filesAdminService: FilesAdminService) {}
 
+  @RequirePermission('section:create')
   @Post('upload')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -73,18 +76,21 @@ export class FilesAdminController {
     return this.filesAdminService.uploadMany(files);
   }
 
+  @RequirePermission('section:read')
   @Get()
   @ApiOperation({ summary: 'Fetch paginated uploaded files with optional search filters' })
   async findAll(@Query() query: QueryMediaFilesAdminDto) {
     return this.filesAdminService.findAll(query);
   }
 
+  @RequirePermission('section:read')
   @Get(':id')
   @ApiOperation({ summary: 'Fetch metadata for a single uploaded file' })
   async findOne(@Param('id') id: string) {
     return this.filesAdminService.findOne(id);
   }
 
+  @RequirePermission('section:delete')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a media file and remove it from storage' })

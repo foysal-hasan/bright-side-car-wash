@@ -19,10 +19,13 @@ import { QuerySectionsAdminDto } from './dto/query-sections.admin.dto';
 import { UpdateSectionAdminDto } from './dto/update-section.admin.dto';
 import { SectionsAdminService } from './sections.admin.service';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
+import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
+import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 
 @ApiTags('Admin / Sections')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
+@RequirePermission('section')
 @UseInterceptors(TransformResponseInterceptor)
 @Controller('admin/sections')
 export class SectionsAdminController {

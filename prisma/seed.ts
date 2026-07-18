@@ -122,6 +122,7 @@ async function seedRoleAndPermission() {
     'testimonial',
     'news-and-events-category',
     'news-and-events',
+    'section',
   ];
 
   const ACTIONS = ['create', 'read', 'update', 'delete'];
