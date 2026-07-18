@@ -134,7 +134,7 @@ export class LeadGroupService {
       Source: lead.source || '',
       Stage: lead.stage?.name || 'N/A',
       // 'Deposit Status': lead.deposit_status || 'PENDING',
-      // Priority: lead.priority || 'LOW',
+      Priority: lead.priority || 'LOW',
       'Created At': lead.created_at.toISOString(),
     }));
 
