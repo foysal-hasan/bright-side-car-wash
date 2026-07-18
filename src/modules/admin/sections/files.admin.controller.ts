@@ -25,18 +25,21 @@ import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { UpdateMediaFileAdminDto } from './dto/update-media-file.admin.dto';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
+import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
+import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 
 @ApiTags('Admin / Files')
 @ApiBearerAuth()
-@UseInterceptors(TransformResponseInterceptor)
 @Controller('admin/files')
 @UseGuards(JwtAuthGuard, PermissionGuard)
+@UseInterceptors(TransformResponseInterceptor, ActivityLogInterceptor)
 export class FilesAdminController {
   constructor(private readonly filesAdminService: FilesAdminService) {}
 
   @RequirePermission('section:create')
   @Post('upload')
   @ApiConsumes('multipart/form-data')
+  @LogActivity({ action: 'upload_files' , entity: 'section' })
   @ApiBody({
     schema: {
       type: 'object',
@@ -76,6 +79,7 @@ export class FilesAdminController {
     return this.filesAdminService.uploadMany(files);
   }
 
+  @LogActivity({ action: 'get_files_files' , entity: 'section' })
   @RequirePermission('section:read')
   @Get()
   @ApiOperation({ summary: 'Fetch paginated uploaded files with optional search filters' })
@@ -83,6 +87,7 @@ export class FilesAdminController {
     return this.filesAdminService.findAll(query);
   }
 
+  @LogActivity({ action: 'get_files_file' , entity: 'section' })
   @RequirePermission('section:read')
   @Get(':id')
   @ApiOperation({ summary: 'Fetch metadata for a single uploaded file' })
@@ -90,6 +95,7 @@ export class FilesAdminController {
     return this.filesAdminService.findOne(id);
   }
 
+  @LogActivity({ action: 'delete_files_file' , entity: 'section' })
   @RequirePermission('section:delete')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
