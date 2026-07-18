@@ -7,8 +7,12 @@ import { MemberActivityController } from './controllers/member-activity.controll
 import { MemberActivityService } from './services/member-activity.service';
 import { DepositAnalyticsController } from './controllers/deposit-analytics.controller';
 import { DepositAnalyticsService } from './services/deposit.analytics.service';
+import { ActivityLogModule as CoreActivityLogModule } from 'src/activity-log/activity-log.module';
 
 @Module({
+  imports: [
+    CoreActivityLogModule,
+  ],
   controllers: [ReportsController, CampaignReportsController, MemberActivityController, DepositAnalyticsController],
   providers: [ReportsService, CampaignReportsService, MemberActivityService, DepositAnalyticsService],
 })

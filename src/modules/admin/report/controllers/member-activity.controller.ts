@@ -1,18 +1,22 @@
-import { Controller, Get, Query, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, HttpCode, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { MemberActivityService } from '../services/member-activity.service';
 import { MemberHighlightsQueryDto, MemberTableQueryDto } from '../dto/member-activity-report.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
+import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
+import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 
 @ApiTags('Admin Member Activity Analytics')
 @ApiBearerAuth() 
-@UseGuards(JwtAuthGuard, PermissionGuard) 
+@UseGuards(JwtAuthGuard, PermissionGuard)
+@UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/reports/member-activity')
 export class MemberActivityController {
   constructor(private readonly memberActivityService: MemberActivityService) {}
 
+  @LogActivity({ action: 'get_member_highlights' , entity: 'member' })
   @RequirePermission('report:member')
   @Get('highlights')
   @HttpCode(HttpStatus.OK)
@@ -26,6 +30,7 @@ export class MemberActivityController {
     }
   }
 
+  @LogActivity({ action: 'get_member_table' , entity: 'member' })
   @RequirePermission('report:member')
   @Get('table')
   @HttpCode(HttpStatus.OK)

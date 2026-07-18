@@ -1,4 +1,4 @@
-import { Controller, Get, Query, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, HttpCode, HttpStatus, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
@@ -6,11 +6,14 @@ import { CampaignReportsService } from '../services/campaign.service';
 import { CampaignHighlightsQueryDto, CampaignReportTableQueryDto } from '../dto/campaign-reports.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
+import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
+import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 
 
-@ApiTags('Admin Campaign Performance Reports') // Groups endpoints together in Swagger UI
+@ApiTags('Admin Campaign Performance Reports')
 @ApiBearerAuth() 
 @UseGuards(JwtAuthGuard, PermissionGuard) 
+@UseInterceptors(ActivityLogInterceptor)  
 @Controller('admin/reports/campaigns')
 export class CampaignReportsController {
   constructor(private readonly campaignReportsService: CampaignReportsService) {}
@@ -30,6 +33,7 @@ export class CampaignReportsController {
     }
   })
   @RequirePermission('report:campaign')
+  @LogActivity({ action: 'get_campaign_highlights' , entity: 'campaign' })
   async getHighlights(@Query() query: CampaignHighlightsQueryDto) {
     const result = await this.campaignReportsService.getTopPerformanceCards(query);
     return {
@@ -43,6 +47,7 @@ export class CampaignReportsController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get paginated campaign performance list', description: 'Returns a paginated data array with open and click rates for a table view grid.' })
   @RequirePermission('report:campaign')
+  @LogActivity({ action: 'get_campaign_table' , entity: 'campaign' })
   async getTableData(@Query() query: CampaignReportTableQueryDto) {
     const result = await this.campaignReportsService.getCampaignReportTable(query);
     return {
