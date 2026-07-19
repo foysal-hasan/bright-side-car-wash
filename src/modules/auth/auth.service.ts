@@ -94,6 +94,7 @@ export class AuthService implements OnModuleInit {
           role_id: superUserRole.id,
           permission_id: permission.id,
         })),
+        skipDuplicates: true,
       });
     }
 
