@@ -168,6 +168,7 @@ export class AuthService implements OnModuleInit {
         first_name: true,
         last_name: true,
         email: true,
+        phone_number: true,
         avatar: true,
         gender: true,
         date_of_birth: true,
