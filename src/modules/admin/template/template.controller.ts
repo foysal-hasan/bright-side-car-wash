@@ -57,9 +57,9 @@ export class TemplatesController {
   }
 
   // upload image for template
-  @ApiOperation({ 
-    summary: 'Upload an image for a template', 
-    description: 'Uploads an image to be used in a template. Returns the URL of the uploaded image.' 
+  @ApiOperation({
+    summary: 'Upload an image for a template',
+    description: 'Uploads an image to be used in a template. Returns the URL of the uploaded image.'
   })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({ status: 200, description: 'Image uploaded successfully.' })

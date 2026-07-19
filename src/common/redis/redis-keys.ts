@@ -1,25 +1,33 @@
 export const RedisKeys = {
-    rolePermissions(roleName: string): string {
-        return `role:${roleName.trim().toLowerCase()}`;
-    },
+  rolePermissions(roleName: string): string {
+    return `role:${roleName.trim().toLowerCase()}`;
+  },
 
-    rolePermissionsPattern(): string {
-        return 'role:*';
-    },
+  rolePermissionsPattern(): string {
+    return 'role:*';
+  },
 
-    refreshToken(sessionId: string): string {
-        return `refresh_token:${sessionId}`;
-    },
+  refreshToken(sessionId: string): string {
+    return `refresh_token:${sessionId}`;
+  },
 
-    blacklist(sessionId: string): string {
-        return `blacklist:${sessionId}`;
-    },
+  blacklist(sessionId: string): string {
+    return `blacklist:${sessionId}`;
+  },
 
-    bookingLock(locationId: string, startAt: string): string {
-        return `lock:${locationId}:${startAt}`;
-    },
+  bookingLock(locationId: string, startAt: string): string {
+    return `lock:${locationId}:${startAt}`;
+  },
 
-    getLockKey(locationId: string, startAt: string) {
-        return `lock:${locationId}:${startAt}`;
-    }
+  getLockKey(locationId: string, startAt: string) {
+    return `lock:${locationId}:${startAt}`;
+  },
+
+  availabilityCache(locationId: string, serviceVariationId: string, date: string): string {
+    return `availability:${locationId}:${serviceVariationId}:${date}`;
+  },
+
+  availabilityCachePattern(): string {
+    return 'availability:*';
+  },
 };

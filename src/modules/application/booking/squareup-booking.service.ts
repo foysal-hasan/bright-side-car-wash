@@ -323,7 +323,63 @@ export class SquareUpBookingService {
   ) {
     try {
       const resolvedRange = this.resolveAvailabilityRange(date, startAt, endAt);
+      const targetDate = date || resolvedRange.startAt.substring(0, 10);
 
+      // Try to get from cache first
+      const allSlotsFromCache: any[] = [];
+      const uncachedVariationIds: string[] = [];
+
+      for (const variationId of serviceVariationIds) {
+        const cacheKey = RedisKeys.availabilityCache(
+          locationId,
+          variationId,
+          targetDate
+        );
+        const cachedData = await this.redis.get(cacheKey);
+        if (cachedData) {
+          allSlotsFromCache.push(...JSON.parse(cachedData));
+        } else {
+          uncachedVariationIds.push(variationId);
+        }
+      }
+
+      // Fetch remaining from Square if needed
+      let slotsFromSquare: any[] = [];
+      if (uncachedVariationIds.length > 0) {
+        const availabilityResponse = await this.squareClient.bookings.searchAvailability({
+          query: {
+            filter: {
+              locationId,
+              startAtRange: resolvedRange,
+              segmentFilters: uncachedVariationIds.map((serviceVariationId) => ({
+                serviceVariationId,
+              })),
+            },
+          },
+        });
+        slotsFromSquare = availabilityResponse.availabilities ?? [];
+      }
+
+      // Combine and filter locked slots
+      const allSlots = [...allSlotsFromCache, ...slotsFromSquare];
+      const availableSlots = [];
+      for (const slot of allSlots) {
+        const lockKey = RedisKeys.getLockKey(locationId, slot.startAt ?? '');
+        const isLocked = await this.redis.get(lockKey);
+        if (!isLocked) {
+          availableSlots.push(slot);
+        }
+      }
+
+      return this.toJsonSafe({
+        locationId,
+        range: resolvedRange,
+        slots: availableSlots,
+      });
+    } catch (error) {
+      // If any error occurs (including cache issues), fall back to direct Square call
+      this.logger.warn('Falling back to direct Square call for availability check', error);
+      const resolvedRange = this.resolveAvailabilityRange(date, startAt, endAt);
       const availabilityResponse = await this.squareClient.bookings.searchAvailability({
         query: {
           filter: {
@@ -350,8 +406,80 @@ export class SquareUpBookingService {
         range: resolvedRange,
         slots: availableSlots,
       });
+    }
+  }
+
+  /**
+   * Pre-cache availability for all services at all locations for the next 30 days
+   */
+  async precacheAvailability() {
+    try {
+      this.logger.log('Starting availability pre-cache...');
+
+      // 1. Get all active locations
+      const locations = await this.getLocations();
+      
+      // 2. Get all bookable services for all locations
+      for (const location of locations) {
+        const servicesResult = await this.getServices({ locationId: location.id, limit: 100 });
+        const services = servicesResult.data;
+
+        // 3. For each service, get all variations and cache availability
+        for (const service of services) {
+          for (const variation of service.variations) {
+            await this.cacheAvailabilityForServiceVariation(
+              location.id,
+              variation.id
+            );
+          }
+        }
+      }
+
+      this.logger.log('Availability pre-cache completed successfully!');
     } catch (error) {
-      this.handleSquareError(error);
+      this.logger.error('Error during availability pre-cache:', error);
+    }
+  }
+
+  /**
+   * Cache availability for a specific service variation at a location for next 30 days
+   */
+  private async cacheAvailabilityForServiceVariation(
+    locationId: string,
+    serviceVariationId: string
+  ) {
+    try {
+      const today = new Date();
+      for (let i = 0; i < 30; i++) {
+        const targetDate = new Date(today);
+        targetDate.setDate(today.getDate() + i);
+        const dateStr = targetDate.toISOString().substring(0, 10);
+        
+        const resolvedRange = this.resolveAvailabilityRange(dateStr);
+        
+        const availabilityResponse = await this.squareClient.bookings.searchAvailability({
+          query: {
+            filter: {
+              locationId,
+              startAtRange: resolvedRange,
+              segmentFilters: [{ serviceVariationId }],
+            },
+          },
+        });
+
+        const slots = availabilityResponse.availabilities ?? [];
+        const cacheKey = RedisKeys.availabilityCache(locationId, serviceVariationId, dateStr);
+        
+        // Cache for 24 hours (86400 seconds)
+        await this.redis.set(cacheKey, JSON.stringify(this.toJsonSafe(slots)), 'EX', 86400);
+        
+        this.logger.debug(`Cached availability for ${locationId}/${serviceVariationId}/${dateStr}: ${slots.length} slots`);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to cache availability for ${locationId}/${serviceVariationId}:`,
+        error
+      );
     }
   }
 
@@ -684,6 +812,24 @@ export class SquareUpBookingService {
 
       // EVICT CACHE LOCK IMMEDIATELY ON SUCCESS
       await this.redis.del(lockKey).catch(() => { });
+
+      // Update availability cache for booked slot
+      const bookingDate = payload.startAt.substring(0, 10);
+      for (const cartItem of payload.cartItems) {
+        const cacheKey = RedisKeys.availabilityCache(
+          payload.locationId,
+          cartItem.serviceVariationId,
+          bookingDate
+        );
+        
+        // Remove the booked slot from cache
+        const cachedData = await this.redis.get(cacheKey);
+        if (cachedData) {
+          const slots: any[] = JSON.parse(cachedData);
+          const updatedSlots = slots.filter(slot => slot.startAt !== payload.startAt);
+          await this.redis.set(cacheKey, JSON.stringify(updatedSlots), 'EX', 86400);
+        }
+      }
 
       return this.toJsonSafe({
         booking: bookingResponse.booking,
