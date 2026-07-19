@@ -51,7 +51,6 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Account: 'Account',
   User: 'User',
   UserSession: 'UserSession',
   Ucode: 'Ucode',
@@ -59,9 +58,6 @@ export const ModelName = {
   Permission: 'Permission',
   RoleUser: 'RoleUser',
   RolePermission: 'RolePermission',
-  Message: 'Message',
-  Attachment: 'Attachment',
-  Conversation: 'Conversation',
   Section: 'Section',
   MediaFile: 'MediaFile',
   ActivityLog: 'ActivityLog',
@@ -100,26 +96,6 @@ export const TransactionIsolationLevel = {
 } as const
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
-export const AccountScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  user_id: 'user_id',
-  type: 'type',
-  provider: 'provider',
-  provider_account_id: 'provider_account_id',
-  refresh_token: 'refresh_token',
-  access_token: 'access_token',
-  expires_at: 'expires_at',
-  token_type: 'token_type',
-  scope: 'scope',
-  id_token: 'id_token',
-  session_state: 'session_state'
-} as const
-
-export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -226,49 +202,6 @@ export const RolePermissionScalarFieldEnum = {
 } as const
 
 export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
-
-
-export const MessageScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  status: 'status',
-  sender_id: 'sender_id',
-  receiver_id: 'receiver_id',
-  conversation_id: 'conversation_id',
-  attachment_id: 'attachment_id',
-  message: 'message'
-} as const
-
-export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
-
-
-export const AttachmentScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  name: 'name',
-  type: 'type',
-  size: 'size',
-  file: 'file',
-  file_alt: 'file_alt'
-} as const
-
-export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
-
-
-export const ConversationScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  creator_id: 'creator_id',
-  participant_id: 'participant_id'
-} as const
-
-export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
 
 
 export const SectionScalarFieldEnum = {

@@ -15,29 +15,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model Account {
-  id         String   @id @default(cuid())
-  created_at DateTime @default(now())
-  updated_at DateTime @default(now())
-
-  user_id String
-  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  type                String?
-  provider            String?
-  provider_account_id String?
-  refresh_token       String?
-  access_token        String?
-  expires_at          DateTime?
-  token_type          String?
-  scope               String?
-  id_token            String?
-  session_state       String?
-
-  @@unique([provider, provider_account_id])
-  @@map("accounts")
-}
-
 model User {
   id           String    @id @default(cuid())
   created_at   DateTime  @default(now())
@@ -87,13 +64,8 @@ model User {
   inviteTokenExpiry DateTime?
 
   // Other relations
-  accounts                     Account[]
   ucodes                       Ucode[]
   userSessions                 UserSession[]
-  messages                     Message[]              @relation("receiver")
-  sent_messages                Message[]              @relation("sender")
-  conversations_created        Conversation[]         @relation("creator")
-  conversations_as_participant Conversation[]         @relation("participant")
   roleUsers                    RoleUser[]
   activityLogs                 ActivityLog[]
   lead_activity_timelines      LeadActivityTimeline[]
@@ -195,68 +167,6 @@ enum MessageStatus {
   SENT
   DELIVERED
   READ
-}
-
-// message is used for conversation
-model Message {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
-  status MessageStatus? @default(PENDING)
-
-  sender_id String?
-  sender    User?   @relation("sender", fields: [sender_id], references: [id])
-
-  receiver_id String?
-  receiver    User?   @relation("receiver", fields: [receiver_id], references: [id])
-
-  conversation_id String?
-  conversation    Conversation? @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
-
-  attachment_id String?
-  attachment    Attachment? @relation(fields: [attachment_id], references: [id])
-
-  message String?
-
-  @@map("messages")
-}
-
-// this table stores attachment of message
-model Attachment {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
-  name     String?
-  type     String?
-  size     Int?
-  file     String?
-  file_alt String?
-
-  messages Message[]
-
-  @@map("attachments")
-}
-
-// this table stores conversation
-model Conversation {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
-  creator_id String?
-  creator    User?   @relation("creator", fields: [creator_id], references: [id])
-
-  participant_id String?
-  participant    User?   @relation("participant", fields: [participant_id], references: [id])
-
-  messages Message[]
-
-  @@map("conversations")
 }
 
 model Section {

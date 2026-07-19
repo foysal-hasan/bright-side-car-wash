@@ -8,7 +8,6 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/Account'
 export type * from './models/User'
 export type * from './models/UserSession'
 export type * from './models/Ucode'
@@ -16,9 +15,6 @@ export type * from './models/Role'
 export type * from './models/Permission'
 export type * from './models/RoleUser'
 export type * from './models/RolePermission'
-export type * from './models/Message'
-export type * from './models/Attachment'
-export type * from './models/Conversation'
 export type * from './models/Section'
 export type * from './models/MediaFile'
 export type * from './models/ActivityLog'

@@ -33,7 +33,6 @@ export class AuthService implements OnModuleInit {
     private mailService: MailService,
     private userRepository: UserRepository,
     private ucodeRepository: UcodeRepository,
-    @Inject('FIREBASE_AUTH') private firebaseAuth: any,
     @InjectRedis() private readonly redis: Redis,
   ) { }
 
@@ -160,55 +159,55 @@ export class AuthService implements OnModuleInit {
   }
 
   async me(userId: string) {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          id: userId,
-        },
-        select: {
-          id: true,
-          first_name: true,
-          last_name: true,
-          email: true,
-          avatar: true,
-          gender: true,
-          date_of_birth: true,
-          created_at: true,
-          updated_at: true,
-          roleUsers: {
-            select: {
-              role: {
-                select: {
-                  name: true,
-                },
+    const user = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        first_name: true,
+        last_name: true,
+        email: true,
+        avatar: true,
+        gender: true,
+        date_of_birth: true,
+        created_at: true,
+        updated_at: true,
+        roleUsers: {
+          select: {
+            role: {
+              select: {
+                name: true,
               },
             },
           },
         },
-      });
+      },
+    });
 
-      if (!user) {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
+    if (!user) {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
 
-      if (user.avatar) {
-        user['avatar_url'] = SojebStorage.url(
-          appConfig().storageUrl.avatar + user.avatar,
-        );
-      }
+    if (user.avatar) {
+      user['avatar_url'] = SojebStorage.url(
+        appConfig().storageUrl.avatar + user.avatar,
+      );
+    }
 
-      if (user) {
-        return {
-          success: true,
-          data: user,
-        };
-      } else {
-        return {
-          success: false,
-          message: 'User not found',
-        };
+    if (user) {
+      return {
+        success: true,
+        data: user,
+      };
+    } else {
+      return {
+        success: false,
+        message: 'User not found',
+      };
     }
   }
 
@@ -217,68 +216,68 @@ export class AuthService implements OnModuleInit {
     updateUserDto: UpdateUserDto,
     image?: Express.Multer.File,
   ) {
-      const data: any = {};
-      if (updateUserDto.firstName) {
-        data.first_name = updateUserDto.firstName;
-      }
-      if (updateUserDto.lastName) {
-        data.last_name = updateUserDto.lastName;
-      }
-      if (updateUserDto.phoneNumber) {
-        data.phone_number = updateUserDto.phoneNumber;
-      }
-      if (updateUserDto.address) {
-        data.address = updateUserDto.address;
-      }
-      if (updateUserDto.gender) {
-        data.gender = updateUserDto.gender;
-      }
-      if (updateUserDto.dateOfBirth) {
-        data.date_of_birth = DateHelper.format(updateUserDto.dateOfBirth);
-      }
+    const data: any = {};
+    if (updateUserDto.firstName) {
+      data.first_name = updateUserDto.firstName;
+    }
+    if (updateUserDto.lastName) {
+      data.last_name = updateUserDto.lastName;
+    }
+    if (updateUserDto.phoneNumber) {
+      data.phone_number = updateUserDto.phoneNumber;
+    }
+    if (updateUserDto.address) {
+      data.address = updateUserDto.address;
+    }
+    if (updateUserDto.gender) {
+      data.gender = updateUserDto.gender;
+    }
+    if (updateUserDto.dateOfBirth) {
+      data.date_of_birth = DateHelper.format(updateUserDto.dateOfBirth);
+    }
 
-      if (image) {
-        // delete old image from storage
-        const oldImage = await this.prisma.user.findFirst({
-          where: { id: userId },
-          select: { avatar: true },
-        });
+    if (image) {
+      // delete old image from storage
+      const oldImage = await this.prisma.user.findFirst({
+        where: { id: userId },
+        select: { avatar: true },
+      });
 
-        if (oldImage.avatar) {
-          await SojebStorage.delete(
-            appConfig().storageUrl.avatar + oldImage.avatar,
-          );
-        }
-
-        // upload file
-        const fileName = `${StringHelper.randomString(16)}${image.originalname}`;
-        await SojebStorage.put(
-          appConfig().storageUrl.avatar + fileName,
-          image.buffer,
+      if (oldImage.avatar) {
+        await SojebStorage.delete(
+          appConfig().storageUrl.avatar + oldImage.avatar,
         );
-
-        data.avatar = fileName;
       }
 
-      const user = await this.userRepository.getUserDetails(userId);
-      if (user) {
-        await this.prisma.user.update({
-          where: { id: userId },
-          data: {
-            ...data,
-          },
-        });
+      // upload file
+      const fileName = `${StringHelper.randomString(16)}${image.originalname}`;
+      await SojebStorage.put(
+        appConfig().storageUrl.avatar + fileName,
+        image.buffer,
+      );
 
-        return {
-          success: true,
-          message: 'User updated successfully',
-        };
-      } else {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
+      data.avatar = fileName;
+    }
+
+    const user = await this.userRepository.getUserDetails(userId);
+    if (user) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: {
+          ...data,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'User updated successfully',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
   }
 
   async validateUser(
@@ -685,118 +684,117 @@ export class AuthService implements OnModuleInit {
     return { message: 'Invitation resent successfully' };
   }
 
-  async register(
-    {
-      name,
-      first_name,
-      last_name,
-      email,
-      password,
-      type,
-      gender,
-      date_of_birth,
-      phone_number,
-    }: {
-      name?: string;
-      first_name: string;
-      last_name: string;
-      email: string;
-      password: string;
-      type?: string;
-      gender: string;
-      date_of_birth: string;
-      phone_number: string;
-    },
-    avatar?: Express.Multer.File,
-  ) {
-    try {
-      // Check if email already exist
-      const userEmailExist = await this.userRepository.exist({
-        field: 'email',
-        value: String(email),
-      });
+  // async register(
+  //   {
+  //     name,
+  //     first_name,
+  //     last_name,
+  //     email,
+  //     password,
+  //     type,
+  //     gender,
+  //     date_of_birth,
+  //     phone_number,
+  //   }: {
+  //     name?: string;
+  //     first_name: string;
+  //     last_name: string;
+  //     email: string;
+  //     password: string;
+  //     type?: string;
+  //     gender: string;
+  //     date_of_birth: string;
+  //     phone_number: string;
+  //   },
+  //   avatar?: Express.Multer.File,
+  // ) {
+  //   try {
+  //     // Check if email already exist
+  //     const userEmailExist = await this.userRepository.exist({
+  //       field: 'email',
+  //       value: String(email),
+  //     });
 
-      if (userEmailExist) {
-        return {
-          statusCode: 401,
-          message: 'Email already exist',
-        };
-      }
+  //     if (userEmailExist) {
+  //       return {
+  //         statusCode: 401,
+  //         message: 'Email already exist',
+  //       };
+  //     }
 
-      // put avatar file to storage
-      // upload image if provided
-      let fileName: string | null = null;
-      if (avatar) {
-        fileName = `${StringHelper.randomString(8)}${avatar.originalname}`;
-        await SojebStorage.put(
-          appConfig().storageUrl.avatar + '/' + fileName,
-          avatar.buffer,
-        );
-      }
+  //     // put avatar file to storage
+  //     // upload image if provided
+  //     let fileName: string | null = null;
+  //     if (avatar) {
+  //       fileName = `${StringHelper.randomString(8)}${avatar.originalname}`;
+  //       await SojebStorage.put(
+  //         appConfig().storageUrl.avatar + '/' + fileName,
+  //         avatar.buffer,
+  //       );
+  //     }
 
-      const payload = {
-        email: email,
-        first_name: first_name,
-        last_name: last_name,
-        password: password,
-        type: type,
-        gender: gender,
-        date_of_birth: date_of_birth,
-        phone_number: phone_number,
-        avatar: fileName,
-      };
+  //     const payload = {
+  //       email: email,
+  //       first_name: first_name,
+  //       last_name: last_name,
+  //       password: password,
+  //       type: type,
+  //       gender: gender,
+  //       date_of_birth: date_of_birth,
+  //       phone_number: phone_number,
+  //       avatar: fileName,
+  //     };
 
-      const RegisterToken = this.jwtService.sign(payload, { expiresIn: '5h' });
+  //     const RegisterToken = this.jwtService.sign(payload, { expiresIn: '5h' });
 
-      // create otp code
-      const token = await this.ucodeRepository.createTokenRegistration({
-        email: email,
-        isOtp: true,
-      });
+  //     // create otp code
+  //     const token = await this.ucodeRepository.createTokenRegistration({
+  //       email: email,
+  //       isOtp: true,
+  //     });
 
-      // send otp code to email
-      await this.mailService.sendOtpCodeToEmail({
-        email: email,
-        first_name: first_name,
-        otp: token,
-      });
+  //     // send otp code to email
+  //     await this.mailService.sendOtpCodeToEmail({
+  //       email: email,
+  //       first_name: first_name,
+  //       otp: token,
+  //     });
 
-      return {
-        success: true,
-        message: 'We have sent an OTP code to your email',
-        register_token: RegisterToken,
-      };
+  //     return {
+  //       success: true,
+  //       message: 'We have sent an OTP code to your email',
+  //       register_token: RegisterToken,
+  //     };
 
-      // ----------------------------------------------------
+  //     // ----------------------------------------------------
 
-      // Generate verification token
-      // const token = await this.ucodeRepository.createVerificationToken({
-      //   userId: user.data.id,
-      //   email: email,
-      // });
+  //     // Generate verification token
+  //     // const token = await this.ucodeRepository.createVerificationToken({
+  //     //   userId: user.data.id,
+  //     //   email: email,
+  //     // });
 
-      // // Send verification email with token
-      // await this.mailService.sendVerificationLink({
-      //   email,
-      //   name: email,
-      //   token: token.token,
-      //   type: type,
-      // });
+  //     // // Send verification email with token
+  //     // await this.mailService.sendVerificationLink({
+  //     //   email,
+  //     //   name: email,
+  //     //   token: token.token,
+  //     //   type: type,
+  //     // });
 
-      // return {
-      //   success: true,
-      //   message: 'We have sent a verification link to your email',
-      // };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
-  }
+  //     // return {
+  //     //   success: true,
+  //     //   message: 'We have sent a verification link to your email',
+  //     // };
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: error.message,
+  //     };
+  //   }
+  // }
 
   async forgotPassword(email) {
-    try {
       const user = await this.userRepository.exist({
         field: 'email',
         value: email,
@@ -824,16 +822,9 @@ export class AuthService implements OnModuleInit {
           message: 'Email not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   async sendForgotPasswordOtp(email: string) {
-
     const normalizedEmail = email.trim().toLowerCase();
     const user = await this.userRepository.exist({
       field: 'email',
@@ -912,7 +903,6 @@ export class AuthService implements OnModuleInit {
     otp: string;
     newPassword: string;
   }) {
-
     const normalizedEmail = email.trim().toLowerCase();
     const user = await this.userRepository.exist({
       field: 'email',
@@ -948,10 +938,7 @@ export class AuthService implements OnModuleInit {
     };
   }
 
-
-
   async resetPassword({ email, token, password }) {
-    try {
       const user = await this.userRepository.exist({
         field: 'email',
         value: email,
@@ -991,16 +978,9 @@ export class AuthService implements OnModuleInit {
           message: 'Email not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   async verifyEmail({ token, registerToken }) {
-    try {
       const decoded = await this.ucodeRepository.decodeJWT(registerToken);
 
       const email = decoded.payload.email;
@@ -1041,7 +1021,6 @@ export class AuthService implements OnModuleInit {
         gender: decoded.payload.gender,
         date_of_birth: DateHelper.format(decoded.payload.date_of_birth),
         phone_number: decoded.payload.phone_number,
-        role: decoded.payload.role,
       });
 
       if (user == null && user.success == false) throw new BadRequestException(user.message);
@@ -1122,16 +1101,9 @@ export class AuthService implements OnModuleInit {
         access_token: accessToken,
         refresh_token: refreshToken,
       };
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message || 'Verification failed',
-      };
-    }
   }
 
   async resendVerificationEmail(email: string) {
-    try {
       const user = await this.userRepository.getUserByEmail(email);
 
       if (user) {
@@ -1158,16 +1130,10 @@ export class AuthService implements OnModuleInit {
           message: 'Email not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   async changePassword({ user_id, oldPassword, newPassword }) {
-    try {
+
       const user = await this.userRepository.getUserDetails(user_id);
 
       if (user) {
@@ -1197,16 +1163,9 @@ export class AuthService implements OnModuleInit {
           message: 'Email not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   async requestEmailChange(user_id: string, email: string) {
-    try {
       const user = await this.userRepository.getUserDetails(user_id);
       if (user) {
         const token = await this.ucodeRepository.createToken({
@@ -1231,12 +1190,6 @@ export class AuthService implements OnModuleInit {
           message: 'User not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   async changeEmail({
@@ -1248,7 +1201,6 @@ export class AuthService implements OnModuleInit {
     new_email: string;
     token: string;
   }) {
-    try {
       const user = await this.userRepository.getUserDetails(user_id);
 
       if (user) {
@@ -1286,89 +1238,55 @@ export class AuthService implements OnModuleInit {
           message: 'User not found',
         };
       }
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
   }
 
   // --------- 2FA ---------
   async generate2FASecret(user_id: string) {
-    try {
-      return await this.userRepository.generate2FASecret(user_id);
-    } catch (error) {
-      return {
-        success: false,
-        message: error.message,
-      };
-    }
+    return await this.userRepository.generate2FASecret(user_id);
   }
 
   async verify2FA(user_id: string, token: string) {
-    try {
-      const isValid = await this.userRepository.verify2FA(user_id, token);
-      if (!isValid) {
-        return {
-          success: false,
-          message: 'Invalid token',
-        };
-      }
-      return {
-        success: true,
-        message: '2FA verified successfully',
-      };
-    } catch (error) {
+    const isValid = await this.userRepository.verify2FA(user_id, token);
+    if (!isValid) {
       return {
         success: false,
-        message: error.message,
+        message: 'Invalid token',
       };
     }
+    return {
+      success: true,
+      message: '2FA verified successfully',
+    };
   }
 
   async enable2FA(user_id: string) {
-    try {
-      const user = await this.userRepository.getUserDetails(user_id);
-      if (user) {
-        await this.userRepository.enable2FA(user_id);
-        return {
-          success: true,
-          message: '2FA enabled successfully',
-        };
-      } else {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
-    } catch (error) {
+    const user = await this.userRepository.getUserDetails(user_id);
+    if (user) {
+      await this.userRepository.enable2FA(user_id);
+      return {
+        success: true,
+        message: '2FA enabled successfully',
+      };
+    } else {
       return {
         success: false,
-        message: error.message,
+        message: 'User not found',
       };
     }
   }
 
   async disable2FA(user_id: string) {
-    try {
-      const user = await this.userRepository.getUserDetails(user_id);
-      if (user) {
-        await this.userRepository.disable2FA(user_id);
-        return {
-          success: true,
-          message: '2FA disabled successfully',
-        };
-      } else {
-        return {
-          success: false,
-          message: 'User not found',
-        };
-      }
-    } catch (error) {
+    const user = await this.userRepository.getUserDetails(user_id);
+    if (user) {
+      await this.userRepository.disable2FA(user_id);
+      return {
+        success: true,
+        message: '2FA disabled successfully',
+      };
+    } else {
       return {
         success: false,
-        message: error.message,
+        message: 'User not found',
       };
     }
   }
@@ -1414,38 +1332,5 @@ export class AuthService implements OnModuleInit {
     }
 
     throw new UnauthorizedException('Invalid/Expired verification code');
-  }
-
-  async googleLogin(idToken: string) {
-    try {
-      const decoded = await this.firebaseAuth.verifyIdToken(idToken);
-      const { email, name, uid } = decoded;
-
-      if (!email) throw new UnauthorizedException('No email in token');
-
-      let user = await this.prisma.user.findUnique({ where: { email } });
-
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-
-      // if (!user) {
-      //   user = await this.prisma.user.create({
-      //     data: {
-      //       email,
-      //       name: name || '',
-      //       firebaseUid: uid,
-      //       // maybe set other default fields
-      //     },
-      //   });
-      // }
-
-      const payload = { sub: user.id, email: user.email };
-      const token = this.jwtService.sign(payload);
-
-      return { user, token };
-    } catch (err) {
-      throw new UnauthorizedException('Invalid Firebase token');
-    }
   }
 }

@@ -19,7 +19,6 @@ import { AbilityModule } from './ability/ability.module';
 import { MailModule } from './mail/mail.module';
 import { ApplicationModule } from './modules/application/application.module';
 import { AdminModule } from './modules/admin/admin.module';
-import { ChatModule } from './modules/chat/chat.module';
 import { PrometheusModule } from './prometheus/prometheus.module';
 import { RepositoryModule } from './common/repository/repository.module';
 import { AnalyticsTrackingService } from './common/analytics/analytics-tracking.service';
@@ -81,7 +80,6 @@ import { NotificationModule } from './modules/notification/notification.module';
     MailModule,
     ApplicationModule,
     AdminModule,
-    ChatModule,
     PrometheusModule,
     ActivityLogModule,
     NotificationModule,

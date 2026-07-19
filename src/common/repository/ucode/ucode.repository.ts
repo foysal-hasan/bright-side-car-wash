@@ -10,7 +10,7 @@ export class UcodeRepository {
   constructor(
     private readonly prisma: PrismaService,
     private readonly userRepository: UserRepository,
-  ) {}
+  ) { }
 
   /**
    * create ucode token
@@ -276,25 +276,25 @@ export class UcodeRepository {
   }
 
   async decodeJWT(token: string) {
-  try {
-    // Split the token into parts
-    const parts = token.split('.');
-    
-    if (parts.length !== 3) {
-      throw new Error('Invalid JWT format');
+    try {
+      // Split the token into parts
+      const parts = token.split('.');
+
+      if (parts.length !== 3) {
+        throw new Error('Invalid JWT format');
+      }
+
+      // Decode header and payload (base64url decode)
+      const header = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
+      const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
+
+      return {
+        header,
+        payload,
+        signature: parts[2]
+      };
+    } catch (error: any) {
+      throw new Error(`Failed to decode JWT: ${error?.message}`);
     }
-    
-    // Decode header and payload (base64url decode)
-    const header = JSON.parse(Buffer.from(parts[0], 'base64url').toString());
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString());
-    
-    return {
-      header,
-      payload,
-      signature: parts[2]
-    };
-  } catch (error) {
-    throw new Error(`Failed to decode JWT: ${error.message}`);
   }
-}
 }

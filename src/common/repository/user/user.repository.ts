@@ -6,7 +6,6 @@ import { ArrayHelper } from '../../helper/array.helper';
 import { Role } from '../../guard/role/role.enum';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { UserRole } from 'src/generated/prisma/enums';
 
 
 @Injectable()
@@ -205,7 +204,6 @@ export class UserRepository {
     gender,
     date_of_birth,
     avatar,
-    role,
   }: {
     name?: string;
     first_name?: string;
@@ -218,7 +216,6 @@ export class UserRepository {
     gender?: string;
     date_of_birth?: string;
     avatar?: string;
-    role?: UserRole;
   }) {
     try {
       const data = {};
@@ -276,10 +273,6 @@ export class UserRepository {
         // }
       }
 
-      if (role) {
-        data['role'] = role;
-      }
-
       const user = await this.prisma.user.create({
         data: {
           ...data,
@@ -306,10 +299,10 @@ export class UserRepository {
           message: 'User creation failed',
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
-        message: error.message,
+        message: error?.message,
       };
     }
   }
@@ -413,7 +406,7 @@ export class UserRepository {
           message: 'User update failed',
         };
       }
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         message: error.message,
@@ -450,10 +443,10 @@ export class UserRepository {
         success: true,
         message: 'User deleted successfully',
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
-        message: error.message,
+        message: error?.message,
       };
     }
   }
@@ -551,10 +544,10 @@ export class UserRepository {
         success: true,
         message: 'Converted to ' + type + ' successfully',
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
-        message: error.message,
+        message: error?.message,
       };
     }
   }
