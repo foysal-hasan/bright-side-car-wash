@@ -287,38 +287,6 @@ model MediaFile {
 
 // ---------End Chat schema---------
 
-model SocialMedia {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
-  status     Int?    @default(1) @db.SmallInt
-  sort_order Int?    @default(0)
-  name       String?
-  url        String?
-  icon       String?
-
-  @@map("social_media")
-}
-
-model WebsiteInfo {
-  id         String    @id @default(cuid())
-  created_at DateTime  @default(now())
-  updated_at DateTime  @default(now())
-  deleted_at DateTime?
-
-  name                String?
-  phone_number        String?
-  email               String?
-  address             String?
-  logo                String?
-  favicon             String?
-  copyright           String?
-  cancellation_policy String?
-
-  @@map("website_info")
-}
 
 model ActivityLog {
   id          String   @id @default(cuid())
@@ -659,6 +627,7 @@ model Template {
 
   // Relationships back to campaigns
   emailCampaigns EmailConfig[] // Reuse tracking
+  fileRecords    FileRecord[] // Attachment tracking
 
   @@index([userId])
   @@index([type])
@@ -806,6 +775,8 @@ model NewsAndEvent {
   created_by_id String
   creator  User     @relation(fields: [created_by_id], references: [id], onDelete: Cascade)
 
+  fileRecords    FileRecord[] // Attachment tracking
+
   @@map("news_and_events")
 }
 // =================== News and Events end =====================
@@ -841,3 +812,23 @@ model NotificationLog {
 }
 
 // =================== Notification end =====================
+
+// =================== Attachment tracking start =====================
+model FileRecord {
+  id         String    @id @default(cuid())
+  storageKey String  
+  fileType   String  
+  
+  // Polymorphic mapping
+  templateId String?
+  template   Template? @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  newsAndEventId     String?
+  newsAndEvent       NewsAndEvent?     @relation(fields: [newsAndEventId], references: [id], onDelete: Cascade)
+
+  createdAt  DateTime  @default(now())
+
+  @@index([templateId])
+  @@index([newsAndEventId])
+}
+// =================== Attachment tracking end =====================

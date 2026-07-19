@@ -397,8 +397,6 @@ export const ModelName = {
   Conversation: 'Conversation',
   Section: 'Section',
   MediaFile: 'MediaFile',
-  SocialMedia: 'SocialMedia',
-  WebsiteInfo: 'WebsiteInfo',
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
   Lead: 'Lead',
@@ -417,7 +415,8 @@ export const ModelName = {
   Testimonial: 'Testimonial',
   Category: 'Category',
   NewsAndEvent: 'NewsAndEvent',
-  NotificationLog: 'NotificationLog'
+  NotificationLog: 'NotificationLog',
+  FileRecord: 'FileRecord'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -433,7 +432,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "section" | "mediaFile" | "socialMedia" | "websiteInfo" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery" | "testimonial" | "category" | "newsAndEvent" | "notificationLog"
+    modelProps: "account" | "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "message" | "attachment" | "conversation" | "section" | "mediaFile" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery" | "testimonial" | "category" | "newsAndEvent" | "notificationLog" | "fileRecord"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1396,154 +1395,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.MediaFileCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.MediaFileCountAggregateOutputType> | number
-        }
-      }
-    }
-    SocialMedia: {
-      payload: Prisma.$SocialMediaPayload<ExtArgs>
-      fields: Prisma.SocialMediaFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.SocialMediaFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.SocialMediaFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>
-        }
-        findFirst: {
-          args: Prisma.SocialMediaFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.SocialMediaFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>
-        }
-        findMany: {
-          args: Prisma.SocialMediaFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>[]
-        }
-        create: {
-          args: Prisma.SocialMediaCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>
-        }
-        createMany: {
-          args: Prisma.SocialMediaCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.SocialMediaCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>[]
-        }
-        delete: {
-          args: Prisma.SocialMediaDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>
-        }
-        update: {
-          args: Prisma.SocialMediaUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>
-        }
-        deleteMany: {
-          args: Prisma.SocialMediaDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.SocialMediaUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.SocialMediaUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>[]
-        }
-        upsert: {
-          args: Prisma.SocialMediaUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$SocialMediaPayload>
-        }
-        aggregate: {
-          args: Prisma.SocialMediaAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateSocialMedia>
-        }
-        groupBy: {
-          args: Prisma.SocialMediaGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.SocialMediaGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.SocialMediaCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.SocialMediaCountAggregateOutputType> | number
-        }
-      }
-    }
-    WebsiteInfo: {
-      payload: Prisma.$WebsiteInfoPayload<ExtArgs>
-      fields: Prisma.WebsiteInfoFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.WebsiteInfoFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.WebsiteInfoFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>
-        }
-        findFirst: {
-          args: Prisma.WebsiteInfoFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.WebsiteInfoFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>
-        }
-        findMany: {
-          args: Prisma.WebsiteInfoFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>[]
-        }
-        create: {
-          args: Prisma.WebsiteInfoCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>
-        }
-        createMany: {
-          args: Prisma.WebsiteInfoCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.WebsiteInfoCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>[]
-        }
-        delete: {
-          args: Prisma.WebsiteInfoDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>
-        }
-        update: {
-          args: Prisma.WebsiteInfoUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>
-        }
-        deleteMany: {
-          args: Prisma.WebsiteInfoDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.WebsiteInfoUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.WebsiteInfoUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>[]
-        }
-        upsert: {
-          args: Prisma.WebsiteInfoUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$WebsiteInfoPayload>
-        }
-        aggregate: {
-          args: Prisma.WebsiteInfoAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateWebsiteInfo>
-        }
-        groupBy: {
-          args: Prisma.WebsiteInfoGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.WebsiteInfoGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.WebsiteInfoCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.WebsiteInfoCountAggregateOutputType> | number
         }
       }
     }
@@ -2953,6 +2804,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    FileRecord: {
+      payload: Prisma.$FileRecordPayload<ExtArgs>
+      fields: Prisma.FileRecordFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FileRecordFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FileRecordFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>
+        }
+        findFirst: {
+          args: Prisma.FileRecordFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FileRecordFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>
+        }
+        findMany: {
+          args: Prisma.FileRecordFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>[]
+        }
+        create: {
+          args: Prisma.FileRecordCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>
+        }
+        createMany: {
+          args: Prisma.FileRecordCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FileRecordCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>[]
+        }
+        delete: {
+          args: Prisma.FileRecordDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>
+        }
+        update: {
+          args: Prisma.FileRecordUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>
+        }
+        deleteMany: {
+          args: Prisma.FileRecordDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FileRecordUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FileRecordUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>[]
+        }
+        upsert: {
+          args: Prisma.FileRecordUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FileRecordPayload>
+        }
+        aggregate: {
+          args: Prisma.FileRecordAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFileRecord>
+        }
+        groupBy: {
+          args: Prisma.FileRecordGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FileRecordGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FileRecordCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FileRecordCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3185,39 +3110,6 @@ export const MediaFileScalarFieldEnum = {
 } as const
 
 export type MediaFileScalarFieldEnum = (typeof MediaFileScalarFieldEnum)[keyof typeof MediaFileScalarFieldEnum]
-
-
-export const SocialMediaScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  status: 'status',
-  sort_order: 'sort_order',
-  name: 'name',
-  url: 'url',
-  icon: 'icon'
-} as const
-
-export type SocialMediaScalarFieldEnum = (typeof SocialMediaScalarFieldEnum)[keyof typeof SocialMediaScalarFieldEnum]
-
-
-export const WebsiteInfoScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  name: 'name',
-  phone_number: 'phone_number',
-  email: 'email',
-  address: 'address',
-  logo: 'logo',
-  favicon: 'favicon',
-  copyright: 'copyright',
-  cancellation_policy: 'cancellation_policy'
-} as const
-
-export type WebsiteInfoScalarFieldEnum = (typeof WebsiteInfoScalarFieldEnum)[keyof typeof WebsiteInfoScalarFieldEnum]
 
 
 export const ActivityLogScalarFieldEnum = {
@@ -3506,6 +3398,18 @@ export const NotificationLogScalarFieldEnum = {
 } as const
 
 export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
+
+
+export const FileRecordScalarFieldEnum = {
+  id: 'id',
+  storageKey: 'storageKey',
+  fileType: 'fileType',
+  templateId: 'templateId',
+  newsAndEventId: 'newsAndEventId',
+  createdAt: 'createdAt'
+} as const
+
+export type FileRecordScalarFieldEnum = (typeof FileRecordScalarFieldEnum)[keyof typeof FileRecordScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3912,8 +3816,6 @@ export type GlobalOmitConfig = {
   conversation?: Prisma.ConversationOmit
   section?: Prisma.SectionOmit
   mediaFile?: Prisma.MediaFileOmit
-  socialMedia?: Prisma.SocialMediaOmit
-  websiteInfo?: Prisma.WebsiteInfoOmit
   activityLog?: Prisma.ActivityLogOmit
   stage?: Prisma.StageOmit
   lead?: Prisma.LeadOmit
@@ -3933,6 +3835,7 @@ export type GlobalOmitConfig = {
   category?: Prisma.CategoryOmit
   newsAndEvent?: Prisma.NewsAndEventOmit
   notificationLog?: Prisma.NotificationLogOmit
+  fileRecord?: Prisma.FileRecordOmit
 }
 
 /* Types for Logging */

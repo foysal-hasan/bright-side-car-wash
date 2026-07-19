@@ -83,16 +83,6 @@ export type Section = Prisma.SectionModel
  */
 export type MediaFile = Prisma.MediaFileModel
 /**
- * Model SocialMedia
- * 
- */
-export type SocialMedia = Prisma.SocialMediaModel
-/**
- * Model WebsiteInfo
- * 
- */
-export type WebsiteInfo = Prisma.WebsiteInfoModel
-/**
  * Model ActivityLog
  * 
  */
@@ -187,3 +177,8 @@ export type NewsAndEvent = Prisma.NewsAndEventModel
  * 
  */
 export type NotificationLog = Prisma.NotificationLogModel
+/**
+ * Model FileRecord
+ * 
+ */
+export type FileRecord = Prisma.FileRecordModel

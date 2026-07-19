@@ -64,8 +64,6 @@ export const ModelName = {
   Conversation: 'Conversation',
   Section: 'Section',
   MediaFile: 'MediaFile',
-  SocialMedia: 'SocialMedia',
-  WebsiteInfo: 'WebsiteInfo',
   ActivityLog: 'ActivityLog',
   Stage: 'Stage',
   Lead: 'Lead',
@@ -84,7 +82,8 @@ export const ModelName = {
   Testimonial: 'Testimonial',
   Category: 'Category',
   NewsAndEvent: 'NewsAndEvent',
-  NotificationLog: 'NotificationLog'
+  NotificationLog: 'NotificationLog',
+  FileRecord: 'FileRecord'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -296,39 +295,6 @@ export const MediaFileScalarFieldEnum = {
 } as const
 
 export type MediaFileScalarFieldEnum = (typeof MediaFileScalarFieldEnum)[keyof typeof MediaFileScalarFieldEnum]
-
-
-export const SocialMediaScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  status: 'status',
-  sort_order: 'sort_order',
-  name: 'name',
-  url: 'url',
-  icon: 'icon'
-} as const
-
-export type SocialMediaScalarFieldEnum = (typeof SocialMediaScalarFieldEnum)[keyof typeof SocialMediaScalarFieldEnum]
-
-
-export const WebsiteInfoScalarFieldEnum = {
-  id: 'id',
-  created_at: 'created_at',
-  updated_at: 'updated_at',
-  deleted_at: 'deleted_at',
-  name: 'name',
-  phone_number: 'phone_number',
-  email: 'email',
-  address: 'address',
-  logo: 'logo',
-  favicon: 'favicon',
-  copyright: 'copyright',
-  cancellation_policy: 'cancellation_policy'
-} as const
-
-export type WebsiteInfoScalarFieldEnum = (typeof WebsiteInfoScalarFieldEnum)[keyof typeof WebsiteInfoScalarFieldEnum]
 
 
 export const ActivityLogScalarFieldEnum = {
@@ -617,6 +583,18 @@ export const NotificationLogScalarFieldEnum = {
 } as const
 
 export type NotificationLogScalarFieldEnum = (typeof NotificationLogScalarFieldEnum)[keyof typeof NotificationLogScalarFieldEnum]
+
+
+export const FileRecordScalarFieldEnum = {
+  id: 'id',
+  storageKey: 'storageKey',
+  fileType: 'fileType',
+  templateId: 'templateId',
+  newsAndEventId: 'newsAndEventId',
+  createdAt: 'createdAt'
+} as const
+
+export type FileRecordScalarFieldEnum = (typeof FileRecordScalarFieldEnum)[keyof typeof FileRecordScalarFieldEnum]
 
 
 export const SortOrder = {

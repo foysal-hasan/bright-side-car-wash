@@ -216,6 +216,7 @@ export type TemplateWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   emailBody?: Prisma.XOR<Prisma.EmailTemplateNullableScalarRelationFilter, Prisma.EmailTemplateWhereInput> | null
   emailCampaigns?: Prisma.EmailConfigListRelationFilter
+  fileRecords?: Prisma.FileRecordListRelationFilter
 }
 
 export type TemplateOrderByWithRelationInput = {
@@ -230,6 +231,7 @@ export type TemplateOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   emailBody?: Prisma.EmailTemplateOrderByWithRelationInput
   emailCampaigns?: Prisma.EmailConfigOrderByRelationAggregateInput
+  fileRecords?: Prisma.FileRecordOrderByRelationAggregateInput
 }
 
 export type TemplateWhereUniqueInput = Prisma.AtLeast<{
@@ -247,6 +249,7 @@ export type TemplateWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Template"> | Date | string
   emailBody?: Prisma.XOR<Prisma.EmailTemplateNullableScalarRelationFilter, Prisma.EmailTemplateWhereInput> | null
   emailCampaigns?: Prisma.EmailConfigListRelationFilter
+  fileRecords?: Prisma.FileRecordListRelationFilter
 }, "id">
 
 export type TemplateOrderByWithAggregationInput = {
@@ -291,6 +294,7 @@ export type TemplateCreateInput = {
   updatedAt?: Date | string
   emailBody?: Prisma.EmailTemplateCreateNestedOneWithoutTemplateInput
   emailCampaigns?: Prisma.EmailConfigCreateNestedManyWithoutTemplateInput
+  fileRecords?: Prisma.FileRecordCreateNestedManyWithoutTemplateInput
 }
 
 export type TemplateUncheckedCreateInput = {
@@ -305,6 +309,7 @@ export type TemplateUncheckedCreateInput = {
   updatedAt?: Date | string
   emailBody?: Prisma.EmailTemplateUncheckedCreateNestedOneWithoutTemplateInput
   emailCampaigns?: Prisma.EmailConfigUncheckedCreateNestedManyWithoutTemplateInput
+  fileRecords?: Prisma.FileRecordUncheckedCreateNestedManyWithoutTemplateInput
 }
 
 export type TemplateUpdateInput = {
@@ -319,6 +324,7 @@ export type TemplateUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailBody?: Prisma.EmailTemplateUpdateOneWithoutTemplateNestedInput
   emailCampaigns?: Prisma.EmailConfigUpdateManyWithoutTemplateNestedInput
+  fileRecords?: Prisma.FileRecordUpdateManyWithoutTemplateNestedInput
 }
 
 export type TemplateUncheckedUpdateInput = {
@@ -333,6 +339,7 @@ export type TemplateUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailBody?: Prisma.EmailTemplateUncheckedUpdateOneWithoutTemplateNestedInput
   emailCampaigns?: Prisma.EmailConfigUncheckedUpdateManyWithoutTemplateNestedInput
+  fileRecords?: Prisma.FileRecordUncheckedUpdateManyWithoutTemplateNestedInput
 }
 
 export type TemplateCreateManyInput = {
@@ -455,6 +462,22 @@ export type TemplateUpdateOneRequiredWithoutEmailBodyNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.TemplateUpdateToOneWithWhereWithoutEmailBodyInput, Prisma.TemplateUpdateWithoutEmailBodyInput>, Prisma.TemplateUncheckedUpdateWithoutEmailBodyInput>
 }
 
+export type TemplateCreateNestedOneWithoutFileRecordsInput = {
+  create?: Prisma.XOR<Prisma.TemplateCreateWithoutFileRecordsInput, Prisma.TemplateUncheckedCreateWithoutFileRecordsInput>
+  connectOrCreate?: Prisma.TemplateCreateOrConnectWithoutFileRecordsInput
+  connect?: Prisma.TemplateWhereUniqueInput
+}
+
+export type TemplateUpdateOneWithoutFileRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.TemplateCreateWithoutFileRecordsInput, Prisma.TemplateUncheckedCreateWithoutFileRecordsInput>
+  connectOrCreate?: Prisma.TemplateCreateOrConnectWithoutFileRecordsInput
+  upsert?: Prisma.TemplateUpsertWithoutFileRecordsInput
+  disconnect?: Prisma.TemplateWhereInput | boolean
+  delete?: Prisma.TemplateWhereInput | boolean
+  connect?: Prisma.TemplateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TemplateUpdateToOneWithWhereWithoutFileRecordsInput, Prisma.TemplateUpdateWithoutFileRecordsInput>, Prisma.TemplateUncheckedUpdateWithoutFileRecordsInput>
+}
+
 export type TemplateCreateWithoutEmailCampaignsInput = {
   id?: string
   name: string
@@ -466,6 +489,7 @@ export type TemplateCreateWithoutEmailCampaignsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailBody?: Prisma.EmailTemplateCreateNestedOneWithoutTemplateInput
+  fileRecords?: Prisma.FileRecordCreateNestedManyWithoutTemplateInput
 }
 
 export type TemplateUncheckedCreateWithoutEmailCampaignsInput = {
@@ -479,6 +503,7 @@ export type TemplateUncheckedCreateWithoutEmailCampaignsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailBody?: Prisma.EmailTemplateUncheckedCreateNestedOneWithoutTemplateInput
+  fileRecords?: Prisma.FileRecordUncheckedCreateNestedManyWithoutTemplateInput
 }
 
 export type TemplateCreateOrConnectWithoutEmailCampaignsInput = {
@@ -508,6 +533,7 @@ export type TemplateUpdateWithoutEmailCampaignsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailBody?: Prisma.EmailTemplateUpdateOneWithoutTemplateNestedInput
+  fileRecords?: Prisma.FileRecordUpdateManyWithoutTemplateNestedInput
 }
 
 export type TemplateUncheckedUpdateWithoutEmailCampaignsInput = {
@@ -521,6 +547,7 @@ export type TemplateUncheckedUpdateWithoutEmailCampaignsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailBody?: Prisma.EmailTemplateUncheckedUpdateOneWithoutTemplateNestedInput
+  fileRecords?: Prisma.FileRecordUncheckedUpdateManyWithoutTemplateNestedInput
 }
 
 export type TemplateCreateWithoutEmailBodyInput = {
@@ -534,6 +561,7 @@ export type TemplateCreateWithoutEmailBodyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailCampaigns?: Prisma.EmailConfigCreateNestedManyWithoutTemplateInput
+  fileRecords?: Prisma.FileRecordCreateNestedManyWithoutTemplateInput
 }
 
 export type TemplateUncheckedCreateWithoutEmailBodyInput = {
@@ -547,6 +575,7 @@ export type TemplateUncheckedCreateWithoutEmailBodyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   emailCampaigns?: Prisma.EmailConfigUncheckedCreateNestedManyWithoutTemplateInput
+  fileRecords?: Prisma.FileRecordUncheckedCreateNestedManyWithoutTemplateInput
 }
 
 export type TemplateCreateOrConnectWithoutEmailBodyInput = {
@@ -576,6 +605,7 @@ export type TemplateUpdateWithoutEmailBodyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailCampaigns?: Prisma.EmailConfigUpdateManyWithoutTemplateNestedInput
+  fileRecords?: Prisma.FileRecordUpdateManyWithoutTemplateNestedInput
 }
 
 export type TemplateUncheckedUpdateWithoutEmailBodyInput = {
@@ -589,6 +619,79 @@ export type TemplateUncheckedUpdateWithoutEmailBodyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   emailCampaigns?: Prisma.EmailConfigUncheckedUpdateManyWithoutTemplateNestedInput
+  fileRecords?: Prisma.FileRecordUncheckedUpdateManyWithoutTemplateNestedInput
+}
+
+export type TemplateCreateWithoutFileRecordsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  type?: $Enums.TemplateType
+  editorType?: $Enums.EditorType
+  userId?: string | null
+  isArchived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  emailBody?: Prisma.EmailTemplateCreateNestedOneWithoutTemplateInput
+  emailCampaigns?: Prisma.EmailConfigCreateNestedManyWithoutTemplateInput
+}
+
+export type TemplateUncheckedCreateWithoutFileRecordsInput = {
+  id?: string
+  name: string
+  description?: string | null
+  type?: $Enums.TemplateType
+  editorType?: $Enums.EditorType
+  userId?: string | null
+  isArchived?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  emailBody?: Prisma.EmailTemplateUncheckedCreateNestedOneWithoutTemplateInput
+  emailCampaigns?: Prisma.EmailConfigUncheckedCreateNestedManyWithoutTemplateInput
+}
+
+export type TemplateCreateOrConnectWithoutFileRecordsInput = {
+  where: Prisma.TemplateWhereUniqueInput
+  create: Prisma.XOR<Prisma.TemplateCreateWithoutFileRecordsInput, Prisma.TemplateUncheckedCreateWithoutFileRecordsInput>
+}
+
+export type TemplateUpsertWithoutFileRecordsInput = {
+  update: Prisma.XOR<Prisma.TemplateUpdateWithoutFileRecordsInput, Prisma.TemplateUncheckedUpdateWithoutFileRecordsInput>
+  create: Prisma.XOR<Prisma.TemplateCreateWithoutFileRecordsInput, Prisma.TemplateUncheckedCreateWithoutFileRecordsInput>
+  where?: Prisma.TemplateWhereInput
+}
+
+export type TemplateUpdateToOneWithWhereWithoutFileRecordsInput = {
+  where?: Prisma.TemplateWhereInput
+  data: Prisma.XOR<Prisma.TemplateUpdateWithoutFileRecordsInput, Prisma.TemplateUncheckedUpdateWithoutFileRecordsInput>
+}
+
+export type TemplateUpdateWithoutFileRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTemplateTypeFieldUpdateOperationsInput | $Enums.TemplateType
+  editorType?: Prisma.EnumEditorTypeFieldUpdateOperationsInput | $Enums.EditorType
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailBody?: Prisma.EmailTemplateUpdateOneWithoutTemplateNestedInput
+  emailCampaigns?: Prisma.EmailConfigUpdateManyWithoutTemplateNestedInput
+}
+
+export type TemplateUncheckedUpdateWithoutFileRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.EnumTemplateTypeFieldUpdateOperationsInput | $Enums.TemplateType
+  editorType?: Prisma.EnumEditorTypeFieldUpdateOperationsInput | $Enums.EditorType
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isArchived?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  emailBody?: Prisma.EmailTemplateUncheckedUpdateOneWithoutTemplateNestedInput
+  emailCampaigns?: Prisma.EmailConfigUncheckedUpdateManyWithoutTemplateNestedInput
 }
 
 
@@ -598,10 +701,12 @@ export type TemplateUncheckedUpdateWithoutEmailBodyInput = {
 
 export type TemplateCountOutputType = {
   emailCampaigns: number
+  fileRecords: number
 }
 
 export type TemplateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   emailCampaigns?: boolean | TemplateCountOutputTypeCountEmailCampaignsArgs
+  fileRecords?: boolean | TemplateCountOutputTypeCountFileRecordsArgs
 }
 
 /**
@@ -621,6 +726,13 @@ export type TemplateCountOutputTypeCountEmailCampaignsArgs<ExtArgs extends runti
   where?: Prisma.EmailConfigWhereInput
 }
 
+/**
+ * TemplateCountOutputType without action
+ */
+export type TemplateCountOutputTypeCountFileRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FileRecordWhereInput
+}
+
 
 export type TemplateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -634,6 +746,7 @@ export type TemplateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   emailBody?: boolean | Prisma.Template$emailBodyArgs<ExtArgs>
   emailCampaigns?: boolean | Prisma.Template$emailCampaignsArgs<ExtArgs>
+  fileRecords?: boolean | Prisma.Template$fileRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.TemplateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["template"]>
 
@@ -677,6 +790,7 @@ export type TemplateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type TemplateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   emailBody?: boolean | Prisma.Template$emailBodyArgs<ExtArgs>
   emailCampaigns?: boolean | Prisma.Template$emailCampaignsArgs<ExtArgs>
+  fileRecords?: boolean | Prisma.Template$fileRecordsArgs<ExtArgs>
   _count?: boolean | Prisma.TemplateCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TemplateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -687,6 +801,7 @@ export type $TemplatePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     emailBody: Prisma.$EmailTemplatePayload<ExtArgs> | null
     emailCampaigns: Prisma.$EmailConfigPayload<ExtArgs>[]
+    fileRecords: Prisma.$FileRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1094,6 +1209,7 @@ export interface Prisma__TemplateClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   emailBody<T extends Prisma.Template$emailBodyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Template$emailBodyArgs<ExtArgs>>): Prisma.Prisma__EmailTemplateClient<runtime.Types.Result.GetResult<Prisma.$EmailTemplatePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   emailCampaigns<T extends Prisma.Template$emailCampaignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Template$emailCampaignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  fileRecords<T extends Prisma.Template$fileRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Template$fileRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FileRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1560,6 +1676,30 @@ export type Template$emailCampaignsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.EmailConfigScalarFieldEnum | Prisma.EmailConfigScalarFieldEnum[]
+}
+
+/**
+ * Template.fileRecords
+ */
+export type Template$fileRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FileRecord
+   */
+  select?: Prisma.FileRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FileRecord
+   */
+  omit?: Prisma.FileRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileRecordInclude<ExtArgs> | null
+  where?: Prisma.FileRecordWhereInput
+  orderBy?: Prisma.FileRecordOrderByWithRelationInput | Prisma.FileRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FileRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FileRecordScalarFieldEnum | Prisma.FileRecordScalarFieldEnum[]
 }
 
 /**

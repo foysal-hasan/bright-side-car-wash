@@ -232,6 +232,7 @@ export type NewsAndEventWhereInput = {
   created_by_id?: Prisma.StringFilter<"NewsAndEvent"> | string
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  fileRecords?: Prisma.FileRecordListRelationFilter
 }
 
 export type NewsAndEventOrderByWithRelationInput = {
@@ -248,6 +249,7 @@ export type NewsAndEventOrderByWithRelationInput = {
   created_by_id?: Prisma.SortOrder
   category?: Prisma.CategoryOrderByWithRelationInput
   creator?: Prisma.UserOrderByWithRelationInput
+  fileRecords?: Prisma.FileRecordOrderByRelationAggregateInput
 }
 
 export type NewsAndEventWhereUniqueInput = Prisma.AtLeast<{
@@ -267,6 +269,7 @@ export type NewsAndEventWhereUniqueInput = Prisma.AtLeast<{
   created_by_id?: Prisma.StringFilter<"NewsAndEvent"> | string
   category?: Prisma.XOR<Prisma.CategoryScalarRelationFilter, Prisma.CategoryWhereInput>
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  fileRecords?: Prisma.FileRecordListRelationFilter
 }, "id" | "slug">
 
 export type NewsAndEventOrderByWithAggregationInput = {
@@ -315,6 +318,7 @@ export type NewsAndEventCreateInput = {
   updated_at?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutNews_and_eventsInput
   creator: Prisma.UserCreateNestedOneWithoutNews_and_events_createdInput
+  fileRecords?: Prisma.FileRecordCreateNestedManyWithoutNewsAndEventInput
 }
 
 export type NewsAndEventUncheckedCreateInput = {
@@ -329,6 +333,7 @@ export type NewsAndEventUncheckedCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   created_by_id: string
+  fileRecords?: Prisma.FileRecordUncheckedCreateNestedManyWithoutNewsAndEventInput
 }
 
 export type NewsAndEventUpdateInput = {
@@ -343,6 +348,7 @@ export type NewsAndEventUpdateInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutNews_and_eventsNestedInput
   creator?: Prisma.UserUpdateOneRequiredWithoutNews_and_events_createdNestedInput
+  fileRecords?: Prisma.FileRecordUpdateManyWithoutNewsAndEventNestedInput
 }
 
 export type NewsAndEventUncheckedUpdateInput = {
@@ -357,6 +363,7 @@ export type NewsAndEventUncheckedUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   created_by_id?: Prisma.StringFieldUpdateOperationsInput | string
+  fileRecords?: Prisma.FileRecordUncheckedUpdateManyWithoutNewsAndEventNestedInput
 }
 
 export type NewsAndEventCreateManyInput = {
@@ -451,6 +458,11 @@ export type NewsAndEventMinOrderByAggregateInput = {
   created_by_id?: Prisma.SortOrder
 }
 
+export type NewsAndEventNullableScalarRelationFilter = {
+  is?: Prisma.NewsAndEventWhereInput | null
+  isNot?: Prisma.NewsAndEventWhereInput | null
+}
+
 export type NewsAndEventCreateNestedManyWithoutCreatorInput = {
   create?: Prisma.XOR<Prisma.NewsAndEventCreateWithoutCreatorInput, Prisma.NewsAndEventUncheckedCreateWithoutCreatorInput> | Prisma.NewsAndEventCreateWithoutCreatorInput[] | Prisma.NewsAndEventUncheckedCreateWithoutCreatorInput[]
   connectOrCreate?: Prisma.NewsAndEventCreateOrConnectWithoutCreatorInput | Prisma.NewsAndEventCreateOrConnectWithoutCreatorInput[]
@@ -535,6 +547,22 @@ export type NewsAndEventUncheckedUpdateManyWithoutCategoryNestedInput = {
   deleteMany?: Prisma.NewsAndEventScalarWhereInput | Prisma.NewsAndEventScalarWhereInput[]
 }
 
+export type NewsAndEventCreateNestedOneWithoutFileRecordsInput = {
+  create?: Prisma.XOR<Prisma.NewsAndEventCreateWithoutFileRecordsInput, Prisma.NewsAndEventUncheckedCreateWithoutFileRecordsInput>
+  connectOrCreate?: Prisma.NewsAndEventCreateOrConnectWithoutFileRecordsInput
+  connect?: Prisma.NewsAndEventWhereUniqueInput
+}
+
+export type NewsAndEventUpdateOneWithoutFileRecordsNestedInput = {
+  create?: Prisma.XOR<Prisma.NewsAndEventCreateWithoutFileRecordsInput, Prisma.NewsAndEventUncheckedCreateWithoutFileRecordsInput>
+  connectOrCreate?: Prisma.NewsAndEventCreateOrConnectWithoutFileRecordsInput
+  upsert?: Prisma.NewsAndEventUpsertWithoutFileRecordsInput
+  disconnect?: Prisma.NewsAndEventWhereInput | boolean
+  delete?: Prisma.NewsAndEventWhereInput | boolean
+  connect?: Prisma.NewsAndEventWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.NewsAndEventUpdateToOneWithWhereWithoutFileRecordsInput, Prisma.NewsAndEventUpdateWithoutFileRecordsInput>, Prisma.NewsAndEventUncheckedUpdateWithoutFileRecordsInput>
+}
+
 export type NewsAndEventCreateWithoutCreatorInput = {
   id?: string
   title: string
@@ -546,6 +574,7 @@ export type NewsAndEventCreateWithoutCreatorInput = {
   created_at?: Date | string
   updated_at?: Date | string
   category: Prisma.CategoryCreateNestedOneWithoutNews_and_eventsInput
+  fileRecords?: Prisma.FileRecordCreateNestedManyWithoutNewsAndEventInput
 }
 
 export type NewsAndEventUncheckedCreateWithoutCreatorInput = {
@@ -559,6 +588,7 @@ export type NewsAndEventUncheckedCreateWithoutCreatorInput = {
   is_published?: boolean
   created_at?: Date | string
   updated_at?: Date | string
+  fileRecords?: Prisma.FileRecordUncheckedCreateNestedManyWithoutNewsAndEventInput
 }
 
 export type NewsAndEventCreateOrConnectWithoutCreatorInput = {
@@ -615,6 +645,7 @@ export type NewsAndEventCreateWithoutCategoryInput = {
   created_at?: Date | string
   updated_at?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutNews_and_events_createdInput
+  fileRecords?: Prisma.FileRecordCreateNestedManyWithoutNewsAndEventInput
 }
 
 export type NewsAndEventUncheckedCreateWithoutCategoryInput = {
@@ -628,6 +659,7 @@ export type NewsAndEventUncheckedCreateWithoutCategoryInput = {
   created_at?: Date | string
   updated_at?: Date | string
   created_by_id: string
+  fileRecords?: Prisma.FileRecordUncheckedCreateNestedManyWithoutNewsAndEventInput
 }
 
 export type NewsAndEventCreateOrConnectWithoutCategoryInput = {
@@ -656,6 +688,78 @@ export type NewsAndEventUpdateManyWithWhereWithoutCategoryInput = {
   data: Prisma.XOR<Prisma.NewsAndEventUpdateManyMutationInput, Prisma.NewsAndEventUncheckedUpdateManyWithoutCategoryInput>
 }
 
+export type NewsAndEventCreateWithoutFileRecordsInput = {
+  id?: string
+  title: string
+  slug: string
+  content: string
+  summary?: string | null
+  image_url?: string | null
+  is_published?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  category: Prisma.CategoryCreateNestedOneWithoutNews_and_eventsInput
+  creator: Prisma.UserCreateNestedOneWithoutNews_and_events_createdInput
+}
+
+export type NewsAndEventUncheckedCreateWithoutFileRecordsInput = {
+  id?: string
+  title: string
+  slug: string
+  content: string
+  summary?: string | null
+  image_url?: string | null
+  category_id: string
+  is_published?: boolean
+  created_at?: Date | string
+  updated_at?: Date | string
+  created_by_id: string
+}
+
+export type NewsAndEventCreateOrConnectWithoutFileRecordsInput = {
+  where: Prisma.NewsAndEventWhereUniqueInput
+  create: Prisma.XOR<Prisma.NewsAndEventCreateWithoutFileRecordsInput, Prisma.NewsAndEventUncheckedCreateWithoutFileRecordsInput>
+}
+
+export type NewsAndEventUpsertWithoutFileRecordsInput = {
+  update: Prisma.XOR<Prisma.NewsAndEventUpdateWithoutFileRecordsInput, Prisma.NewsAndEventUncheckedUpdateWithoutFileRecordsInput>
+  create: Prisma.XOR<Prisma.NewsAndEventCreateWithoutFileRecordsInput, Prisma.NewsAndEventUncheckedCreateWithoutFileRecordsInput>
+  where?: Prisma.NewsAndEventWhereInput
+}
+
+export type NewsAndEventUpdateToOneWithWhereWithoutFileRecordsInput = {
+  where?: Prisma.NewsAndEventWhereInput
+  data: Prisma.XOR<Prisma.NewsAndEventUpdateWithoutFileRecordsInput, Prisma.NewsAndEventUncheckedUpdateWithoutFileRecordsInput>
+}
+
+export type NewsAndEventUpdateWithoutFileRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  category?: Prisma.CategoryUpdateOneRequiredWithoutNews_and_eventsNestedInput
+  creator?: Prisma.UserUpdateOneRequiredWithoutNews_and_events_createdNestedInput
+}
+
+export type NewsAndEventUncheckedUpdateWithoutFileRecordsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  category_id?: Prisma.StringFieldUpdateOperationsInput | string
+  is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  created_by_id?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
 export type NewsAndEventCreateManyCreatorInput = {
   id?: string
   title: string
@@ -680,6 +784,7 @@ export type NewsAndEventUpdateWithoutCreatorInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   category?: Prisma.CategoryUpdateOneRequiredWithoutNews_and_eventsNestedInput
+  fileRecords?: Prisma.FileRecordUpdateManyWithoutNewsAndEventNestedInput
 }
 
 export type NewsAndEventUncheckedUpdateWithoutCreatorInput = {
@@ -693,6 +798,7 @@ export type NewsAndEventUncheckedUpdateWithoutCreatorInput = {
   is_published?: Prisma.BoolFieldUpdateOperationsInput | boolean
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  fileRecords?: Prisma.FileRecordUncheckedUpdateManyWithoutNewsAndEventNestedInput
 }
 
 export type NewsAndEventUncheckedUpdateManyWithoutCreatorInput = {
@@ -732,6 +838,7 @@ export type NewsAndEventUpdateWithoutCategoryInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutNews_and_events_createdNestedInput
+  fileRecords?: Prisma.FileRecordUpdateManyWithoutNewsAndEventNestedInput
 }
 
 export type NewsAndEventUncheckedUpdateWithoutCategoryInput = {
@@ -745,6 +852,7 @@ export type NewsAndEventUncheckedUpdateWithoutCategoryInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   created_by_id?: Prisma.StringFieldUpdateOperationsInput | string
+  fileRecords?: Prisma.FileRecordUncheckedUpdateManyWithoutNewsAndEventNestedInput
 }
 
 export type NewsAndEventUncheckedUpdateManyWithoutCategoryInput = {
@@ -761,6 +869,35 @@ export type NewsAndEventUncheckedUpdateManyWithoutCategoryInput = {
 }
 
 
+/**
+ * Count Type NewsAndEventCountOutputType
+ */
+
+export type NewsAndEventCountOutputType = {
+  fileRecords: number
+}
+
+export type NewsAndEventCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  fileRecords?: boolean | NewsAndEventCountOutputTypeCountFileRecordsArgs
+}
+
+/**
+ * NewsAndEventCountOutputType without action
+ */
+export type NewsAndEventCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NewsAndEventCountOutputType
+   */
+  select?: Prisma.NewsAndEventCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * NewsAndEventCountOutputType without action
+ */
+export type NewsAndEventCountOutputTypeCountFileRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FileRecordWhereInput
+}
+
 
 export type NewsAndEventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -776,6 +913,8 @@ export type NewsAndEventSelect<ExtArgs extends runtime.Types.Extensions.Internal
   created_by_id?: boolean
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  fileRecords?: boolean | Prisma.NewsAndEvent$fileRecordsArgs<ExtArgs>
+  _count?: boolean | Prisma.NewsAndEventCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["newsAndEvent"]>
 
 export type NewsAndEventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -828,6 +967,8 @@ export type NewsAndEventOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type NewsAndEventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  fileRecords?: boolean | Prisma.NewsAndEvent$fileRecordsArgs<ExtArgs>
+  _count?: boolean | Prisma.NewsAndEventCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type NewsAndEventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   category?: boolean | Prisma.CategoryDefaultArgs<ExtArgs>
@@ -843,6 +984,7 @@ export type $NewsAndEventPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     category: Prisma.$CategoryPayload<ExtArgs>
     creator: Prisma.$UserPayload<ExtArgs>
+    fileRecords: Prisma.$FileRecordPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1252,6 +1394,7 @@ export interface Prisma__NewsAndEventClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   category<T extends Prisma.CategoryDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CategoryDefaultArgs<ExtArgs>>): Prisma.Prisma__CategoryClient<runtime.Types.Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   creator<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  fileRecords<T extends Prisma.NewsAndEvent$fileRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.NewsAndEvent$fileRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FileRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1685,6 +1828,30 @@ export type NewsAndEventDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many NewsAndEvents to delete.
    */
   limit?: number
+}
+
+/**
+ * NewsAndEvent.fileRecords
+ */
+export type NewsAndEvent$fileRecordsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FileRecord
+   */
+  select?: Prisma.FileRecordSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FileRecord
+   */
+  omit?: Prisma.FileRecordOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FileRecordInclude<ExtArgs> | null
+  where?: Prisma.FileRecordWhereInput
+  orderBy?: Prisma.FileRecordOrderByWithRelationInput | Prisma.FileRecordOrderByWithRelationInput[]
+  cursor?: Prisma.FileRecordWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FileRecordScalarFieldEnum | Prisma.FileRecordScalarFieldEnum[]
 }
 
 /**

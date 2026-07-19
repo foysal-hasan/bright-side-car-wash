@@ -1,7 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested, IsObject } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested, IsObject, IsArray, ArrayNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 import { EditorType, TemplateType } from 'src/generated/prisma/enums';
+import { IsCuid } from 'src/common/validators/is-cuid.validator';
 
 
 class CreateEmailTemplateDto {
@@ -47,4 +48,10 @@ export class CreateTemplateDto {
   @ValidateNested()
   @Type(() => CreateEmailTemplateDto)
   emailBody?: CreateEmailTemplateDto;
+
+  @ApiPropertyOptional({ description: 'Array of media file CUIDs to attach to the template', example: ['cm123abc', 'cm456def'] })
+  @IsOptional()
+  @IsArray()
+  @IsCuid({ each: true })
+  fileIds?: string[];
 }

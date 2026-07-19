@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseInterceptors, UploadedFile, UseGuards, BadRequestException, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiConsumes, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiConsumes, ApiBearerAuth, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CreateNewsAndEventDto } from './dto/create-news-and-event.dto';
@@ -47,6 +47,8 @@ export class NewsAndEventsController {
     return this.service.find_all_categories();
   }
 
+
+
   @Get('categories/:id')
   @RequirePermission('news-and-events-category:read')
   @ApiOperation({ summary: 'Get category by ID' })
@@ -82,7 +84,7 @@ export class NewsAndEventsController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({ status: 200, description: 'Image uploaded successfully.' })
-  @LogActivity({ action: 'upload', entity: 'template' })
+  @LogActivity({ action: 'upload', entity: 'news-and-events' })
   @Post('upload-image')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -100,12 +102,34 @@ export class NewsAndEventsController {
     const key = `${appConfig().storageUrl.newsAndEventsBodyImages}${generatedFilename}`;
     await SojebStorage.put(key, file.buffer);
 
+    const fileRecord = await this.service.createFileRecord({
+      storageKey: key,
+      fileType: file.mimetype
+    })
+
     return {
       success: true,
       message: 'File uploaded successfully',
       data: {
+        id: fileRecord.id,
         url: SojebStorage.url(key),
       }
+    }
+  }
+
+  @ApiOperation({ summary: 'Delete a file record by ID' })
+  @ApiParam({ name: 'id', description: 'CUID string of the target file record entry' })
+  @ApiResponse({ status: 200, description: 'File record deleted successfully.' })
+  @LogActivity({ action: 'delete', entity: 'fileRecord' })
+  @Delete('upload-image/delete/:id')
+  async deleteFileRecord(@Param('id') id: string) {
+    const fileRecord = await this.service.deleteFileRecord(id);
+    SojebStorage.delete(fileRecord.storageKey);
+
+    return {
+      success: true,
+      message: 'File record deleted successfully',
+      data: null,
     }
   }
 
@@ -237,6 +261,12 @@ export class NewsAndEventsController {
     if (result.deleted_image_url) {
       const key = `${appConfig().storageUrl.newsAndEvents}${result.deleted_image_url}`;
       result.deleted_image_url = SojebStorage.url(key);
+    }
+
+    if (result.deleted_file_records?.length > 0) {
+      result.deleted_file_records.forEach(async record => {
+        await SojebStorage.delete(record.storageKey);
+      })
     }
     return null;
   }

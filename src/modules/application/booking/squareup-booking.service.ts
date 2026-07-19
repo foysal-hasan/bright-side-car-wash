@@ -127,9 +127,8 @@ export class SquareUpBookingService {
 
   async getBookingBasicInfo() {
     try {
-      const [businessProfileResponse, websiteInfo, locationsResponse] = await Promise.all([
+      const [businessProfileResponse, locationsResponse] = await Promise.all([
         this.squareClient.bookings.getBusinessProfile(),
-        this.prisma.websiteInfo.findFirst({ orderBy: { created_at: 'desc' } }),
         this.squareClient.locations.list(),
       ]);
 
@@ -149,13 +148,6 @@ export class SquareUpBookingService {
           cancellationPolicy: appointmentSettings?.cancellationPolicy,
           cancellationPolicyText: appointmentSettings?.cancellationPolicyText,
           multipleServiceBookingEnabled: appointmentSettings?.multipleServiceBookingEnabled,
-        },
-        websiteInfo: {
-          name: websiteInfo?.name,
-          phoneNumber: websiteInfo?.phone_number,
-          email: websiteInfo?.email,
-          address: websiteInfo?.address,
-          cancellationPolicy: websiteInfo?.cancellation_policy,
         },
         workingHours: (locationsResponse.locations ?? [])
           .filter((location) => location.status === 'ACTIVE')

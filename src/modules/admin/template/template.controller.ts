@@ -81,12 +81,35 @@ export class TemplatesController {
     const key = `${appConfig().storageUrl.templateAttachments}${generatedFilename}`;
     await SojebStorage.put(key, file.buffer);
 
+    const fileRecord = await this.templatesService.createFileRecord({
+      storageKey: key,
+      fileType: file.mimetype
+    })
+
     return {
       success: true,
       message: 'File uploaded successfully',
       data: {
+        id: fileRecord.id,
         url: SojebStorage.url(key),
       }
+    }
+  }
+
+
+  @ApiOperation({ summary: 'Delete a file record by ID' })
+  @ApiParam({ name: 'id', description: 'CUID string of the target file record entry' })
+  @ApiResponse({ status: 200, description: 'File record deleted successfully.' })
+  @LogActivity({ action: 'delete', entity: 'fileRecord' })
+  @Delete('upload-image/delete/:id')
+  async deleteFileRecord(@Param('id') id: string) {
+    const fileRecord = await this.templatesService.deleteFileRecord(id);
+    SojebStorage.delete(fileRecord.storageKey);
+    
+    return {
+      success: true,
+      message: 'File record deleted successfully',
+      data: null,
     }
   }
 
@@ -146,6 +169,11 @@ export class TemplatesController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const result = await this.templatesService.remove(id);
+    if (result.deletedFileRecords?.length > 0) {
+      result.deletedFileRecords.forEach(item => {
+        SojebStorage.delete(item.storageKey);
+      })
+    }
     return {
       success: true,
       message: 'Template deleted successfully',

@@ -7,32 +7,64 @@ import { TemplateQueryDto } from './dto/query-template.dto';
 
 @Injectable()
 export class TemplatesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createTemplateDto: CreateTemplateDto, currentUserId?: string) {
-    const { name, description, type, editorType, emailBody } = createTemplateDto;
+    const { name, description, type, editorType, emailBody, fileIds } = createTemplateDto;
 
-    const template = await this.prisma.template.create({
-      data: {
-        name,
-        description,
-        type,
-        editorType,
-        userId: currentUserId || null,
-        // Atomic nested write if type is EMAIL and payload exists
-        ...(type === 'EMAIL' && emailBody && {
-          emailBody: {
-            create: {
-              subject: emailBody.subject,
-              htmlContent: emailBody.htmlContent,
-              designJson: emailBody.designJson || undefined,
+    // check files are exist or not
+    if (fileIds && fileIds.length > 0) {
+      const existingFiles = await this.prisma.fileRecord.findMany({
+        where: {
+          id: {
+            in: fileIds,
+          },
+        },
+      });
+      if (existingFiles.length !== fileIds.length) {
+        throw new NotFoundException('Some files do not exist');
+      }
+    }
+
+
+    return this.prisma.$transaction(async tx => {
+      const template = await tx.template.create({
+        data: {
+          name,
+          description,
+          type,
+          editorType,
+          userId: currentUserId || null,
+          // Atomic nested write if type is EMAIL and payload exists
+          ...(type === 'EMAIL' && emailBody && {
+            emailBody: {
+              create: {
+                subject: emailBody.subject,
+                htmlContent: emailBody.htmlContent,
+                designJson: emailBody.designJson || undefined,
+              },
+            },
+          }),
+        },
+        include: { emailBody: true },
+      })
+
+      // Attach file records to the template
+      if (fileIds?.length > 0) {
+        await tx.fileRecord.updateMany({
+          where: {
+            id: {
+              in: fileIds,
             },
           },
-        }),
-      },
-      include: { emailBody: true },
+          data: {
+            templateId: template.id,
+          },
+        })
+      }
+
+      return template;
     });
-    return template;
   }
 
   async findAll(query: TemplateQueryDto) {
@@ -130,7 +162,30 @@ export class TemplatesService {
 
   async remove(id: string) {
     await this.findOne(id);
+    const deletedFileRecords = await this.prisma.fileRecord.findMany({
+      where: {
+        templateId: id,
+      },
+      select: { id: true, storageKey: true }
+    })
+
+    // Delete all file records associated with the template
+    await this.prisma.fileRecord.deleteMany({
+      where: {
+        templateId: id,
+      },
+    })
     await this.prisma.template.delete({ where: { id } });
-    return { deleted: true, id };
+    return { deleted: true, id, deletedFileRecords };
+  }
+
+  async createFileRecord(fileRecord: Prisma.FileRecordCreateInput) {
+    return this.prisma.fileRecord.create({
+      data: fileRecord,
+    });
+  }
+
+  async deleteFileRecord(id: string) {
+    return this.prisma.fileRecord.delete({ where: { id } });
   }
 }

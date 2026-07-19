@@ -86,29 +86,61 @@ export class NewsAndEventsService {
     await this.find_one_category(dto.category_id);
     const slug = await this.generate_unique_slug(dto.title);
 
-    return this.prisma.newsAndEvent.create({
-      data: {
-        title: dto.title,
-        slug: slug,
-        content: dto.content,
-        summary: dto.summary,
-        image_url: dto.image_url,
-        category_id: dto.category_id,
-        is_published: dto.is_published,
-        created_by_id: dto.created_by_id,
-      },
-      include: { 
-        category: true,
-        creator: { select: { first_name: true, last_name: true, email: true } }
-       },
+    // check files are exist or not
+    if (dto.fileIds && dto.fileIds.length > 0) {
+      const existingFiles = await this.prisma.fileRecord.findMany({
+        where: {
+          id: {
+            in: dto.fileIds,
+          },
+        },
+      });
+      if (existingFiles.length !== dto.fileIds.length) {
+        throw new NotFoundException('Some files do not exist');
+      }
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
+      const newsAndEvent = await tx.newsAndEvent.create({
+        data: {
+          title: dto.title,
+          slug: slug,
+          content: dto.content,
+          summary: dto.summary,
+          image_url: dto.image_url,
+          category_id: dto.category_id,
+          is_published: dto.is_published,
+          created_by_id: dto.created_by_id,
+        },
+        include: {
+          category: true,
+          creator: { select: { first_name: true, last_name: true, email: true } },
+        },
+      })
+
+      // update file records of all dto.fileIds. field: newsAndEventId
+      if (dto.fileIds?.length > 0) {
+        await tx.fileRecord.updateMany({
+          data: {
+            newsAndEventId: newsAndEvent.id,
+          },
+          where: {
+            id: {
+              in: dto.fileIds,
+            },
+          },
+        })
+      }
+
+      return newsAndEvent;
     });
   }
-
 
   async findAll(query: QueryNewsAndEventDto) {
     const { search, category_id, is_published, sort_by, sort_order, page, limit } = query;
 
     const where: Prisma.NewsAndEventWhereInput = {};
+
 
     // 1. Text Search across structural text details
     if (search) {
@@ -162,6 +194,7 @@ export class NewsAndEventsService {
               last_name: true
             },
           },
+          fileRecords: true
         },
       }),
     ]);
@@ -180,7 +213,7 @@ export class NewsAndEventsService {
   async find_one(id: string) {
     const record = await this.prisma.newsAndEvent.findUnique({
       where: { id },
-      include: { 
+      include: {
         category: true,
         creator: { select: { first_name: true, last_name: true, email: true } }
       },
@@ -208,7 +241,7 @@ export class NewsAndEventsService {
     const updatedNewsAndEvent = await this.prisma.newsAndEvent.update({
       where: { id },
       data: update_data,
-      include: { 
+      include: {
         category: true,
         creator: { select: { first_name: true, last_name: true, email: true } }
       },
@@ -222,6 +255,28 @@ export class NewsAndEventsService {
   async remove(id: string) {
     const existing = await this.find_one(id);
     await this.prisma.newsAndEvent.delete({ where: { id } });
-    return { deleted_id: id, deleted_image_url: existing.image_url };
+
+    const deletedFileRecords = await this.prisma.fileRecord.findMany({
+      where: { newsAndEventId: id },
+      select: { id: true, storageKey: true },
+    });
+
+    await this.prisma.fileRecord.deleteMany({
+      where: { newsAndEventId: id },
+    });
+
+    return { deleted_id: id, deleted_image_url: existing.image_url, deleted_file_records: deletedFileRecords, };
+  }
+
+  async createFileRecord(fileRecord: Prisma.FileRecordCreateInput) {
+    return this.prisma.fileRecord.create({
+      data: fileRecord,
+    });
+  }
+
+  async deleteFileRecord(id: string) {
+    return this.prisma.fileRecord.delete({
+      where: { id },
+    });
   }
 }
