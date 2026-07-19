@@ -76,84 +76,84 @@ export class AuthController {
     }
   }
 
-  @ApiExcludeEndpoint()
-  @ApiOperation({ summary: 'Register a user' })
-  @Post('register')
-  @UseInterceptors(
-    FileInterceptor('image', {
-      storage: memoryStorage(),
-      limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
-    }),
-  )
-  async create(
-    @Body() data: CreateUserDto,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    try {
-      const name = data.name;
-      const first_name = data.first_name;
-      const last_name = data.last_name;
-      const email = data.email;
-      const password = data.password;
-      // const type = data.type;
+  // @ApiExcludeEndpoint()
+  // @ApiOperation({ summary: 'Register a user' })
+  // @Post('register')
+  // @UseInterceptors(
+  //   FileInterceptor('image', {
+  //     storage: memoryStorage(),
+  //     limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB file size limit
+  //   }),
+  // )
+  // async create(
+  //   @Body() data: CreateUserDto,
+  //   @UploadedFile() image: Express.Multer.File,
+  // ) {
+  //   try {
+  //     const name = data.name;
+  //     const first_name = data.first_name;
+  //     const last_name = data.last_name;
+  //     const email = data.email;
+  //     const password = data.password;
+  //     // const type = data.type;
 
-      const avatar = image; //
-      let userRole = null;
-
-
-
-      // if (!name) {
-      //   throw new HttpException('Name not provided', HttpStatus.UNAUTHORIZED);
-      // }
-      if (!first_name) {
-        throw new HttpException(
-          'First name not provided',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-      if (!last_name) {
-        throw new HttpException(
-          'Last name not provided',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-      if (!email) {
-        throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-      }
-      if (!password) {
-        throw new HttpException(
-          'Password not provided',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
+  //     const avatar = image; //
+  //     let userRole = null;
 
 
 
+  //     // if (!name) {
+  //     //   throw new HttpException('Name not provided', HttpStatus.UNAUTHORIZED);
+  //     // }
+  //     if (!first_name) {
+  //       throw new HttpException(
+  //         'First name not provided',
+  //         HttpStatus.UNAUTHORIZED,
+  //       );
+  //     }
+  //     if (!last_name) {
+  //       throw new HttpException(
+  //         'Last name not provided',
+  //         HttpStatus.UNAUTHORIZED,
+  //       );
+  //     }
+  //     if (!email) {
+  //       throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+  //     }
+  //     if (!password) {
+  //       throw new HttpException(
+  //         'Password not provided',
+  //         HttpStatus.UNAUTHORIZED,
+  //       );
+  //     }
 
-      const response = await this.authService.register(
-        {
-          name: name,
-          first_name: first_name,
-          last_name: last_name,
-          email: email,
-          password: password,
-          // type: type,
-          gender: data.gender,
-          date_of_birth: data.date_of_birth,
-          phone_number: data.phone_number,
-          // userRole: userRole,
-        },
-        avatar,
-      );
 
-      return response;
-    } catch (error: any) {
-      return {
-        success: false,
-        message: error?.message || 'Something went wrong',
-      };
-    }
-  }
+
+
+  //     const response = await this.authService.register(
+  //       {
+  //         name: name,
+  //         first_name: first_name,
+  //         last_name: last_name,
+  //         email: email,
+  //         password: password,
+  //         // type: type,
+  //         gender: data.gender,
+  //         date_of_birth: data.date_of_birth,
+  //         phone_number: data.phone_number,
+  //         // userRole: userRole,
+  //       },
+  //       avatar,
+  //     );
+
+  //     return response;
+  //   } catch (error: any) {
+  //     return {
+  //       success: false,
+  //       message: error?.message || 'Something went wrong',
+  //     };
+  //   }
+  // }
 
   // invite staff
   @ApiOperation({ summary: 'Invite staff' })
@@ -397,22 +397,6 @@ export class AuthController {
       return {
         success: true,
         message: 'Logged out from all devices successfully',
-      };
-    }
-
-
-
-
-    @ApiExcludeEndpoint()
-    @Post('google')
-    async googleLogin(@Body() dto: GoogleLoginDto) {
-      const { user, token } = await this.authService.googleLogin(dto.token);
-      // Remove sensitive fields if any
-      const { password, ...safeUser } = user;
-      return {
-        message: 'Login success',
-        user: safeUser,
-        token,
       };
     }
 

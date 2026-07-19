@@ -63,11 +63,6 @@ export default () => ({
   },
 
   auth: {
-    google: {
-      app_id: process.env.GOOGLE_APP_ID,
-      app_secret: process.env.GOOGLE_APP_SECRET,
-      callback: process.env.GOOGLE_CALLBACK_URL,
-    },
   },
 
   payment: {
@@ -80,10 +75,6 @@ export default () => ({
       secret: process.env.PAYPAL_SECRET,
       api: process.env.PAYPAL_API,
     },
-  },
-
-  googleMaps: {
-    apiKey: process.env.GOOGLE_MAPS_API_KEY,
   },
 
   square: {

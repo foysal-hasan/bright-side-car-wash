@@ -8,8 +8,8 @@ import { AuthController } from './auth.controller';
 import appConfig from '../../config/app.config';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { MailModule } from '../../mail/mail.module';
-import { GoogleStrategy } from './strategies/google.strategy';
 import { ActivityLogModule } from 'src/activity-log/activity-log.module';
+import { DateHelper } from 'src/common/helper/date.helper';
 
 @Module({
   imports: [
@@ -20,8 +20,8 @@ import { ActivityLogModule } from 'src/activity-log/activity-log.module';
     // }),
     JwtModule.registerAsync({
       useFactory: async () => ({
-        secret: appConfig().jwt.secret,
-        signOptions: { expiresIn: +appConfig().jwt.expiry },
+        secret: appConfig().jwt.access_token_secret,
+        signOptions: { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry).unixSeconds },
       }),
     }),
     PrismaModule,
@@ -34,7 +34,6 @@ import { ActivityLogModule } from 'src/activity-log/activity-log.module';
     AuthService,
     LocalStrategy,
     JwtStrategy,
-    GoogleStrategy,
     {
       provide: 'FIREBASE_AUTH',
       useValue: null,
