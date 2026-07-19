@@ -33,11 +33,7 @@ import { DateHelper } from 'src/common/helper/date.helper';
   providers: [
     AuthService,
     LocalStrategy,
-    JwtStrategy,
-    {
-      provide: 'FIREBASE_AUTH',
-      useValue: null,
-    },
+    JwtStrategy
   ],
   exports: [AuthService],
 })
