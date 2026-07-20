@@ -56,7 +56,10 @@ export class NotificationService {
       meta: {
         page,
         limit,
+        total,
         total_pages: Math.ceil(total / limit),
+        has_next_page: page < Math.ceil(total / limit),
+        has_prev_page: page > 1,
       },
    
     };
@@ -89,6 +92,8 @@ export class NotificationService {
         next_cursor,
         has_next_page,
         limit,
+        has_prev_page: cursor !== null ? true : false,
+        total: data.length,
       }
     };
   }
