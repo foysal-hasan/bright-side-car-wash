@@ -20,6 +20,18 @@ export class QuoteService {
 			},
 		});
 
+		const quoteDate = new Date(createQuoteDto.date);
+
+		await this.prisma.quote.create({
+			data: {
+				full_name: createQuoteDto.full_name,
+				email: createQuoteDto.email,
+				phone: createQuoteDto.phone,
+				vehicle: createQuoteDto.vehicle_type,
+				date: quoteDate,
+			},
+		});
+
 		if (existingLead) {
 			return {
 				created: false,

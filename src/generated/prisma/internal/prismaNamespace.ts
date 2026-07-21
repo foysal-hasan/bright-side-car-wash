@@ -398,6 +398,7 @@ export const ModelName = {
   Lead: 'Lead',
   LeadAssignmentHistory: 'LeadAssignmentHistory',
   LeadActivityTimeline: 'LeadActivityTimeline',
+  Quote: 'Quote',
   Payment: 'Payment',
   Campaign: 'Campaign',
   EmailConfig: 'EmailConfig',
@@ -428,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "section" | "mediaFile" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery" | "testimonial" | "category" | "newsAndEvent" | "notificationLog" | "fileRecord"
+    modelProps: "user" | "userSession" | "ucode" | "role" | "permission" | "roleUser" | "rolePermission" | "section" | "mediaFile" | "activityLog" | "stage" | "lead" | "leadAssignmentHistory" | "leadActivityTimeline" | "quote" | "payment" | "campaign" | "emailConfig" | "deliveryLog" | "leadGroup" | "template" | "emailTemplate" | "emailLog" | "faq" | "gallery" | "testimonial" | "category" | "newsAndEvent" | "notificationLog" | "fileRecord"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1465,6 +1466,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.LeadActivityTimelineCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.LeadActivityTimelineCountAggregateOutputType> | number
+        }
+      }
+    }
+    Quote: {
+      payload: Prisma.$QuotePayload<ExtArgs>
+      fields: Prisma.QuoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.QuoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.QuoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>
+        }
+        findFirst: {
+          args: Prisma.QuoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.QuoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>
+        }
+        findMany: {
+          args: Prisma.QuoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>[]
+        }
+        create: {
+          args: Prisma.QuoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>
+        }
+        createMany: {
+          args: Prisma.QuoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.QuoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>[]
+        }
+        delete: {
+          args: Prisma.QuoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>
+        }
+        update: {
+          args: Prisma.QuoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>
+        }
+        deleteMany: {
+          args: Prisma.QuoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.QuoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.QuoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>[]
+        }
+        upsert: {
+          args: Prisma.QuoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$QuotePayload>
+        }
+        aggregate: {
+          args: Prisma.QuoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateQuote>
+        }
+        groupBy: {
+          args: Prisma.QuoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QuoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.QuoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.QuoteCountAggregateOutputType> | number
         }
       }
     }
@@ -2831,6 +2906,22 @@ export const LeadActivityTimelineScalarFieldEnum = {
 export type LeadActivityTimelineScalarFieldEnum = (typeof LeadActivityTimelineScalarFieldEnum)[keyof typeof LeadActivityTimelineScalarFieldEnum]
 
 
+export const QuoteScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  full_name: 'full_name',
+  email: 'email',
+  phone: 'phone',
+  vehicle: 'vehicle',
+  status: 'status',
+  description: 'description',
+  date: 'date'
+} as const
+
+export type QuoteScalarFieldEnum = (typeof QuoteScalarFieldEnum)[keyof typeof QuoteScalarFieldEnum]
+
+
 export const PaymentScalarFieldEnum = {
   id: 'id',
   transaction_id: 'transaction_id',
@@ -3440,6 +3531,7 @@ export type GlobalOmitConfig = {
   lead?: Prisma.LeadOmit
   leadAssignmentHistory?: Prisma.LeadAssignmentHistoryOmit
   leadActivityTimeline?: Prisma.LeadActivityTimelineOmit
+  quote?: Prisma.QuoteOmit
   payment?: Prisma.PaymentOmit
   campaign?: Prisma.CampaignOmit
   emailConfig?: Prisma.EmailConfigOmit

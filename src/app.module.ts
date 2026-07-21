@@ -39,6 +39,11 @@ import { NotificationModule } from './modules/notification/notification.module';
         host: appConfig().redis.host,
         password: appConfig().redis.password,
         port: +appConfig().redis.port,
+        keepAlive: 30000,
+        enableOfflineQueue: true,
+        retryStrategy(times) {
+          return Math.min(times * 100, 3000);
+        },
       },
       // redis: {
       //   host: appConfig().redis.host,
@@ -52,6 +57,10 @@ import { NotificationModule } from './modules/notification/notification.module';
         host: appConfig().redis.host,
         password: appConfig().redis.password,
         port: +appConfig().redis.port,
+        keepAlive: 30000,
+        retryStrategy(times) {
+          return Math.min(times * 100, 3000);
+        },
       },
     }),
     // disabling throttling for dev

@@ -9,16 +9,6 @@
 * 🟢 You can import this file directly.
 */
 
-export const MessageStatus = {
-  PENDING: 'PENDING',
-  SENT: 'SENT',
-  DELIVERED: 'DELIVERED',
-  READ: 'READ'
-} as const
-
-export type MessageStatus = (typeof MessageStatus)[keyof typeof MessageStatus]
-
-
 export const DepositStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',

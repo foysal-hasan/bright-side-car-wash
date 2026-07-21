@@ -11,11 +11,9 @@ export class QuoteController {
   @Post()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Submit a quote request and create lead if not already present' })
-  @ApiBody({ type: CreateQuoteDto })
   @ApiResponse({ status: HttpStatus.OK, description: 'Lead created or existing lead returned without update' })
   async requestQuote(@Body() createQuoteDto: CreateQuoteDto) {
     await this.quoteService.createQuote(createQuoteDto);
-
     return {
       success: true,
       message: 'Quote request submitted successfully',

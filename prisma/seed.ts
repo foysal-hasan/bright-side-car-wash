@@ -109,7 +109,6 @@ async function seedUsers() {
 async function seedRoleAndPermission() {
   const RESOURCES = [
     'user',
-    'billing',
     'lead',
     'stage',
     'campaign',
@@ -158,6 +157,9 @@ async function seedRoleAndPermission() {
     'report:deposit_revenue',
     'report:stage',
     'report:member',
+    'quote:read',
+    'quote:update',
+    'quote:delete',
   ];
 
   console.log('🔄 Starting permission seeding with ioredis...');

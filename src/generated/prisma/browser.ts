@@ -88,6 +88,11 @@ export type LeadAssignmentHistory = Prisma.LeadAssignmentHistoryModel
  */
 export type LeadActivityTimeline = Prisma.LeadActivityTimelineModel
 /**
+ * Model Quote
+ * 
+ */
+export type Quote = Prisma.QuoteModel
+/**
  * Model Payment
  * 
  */

@@ -15,6 +15,7 @@ import { TestimonialModule } from './testimonial/testimonial.module';
 import { PaymentTransactionModule } from './payment-transaction/payment-transaction.module';
 import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
 import { SectionsAdminModule } from './sections/sections.admin.module';
+import { QuoteModule } from './quote/quote.module';
 
 
 @Module({
@@ -35,6 +36,7 @@ import { SectionsAdminModule } from './sections/sections.admin.module';
     NewsAndEventsModule,
     SectionsAdminModule,
     NotificationModule,
+    QuoteModule,
   ],
 })
 export class AdminModule {}

@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEmail, IsEnum, IsString, MaxLength } from 'class-validator';
 
-export enum QuoteVehicleType {
-  SEDAN = 'Sedan',
-  SUV = 'SUV',
-  TRUCK_VAN = 'Truck/Van',
-}
-
 export class CreateQuoteDto {
   @ApiProperty({
     description: 'Customer full name',
@@ -35,9 +29,15 @@ export class CreateQuoteDto {
 
   @ApiProperty({
     description: 'Selected vehicle type from the quote form',
-    enum: QuoteVehicleType,
-    example: QuoteVehicleType.SUV,
+    example: 'SUV',
   })
-  @IsEnum(QuoteVehicleType)
-  vehicle_type: QuoteVehicleType;
+  @IsString()
+  vehicle_type: string;
+
+  @ApiProperty({
+    description: 'Date of the quote',
+    example: '2023-12-31',
+  })
+  @IsDateString()
+  date: string;
 }

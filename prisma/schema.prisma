@@ -162,13 +162,6 @@ model RolePermission {
   @@map("role_permissions")
 }
 
-enum MessageStatus {
-  PENDING
-  SENT
-  DELIVERED
-  READ
-}
-
 model Section {
   id           String   @id @default(cuid())
   section_key  String   @unique
@@ -342,6 +335,24 @@ model LeadActivityTimeline {
   @@index([lead_id])
   @@map("lead_activity_timelines")
 }
+
+// ==================== Quotes Start ====================
+model Quote {
+  id         String    @id @default(cuid())
+  created_at DateTime  @default(now()) @db.Timestamptz
+  updated_at DateTime  @updatedAt @db.Timestamptz
+
+  full_name      String?
+  email     String? 
+  phone     String?
+  vehicle   String?
+  status    String? @default("new")
+  description String?
+  date        DateTime? @db.Timestamptz
+
+  @@map("quotes")
+}
+// ==================== Quotes End ====================
 
 
 // ==================== Payments Start ====================
