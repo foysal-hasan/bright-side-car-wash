@@ -1,5 +1,5 @@
 import { randomInt, createHash } from 'crypto';
-import { BadRequestException, ConflictException, Inject, Injectable, Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, Logger, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
@@ -179,6 +179,7 @@ export class AuthService implements OnModuleInit {
             role: {
               select: {
                 name: true,
+                id: true,
               },
             },
           },
@@ -187,10 +188,7 @@ export class AuthService implements OnModuleInit {
     });
 
     if (!user) {
-      return {
-        success: false,
-        message: 'User not found',
-      };
+      throw new NotFoundException('User not found');
     }
 
     if (user.avatar) {
@@ -199,17 +197,62 @@ export class AuthService implements OnModuleInit {
       );
     }
 
-    if (user) {
-      return {
-        success: true,
-        data: user,
-      };
-    } else {
-      return {
-        success: false,
-        message: 'User not found',
-      };
+    // Get all unique permissions for user's roles
+    const allPermissions = new Set<string>();
+
+    for (const roleUser of user.roleUsers) {
+      const roleName = roleUser.role.name;
+      const cacheKey = RedisKeys.rolePermissions(roleName);
+
+      // Try to get from Redis first
+      let permissions: string[] | null = null;
+      try {
+        const cached = await this.redis.get(cacheKey);
+        if (cached) {
+          permissions = JSON.parse(cached);
+        }
+      } catch (error) {
+        this.logger.error(`Failed to get permissions for role ${roleName} from Redis:`, error);
+      }
+
+      // If not in Redis, get from DB and cache
+      if (!permissions) {
+        const roleWithPermissions = await this.prisma.role.findUnique({
+          where: { id: roleUser.role.id },
+          include: {
+            permissions: {
+              include: {
+                permission: {
+                  select: { name: true },
+                },
+              },
+            },
+          },
+        });
+
+        permissions = roleWithPermissions?.permissions.map(rp => rp.permission.name) || [];
+
+        // Cache the permissions
+        try {
+          await this.redis.set(cacheKey, JSON.stringify(permissions));
+        } catch (error) {
+          this.logger.error(`Failed to cache permissions for role ${roleName} in Redis:`, error);
+        }
+      }
+
+      // Add permissions to the set to avoid duplicates
+      for (const perm of permissions) {
+        allPermissions.add(perm);
+      }
     }
+
+    return {
+      success: true,
+      data: {
+        ...user,
+        permissions: Array.from(allPermissions),
+      },
+    };
   }
 
   async updateUser(
