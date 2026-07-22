@@ -1,5 +1,5 @@
 // external imports
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Injectable, MiddlewareConsumer, Module } from '@nestjs/common';
 // import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 // import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
@@ -26,6 +26,16 @@ import { APP_GUARD } from '@nestjs/core';
 import { PermissionGuard } from './modules/auth/guards/permission.guard';
 import { ActivityLogModule } from './activity-log/activity-log.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { ThrottlerBehindProxyGuard } from './common/guard/throttler-behind-proxy.guard';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthGuard } from '@nestjs/passport';
+
+@Injectable()
+export class OptionalJwtGuard extends AuthGuard('jwt') {
+  handleRequest(err, user) {
+    return user ?? null;
+  }
+}
 
 @Module({
   imports: [
@@ -63,24 +73,7 @@ import { NotificationModule } from './modules/notification/notification.module';
         },
       },
     }),
-    // disabling throttling for dev
-    // ThrottlerModule.forRoot([
-    //   {
-    //     name: 'short',
-    //     ttl: 1000,
-    //     limit: 3,
-    //   },
-    //   {
-    //     name: 'medium',
-    //     ttl: 10000,
-    //     limit: 20,
-    //   },
-    //   {
-    //     name: 'long',
-    //     ttl: 60000,
-    //     limit: 100,
-    //   },
-    // ]),
+
     // General modules
     PrismaModule,
     RepositoryModule,
@@ -92,18 +85,41 @@ import { NotificationModule } from './modules/notification/notification.module';
     PrometheusModule,
     ActivityLogModule,
     NotificationModule,
-    // FirebaseModule,
+    // throttling
+    ThrottlerModule.forRoot([
+      {
+        name: 'short',
+        ttl: 1000,
+        limit: 3,
+      },
+      {
+        name: 'medium',
+        ttl: 10000,
+        limit: 20,
+      },
+      {
+        name: 'long',
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
   ],
   controllers: [AppController],
+
   providers: [
+    ...(appConfig().app.environment === 'production' ? [
+      {
+        provide: APP_GUARD,
+        useClass: OptionalJwtGuard,
+      },
+      {
+        provide: APP_GUARD,
+        useClass: ThrottlerBehindProxyGuard,
+      }] : []),
     // disabling throttling for dev
     // {
     //   provide: APP_GUARD,
     //   useClass: ThrottlerGuard,
-    // },
-    // disbling throttling for dev {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerBehindProxyGuard,
     // },
     AppService,
     AnalyticsTrackingService,
