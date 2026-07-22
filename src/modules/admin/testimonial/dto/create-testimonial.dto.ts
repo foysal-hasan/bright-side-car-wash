@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsString, IsNotEmpty, IsOptional, IsUrl, IsInt, Min, Max } from 'class-validator';
 
 export class CreateTestimonialDto {
@@ -56,6 +56,14 @@ export class CreateTestimonialDto {
         example: true
     })
     @IsOptional()
-    @Type(() => Boolean)
+    @Transform(({ value }) => {
+        if (value === undefined || value === null) {
+            return undefined;
+        }
+        if (typeof value === 'string') {
+            return value.toLowerCase() === 'true';
+        }
+        return Boolean(value);
+    })
     is_active?: boolean = true;
 }
