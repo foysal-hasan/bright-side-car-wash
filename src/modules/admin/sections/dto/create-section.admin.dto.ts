@@ -57,8 +57,15 @@ export class CreateSectionAdminDto {
     default: true,
   })
   @IsOptional()
-  @Type(() => Boolean)
-  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null) {
+      return undefined;
+    }
+    if (typeof value === 'string') {
+      return value.toLowerCase() === 'true';
+    }
+    return Boolean(value);
+  })
   is_active?: boolean = true;
 
   @ApiPropertyOptional({
