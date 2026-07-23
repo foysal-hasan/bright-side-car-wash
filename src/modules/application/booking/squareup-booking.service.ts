@@ -315,35 +315,54 @@ export class SquareUpBookingService {
   ) {
     try {
       const resolvedRange = this.resolveAvailabilityRange(date, startAt, endAt);
-      const targetDate = date || resolvedRange.startAt.substring(0, 10);
-
+      
       // Try to get from cache first
       const allSlotsFromCache: any[] = [];
-      const uncachedVariationIds: string[] = [];
+      const uncachedVariationIds = new Set<string>();
+      const datesToCheck: string[] = [];
 
-      for (const variationId of serviceVariationIds) {
-        const cacheKey = RedisKeys.availabilityCache(
-          locationId,
-          variationId,
-          targetDate
-        );
-        const cachedData = await this.redis.get(cacheKey);
-        if (cachedData) {
-          allSlotsFromCache.push(...JSON.parse(cachedData));
-        } else {
-          uncachedVariationIds.push(variationId);
+      if (date) {
+        // Single date mode
+        datesToCheck.push(date);
+      } else {
+        // Range mode, generate all dates between startAt and endAt
+        const startDate = new Date(resolvedRange.startAt);
+        const endDate = new Date(resolvedRange.endAt);
+        
+        // Loop through each date in the range
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+          datesToCheck.push(currentDate.toISOString().substring(0, 10));
+          currentDate.setDate(currentDate.getDate() + 1);
         }
       }
 
-      // Fetch remaining from Square if needed
+      // Check each date in our list
+      for (const targetDate of datesToCheck) {
+        for (const variationId of serviceVariationIds) {
+          const cacheKey = RedisKeys.availabilityCache(
+            locationId,
+            variationId,
+            targetDate
+          );
+          const cachedData = await this.redis.get(cacheKey);
+          if (cachedData) {
+            allSlotsFromCache.push(...JSON.parse(cachedData));
+          } else {
+            uncachedVariationIds.add(variationId);
+          }
+        }
+      }
+
+      // Fetch remaining from Square if needed (any variation missing on any date)
       let slotsFromSquare: any[] = [];
-      if (uncachedVariationIds.length > 0) {
+      if (uncachedVariationIds.size > 0) {
         const availabilityResponse = await this.squareClient.bookings.searchAvailability({
           query: {
             filter: {
               locationId,
               startAtRange: resolvedRange,
-              segmentFilters: uncachedVariationIds.map((serviceVariationId) => ({
+              segmentFilters: Array.from(uncachedVariationIds).map((serviceVariationId) => ({
                 serviceVariationId,
               })),
             },
@@ -355,7 +374,13 @@ export class SquareUpBookingService {
       // Combine and filter locked slots
       const allSlots = [...allSlotsFromCache, ...slotsFromSquare];
       const availableSlots = [];
+      const seenSlotKeys = new Set<string>(); // To avoid duplicates from cache + square
+
       for (const slot of allSlots) {
+        const slotKey = `${slot.startAt}-${slot.segment?.serviceVariationId}`;
+        if (seenSlotKeys.has(slotKey)) continue;
+        seenSlotKeys.add(slotKey);
+
         const lockKey = RedisKeys.getLockKey(locationId, slot.startAt ?? '');
         const isLocked = await this.redis.get(lockKey);
         if (!isLocked) {
