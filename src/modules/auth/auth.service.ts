@@ -627,7 +627,7 @@ export class AuthService implements OnModuleInit {
     });
 
     // Generate invite URL
-    const inviteUrl = `${appConfig().app.client_app_url}/auth/set-password?token=${inviteToken}&email=${encodeURIComponent(email)}`;
+    const inviteUrl = `${appConfig().app.client_app_url}/set-password?token=${inviteToken}&email=${encodeURIComponent(email)}`;
 
     // Send invite email
     await this.mailService.sendInviteEmail({
@@ -717,7 +717,7 @@ export class AuthService implements OnModuleInit {
     });
 
     // Send new invite
-    const inviteUrl = `${appConfig().app.client_app_url}/auth/set-password?token=${inviteToken}&email=${encodeURIComponent(email)}`;
+    const inviteUrl = `${appConfig().app.client_app_url}/set-password?token=${inviteToken}&email=${encodeURIComponent(email)}`;
 
     await this.mailService.sendInviteEmail({
       to: email,
