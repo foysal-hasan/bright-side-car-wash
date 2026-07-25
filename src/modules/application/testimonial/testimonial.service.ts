@@ -6,7 +6,7 @@ import { GetTestimonialsQueryDto } from './dto/get-testimonials-query.dto';
 export class TestimonialService {
   constructor(private readonly prisma: PrismaService) { }
 
-  async findAll(query: GetTestimonialsQueryDto) {
+ async findAll(query: GetTestimonialsQueryDto) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
     const skip = (page - 1) * limit;
@@ -14,6 +14,9 @@ export class TestimonialService {
     const [totalItems, testimonials] = await this.prisma.$transaction([
       this.prisma.testimonial.count(),
       this.prisma.testimonial.findMany({
+        where:{
+          is_active: true,
+        },
         skip,
         take: limit,
         orderBy: { created_at: 'desc' },
