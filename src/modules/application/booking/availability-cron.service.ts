@@ -33,7 +33,7 @@ export class AvailabilityCronService implements OnModuleInit {
   })
   async handleDailyAvailabilityCache() {
     this.logger.log('Daily availability cache job triggered');
-    await this.bookingService.precacheAvailability();
+    // await this.bookingService.precacheAvailability();
   }
 
   // Optional: Also run once on module initialization to cache immediately
