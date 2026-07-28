@@ -6,8 +6,6 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
 import { Currency, SquareClient, SquareEnvironment, SquareError } from 'square';
 import appConfig from 'src/config/app.config';
 import { PrismaService } from 'src/prisma/prisma.service';

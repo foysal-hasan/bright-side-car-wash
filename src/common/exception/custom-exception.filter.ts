@@ -3,17 +3,67 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { MulterError } from 'multer';
+import { pinoLogger } from '../../logger.config';
 
 @Catch(HttpException)
 export class CustomExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    const response = host.switchToHttp().getResponse();
+    const ctx = host.switchToHttp();
+    const request = ctx.getRequest();
+    const response = ctx.getResponse();
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse() as any;
 
-    // Multer errors
+    const method = request.method;
+    const url = request.url;
+    const userAgent = request.headers?.['user-agent'];
+    const ip = request.ip || request.connection?.remoteAddress;
+
+    const is5xx = status >= HttpStatus.INTERNAL_SERVER_ERROR;
+    const is4xx = status >= HttpStatus.BAD_REQUEST && status < HttpStatus.INTERNAL_SERVER_ERROR;
+
+    if (is5xx) {
+      pinoLogger.error(
+        {
+          err: exception,
+          stack: exception.stack,
+          statusCode: status,
+          method,
+          url,
+          ip,
+          userAgent,
+          exceptionResponse,
+        },
+        `[HTTP ${status}] ${exception.message} at ${method} ${url}`,
+      );
+    } else if (is4xx) {
+      pinoLogger.warn(
+        {
+          statusCode: status,
+          method,
+          url,
+          ip,
+          userAgent,
+          message: exception.message,
+          exceptionResponse,
+        },
+        `[HTTP ${status}] Client error at ${method} ${url}`,
+      );
+    } else {
+      pinoLogger.info(
+        {
+          statusCode: status,
+          method,
+          url,
+          message: exception.message,
+        },
+        `[HTTP ${status}] ${method} ${url}`,
+      );
+    }
+
     if (exception instanceof MulterError) {
       return response.status(400).json({
         success: false,
