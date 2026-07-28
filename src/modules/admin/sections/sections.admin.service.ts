@@ -69,7 +69,7 @@ export class SectionsAdminService {
   }
 
   async upsertByKey(sectionKey: string, dto: UpdateSectionAdminDto) {
-    const existingSection = await this.prisma.section.findUnique({
+    const existingSection = await this.prisma.section.findFirst({
       where: { section_key: sectionKey },
     });
 
