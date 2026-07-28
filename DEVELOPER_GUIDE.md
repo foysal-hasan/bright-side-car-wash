@@ -599,6 +599,12 @@ Recommended commands:
 - `npx prisma generate`
 - `npx prisma migrate dev`
 
+## To see port is already listening or not
+```sh
+netstat -ano | findstr :4000 #shows 0.0.0.0:4000 LISTENING
+
+```
+
 ## Common Mistakes To Avoid
 
 - Do not hardcode Redis keys in new code.
