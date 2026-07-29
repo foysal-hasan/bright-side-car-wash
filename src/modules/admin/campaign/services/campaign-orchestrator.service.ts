@@ -301,6 +301,7 @@ export class CampaignOrchestratorService {
                     ...(dto.subject && { subject: dto.subject }),
                     ...(htmlContentFromTemplate && { htmlContent: htmlContentFromTemplate }),
                     ...(dto.leadGroupId && { leadGroupId: dto.leadGroupId }),
+                    ...(dto.templateId && { templateId: dto.templateId})
                 },
             },
         }
@@ -323,7 +324,16 @@ export class CampaignOrchestratorService {
             where: { id },
             data: data,
             include: {
-                emailConfig: true,
+                emailConfig: {
+                    select: {
+                        template: {
+                            select: {
+                                id:true,
+                                name: true,
+                            }
+                        }
+                    }
+                },
             },
         });
     }
