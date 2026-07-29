@@ -21,8 +21,8 @@ async function bootstrap() {
   const pinoLoggerService = new PinoLoggerService();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
-    logger: pinoLoggerService,
     bufferLogs: true,
+     ...(appConfig().app.environment === 'production' && {logger: pinoLoggerService}),
   });
 
 
