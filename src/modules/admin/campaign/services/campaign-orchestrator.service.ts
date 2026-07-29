@@ -37,7 +37,7 @@ export class CampaignOrchestratorService {
             throw new NotFoundException(`Template not found with the provided templateId: ${createCampaignDto.templateId}`);
         }
 
-        const campaign = await this.prisma.campaign.create({
+        return this.prisma.campaign.create({
             data: {
                 name: createCampaignDto.name,
                 tags: createCampaignDto.tags,
@@ -50,18 +50,23 @@ export class CampaignOrchestratorService {
                         senderName: senderName,
                         senderEmail: senderEmail,
                         leadGroupId: createCampaignDto.leadGroupId,
+                        templateId: template.id
                     },
                 },
             },
-        });
-
-        return{
-            ...campaign,
-            template: {
-                id: template.id,
-                name: template.name
+            include: {
+                emailConfig: {
+                    select: {
+                        template: {
+                            select: {
+                                id: true,
+                                name: true,
+                            }
+                        }
+                    }
+                }
             }
-        }
+        });
     }
 
     async finalizeAndLaunch(campaignId: string) {
@@ -232,6 +237,12 @@ export class CampaignOrchestratorService {
                         leadGroup: {
                             select: { id: true, name: true, brevoListId: true },
                         },
+                        template: {
+                            select: {
+                                id: true,
+                                name: true,
+                            }
+                        }
                     },
                 },
             },
