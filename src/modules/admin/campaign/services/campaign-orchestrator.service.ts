@@ -27,6 +27,8 @@ export class CampaignOrchestratorService {
         const template = await this.prisma.template.findUnique({
             where: { id: createCampaignDto.templateId },
             select: {
+                id: true,
+                name: true,
                 emailBody: { select: { htmlContent: true } },
             },
         });
@@ -35,7 +37,7 @@ export class CampaignOrchestratorService {
             throw new NotFoundException(`Template not found with the provided templateId: ${createCampaignDto.templateId}`);
         }
 
-        return this.prisma.campaign.create({
+        const campaign = await this.prisma.campaign.create({
             data: {
                 name: createCampaignDto.name,
                 tags: createCampaignDto.tags,
@@ -52,6 +54,14 @@ export class CampaignOrchestratorService {
                 },
             },
         });
+
+        return{
+            ...campaign,
+            template: {
+                id: template.id,
+                name: template.name
+            }
+        }
     }
 
     async finalizeAndLaunch(campaignId: string) {

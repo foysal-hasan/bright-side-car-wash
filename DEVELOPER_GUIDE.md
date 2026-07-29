@@ -599,10 +599,10 @@ Recommended commands:
 - `npx prisma generate`
 - `npx prisma migrate dev`
 
-## To see port is already listening or not
+## To see port is already listening or not and close
 ```sh
 netstat -ano | findstr :4000 #shows 0.0.0.0:4000 LISTENING
-
+cmd //c "taskkill /PID [process id] /F"
 ```
 
 ## Common Mistakes To Avoid
