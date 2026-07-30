@@ -103,6 +103,14 @@ export class S3Adapter implements IStorage {
       // ⚠️ FIX: Strip leading slash from S3 Key (e.g. '/avatar/pic.png' -> 'avatar/pic.png')
       const cleanKey = key.replace(/^\/+/, '');
 
+      console.log(contentType)
+      console.log({
+        Bucket: this._config.connection.awsBucket,
+        Key: cleanKey,
+        Body: value,
+        ...(contentType && { ContentType: contentType })
+      })
+
       const params: AWS.S3.PutObjectRequest = {
         Bucket: this._config.connection.awsBucket,
         Key: cleanKey,

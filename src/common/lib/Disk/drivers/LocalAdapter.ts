@@ -64,7 +64,7 @@ export class LocalAdapter implements IStorage {
    * @param key
    * @param value
    */
-  async put(key: string, value: any) {
+  async put(key: string, value: any, contentType?: string | undefined | null) {
     try {
       const filePath = path.join(this._config.connection.rootUrl, key);
       const dirPath = path.dirname(filePath);

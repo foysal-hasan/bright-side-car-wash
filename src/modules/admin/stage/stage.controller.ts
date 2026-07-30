@@ -50,6 +50,7 @@ export class StageController {
       }
       const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
       const key = `${appConfig().storageUrl.stage}${generatedFilename}`;
+      console.log("mimetype => ", file.mimetype)
       await SojebStorage.put(key, file.buffer, file.mimetype);
       createStageDto.icon = generatedFilename;
       const result = await this.stageService.create(createStageDto);
@@ -133,7 +134,7 @@ export class StageController {
       if (file) {
         const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
         const key = `${appConfig().storageUrl.stage}${generatedFilename}`;
-        await SojebStorage.put(key, file.buffer);
+        await SojebStorage.put(key, file.buffer, file.mimetype);
         updateStageDto.icon = generatedFilename;
       }
       const result = await this.stageService.update(id, updateStageDto);
