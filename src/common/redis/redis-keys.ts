@@ -1,3 +1,10 @@
+
+export type GetServicesKeyParams = {
+  locationId?: string;
+  cursor?: string;
+  limit?: number;
+};
+
 export const RedisKeys = {
   rolePermissions(roleName: string): string {
     return `role:${roleName.trim().toLowerCase()}`;
@@ -30,4 +37,24 @@ export const RedisKeys = {
   availabilityCachePattern(): string {
     return 'availability:*';
   },
+
+  getAllLocationKey() {
+    return 'square:locations:all';
+  },
+
+  getServicesKey(params: GetServicesKeyParams): string {
+    const parts: string[] = ['square', 'services'];
+
+    if (params.locationId) {
+      parts.push(`loc:${params.locationId}`);
+    }
+    if (params.cursor) {
+      parts.push(`cur:${params.cursor}`);
+    }
+    if (params.limit !== undefined && params.limit !== null) {
+      parts.push(`lim:${params.limit}`);
+    }
+
+    return parts.join(':');
+  }
 };

@@ -1,5 +1,4 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
-import { SquareUpBookingService } from './squareup-booking.service';
 import { CheckAvailabilityDto } from './dto/check-availability.dto';
 import { ConfirmBookingDto } from './dto/confirm-booking.dto';
 import { LockTimeSlotDto } from './dto/lock-time-slot.dto';
@@ -13,6 +12,7 @@ import appConfig from 'src/config/app.config';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MailService } from 'src/mail/mail.service';
 import { GetTaxesDto } from './dto/get-taxes.dto';
+import { SquareUpBookingService } from './squareup-booking.service';
 
 @ApiTags('Square Booking API')
 @Controller('appointments')
