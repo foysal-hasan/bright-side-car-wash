@@ -97,15 +97,17 @@ export class S3Adapter implements IStorage {
   async put(
     key: string,
     value: Buffer | Uint8Array | string,
+    contentType?: string | undefined | null
   ): Promise<AWS.S3.ManagedUpload.SendData> {
     try {
       // ⚠️ FIX: Strip leading slash from S3 Key (e.g. '/avatar/pic.png' -> 'avatar/pic.png')
       const cleanKey = key.replace(/^\/+/, '');
 
-      const params = {
+      const params: AWS.S3.PutObjectRequest = {
         Bucket: this._config.connection.awsBucket,
         Key: cleanKey,
         Body: value,
+        ...{ ContentType: contentType }
       };
       const upload = await this.s3.upload(params).promise();
       return upload;

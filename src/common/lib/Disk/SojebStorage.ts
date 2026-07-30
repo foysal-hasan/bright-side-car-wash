@@ -43,7 +43,7 @@ export class SojebStorage {
    * @param value
    * @returns
    */
-  public static async put(key: string, value: any): Promise<any> {
+  public static async put(key: string, value: any, contentType?: string | undefined | null): Promise<any> {
     const disk = this.storageDisk();
     return await disk.put(key, value);
   }
