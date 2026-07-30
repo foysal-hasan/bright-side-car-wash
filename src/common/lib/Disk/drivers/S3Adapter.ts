@@ -11,48 +11,62 @@ export class S3Adapter implements IStorage {
 
   constructor(config: DiskOption) {
     this._config = config;
+
+    // Clean up endpoint trailing slash if present
+    const endpoint = this._config.connection.awsEndpoint?.replace(/\/+$/, '');
+
     const awsConfig: AWS.S3.ClientConfiguration = {
-      endpoint: this._config.connection.awsEndpoint,
+      endpoint: endpoint,
       region: this._config.connection.awsDefaultRegion,
       credentials: {
         accessKeyId: this._config.connection.awsAccessKeyId,
         secretAccessKey: this._config.connection.awsSecretAccessKey,
       },
     };
+
     if (this._config.connection.minio) {
-      // s3ForcePathStyle: true, // Required for MinIO
       awsConfig['s3ForcePathStyle'] = true;
     }
+
     this.s3 = new AWS.S3({
       ...awsConfig,
     });
   }
 
   /**
-   * returns object url
-   *
-   * https://[bucketname].s3.[region].amazonaws.com/[object]
-   * and for minio
-   * http://[endpoint]/[bucketname]/[object]
-   * @param key
-   * @returns
+   * Safe path formatter to prevent double slashes (//)
    */
-
-  url(key: string): string {
-    if (this._config.connection.minio) {
-      return `${this._config.connection.awsEndpoint}/${this._config.connection.awsBucket}/${key}`;
-    }
-    return `https://${this._config.connection.awsBucket}.s3.${this._config.connection.awsDefaultRegion}.amazonaws.com/${key}`;
+  private formatPath(...parts: string[]): string {
+    return parts
+      .map((part) => part ? part.replace(/^\/+|\/+$/g, '') : '')
+      .filter(Boolean)
+      .join('/');
   }
 
   /**
-   * check if file exists
-   * @param key
-   * @returns
+   * Returns object URL
+   */
+  url(key: string): string {
+    const bucket = this._config.connection.awsBucket;
+
+    if (this._config.connection.minio) {
+      const endpoint = this._config.connection.awsEndpoint?.replace(/\/+$/, '');
+      const cleanPath = this.formatPath(bucket, key);
+      return `${endpoint}/${cleanPath}`;
+    }
+
+    const region = this._config.connection.awsDefaultRegion;
+    const cleanKey = key.replace(/^\/+/, '');
+    return `https://${bucket}.s3.${region}.amazonaws.com/${cleanKey}`;
+  }
+
+  /**
+   * Check if file exists
    */
   async isExists(key: string): Promise<boolean> {
     try {
-      const params = { Bucket: this._config.connection.awsBucket, Key: key };
+      const cleanKey = key.replace(/^\/+/, '');
+      const params = { Bucket: this._config.connection.awsBucket, Key: cleanKey };
       await this.s3.headObject(params).promise();
       return true;
     } catch (error) {
@@ -64,12 +78,12 @@ export class S3Adapter implements IStorage {
   }
 
   /**
-   * get data
-   * @param key
+   * Get data
    */
   async get(key: string) {
     try {
-      const params = { Bucket: this._config.connection.awsBucket, Key: key };
+      const cleanKey = key.replace(/^\/+/, '');
+      const params = { Bucket: this._config.connection.awsBucket, Key: cleanKey };
       const data = this.s3.getObject(params).createReadStream();
       return data;
     } catch (error) {
@@ -78,18 +92,19 @@ export class S3Adapter implements IStorage {
   }
 
   /**
-   * put data
-   * @param key
-   * @param value
+   * Put data
    */
   async put(
     key: string,
     value: Buffer | Uint8Array | string,
   ): Promise<AWS.S3.ManagedUpload.SendData> {
     try {
+      // ⚠️ FIX: Strip leading slash from S3 Key (e.g. '/avatar/pic.png' -> 'avatar/pic.png')
+      const cleanKey = key.replace(/^\/+/, '');
+
       const params = {
         Bucket: this._config.connection.awsBucket,
-        Key: key,
+        Key: cleanKey,
         Body: value,
       };
       const upload = await this.s3.upload(params).promise();
@@ -100,12 +115,12 @@ export class S3Adapter implements IStorage {
   }
 
   /**
-   * delete data
-   * @param key
+   * Delete data
    */
   async delete(key: string): Promise<boolean> {
     try {
-      const params = { Bucket: this._config.connection.awsBucket, Key: key };
+      const cleanKey = key.replace(/^\/+/, '');
+      const params = { Bucket: this._config.connection.awsBucket, Key: cleanKey };
       await this.s3.deleteObject(params).promise();
       return true;
     } catch (error) {
