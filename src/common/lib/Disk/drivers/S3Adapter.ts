@@ -107,7 +107,7 @@ export class S3Adapter implements IStorage {
         Bucket: this._config.connection.awsBucket,
         Key: cleanKey,
         Body: value,
-        ...{ ContentType: contentType }
+        ...(contentType && { ContentType: contentType })
       };
       const upload = await this.s3.upload(params).promise();
       return upload;
