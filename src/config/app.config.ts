@@ -103,7 +103,7 @@ export default () => ({
     portfolio: '/portfolio',
 
     // stage icon
-    stage: '/stage/',
+    stage: '/stage-icons/',
 
     // lead attachments
     lead: '/lead/',
