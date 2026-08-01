@@ -360,9 +360,9 @@ export type LeadGroupOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type LeadGroupScalarRelationFilter = {
-  is?: Prisma.LeadGroupWhereInput
-  isNot?: Prisma.LeadGroupWhereInput
+export type LeadGroupNullableScalarRelationFilter = {
+  is?: Prisma.LeadGroupWhereInput | null
+  isNot?: Prisma.LeadGroupWhereInput | null
 }
 
 export type LeadGroupCountOrderByAggregateInput = {
@@ -444,10 +444,12 @@ export type LeadGroupCreateNestedOneWithoutEmailCampaignsInput = {
   connect?: Prisma.LeadGroupWhereUniqueInput
 }
 
-export type LeadGroupUpdateOneRequiredWithoutEmailCampaignsNestedInput = {
+export type LeadGroupUpdateOneWithoutEmailCampaignsNestedInput = {
   create?: Prisma.XOR<Prisma.LeadGroupCreateWithoutEmailCampaignsInput, Prisma.LeadGroupUncheckedCreateWithoutEmailCampaignsInput>
   connectOrCreate?: Prisma.LeadGroupCreateOrConnectWithoutEmailCampaignsInput
   upsert?: Prisma.LeadGroupUpsertWithoutEmailCampaignsInput
+  disconnect?: Prisma.LeadGroupWhereInput | boolean
+  delete?: Prisma.LeadGroupWhereInput | boolean
   connect?: Prisma.LeadGroupWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeadGroupUpdateToOneWithWhereWithoutEmailCampaignsInput, Prisma.LeadGroupUpdateWithoutEmailCampaignsInput>, Prisma.LeadGroupUncheckedUpdateWithoutEmailCampaignsInput>
 }

@@ -453,11 +453,11 @@ model EmailConfig {
 
   // Relationships
   templateId String? // Optional link to a saved template
-  template   Template? @relation(fields: [templateId], references: [id])
+  template   Template? @relation(fields: [templateId], references: [id], onDelete: SetNull)
 
   // Link directly to a target segment group
-  leadGroupId String
-  leadGroup   LeadGroup @relation(fields: [leadGroupId], references: [id])
+  leadGroupId String?
+  leadGroup   LeadGroup? @relation(fields: [leadGroupId], references: [id], onDelete: SetNull)
 }
 
 // // 3. Extensible SMS-Specific Configurations
