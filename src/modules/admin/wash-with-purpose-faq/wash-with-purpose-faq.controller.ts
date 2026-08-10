@@ -28,7 +28,7 @@ import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-lo
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 
 @ApiTags('Wash with Purpose FAQs')
-@ApiBearerAuth()  
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
 @RequirePermission('faq')
 @UseInterceptors(ActivityLogInterceptor)
@@ -72,11 +72,13 @@ export class WashWithPurposeFaqController {
     @Body() createFaqDto: CreateWashWithPurposeFaqDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
-    const key = `${appConfig().storageUrl.washWithPurposeFAQ}${generatedFilename}`;
+    if (file) {
+      const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+      const key = `${appConfig().storageUrl.washWithPurposeFAQ}${generatedFilename}`;
 
-    await SojebStorage.put(key, file.buffer, file.mimetype);
-    createFaqDto.icon = generatedFilename;
+      await SojebStorage.put(key, file.buffer, file.mimetype);
+      createFaqDto.icon = generatedFilename;
+    }
     const result = await this.washWithPurposeFaqService.create(createFaqDto);
 
     if (result.icon) {
@@ -132,11 +134,14 @@ export class WashWithPurposeFaqController {
     @Body() updateFaqDto: UpdateWashWithPurposeFaqDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
-    const key = `${appConfig().storageUrl.washWithPurposeFAQ}${generatedFilename}`;
+    if (file) {
+      const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+      const key = `${appConfig().storageUrl.washWithPurposeFAQ}${generatedFilename}`;
 
-    await SojebStorage.put(key, file.buffer, file.mimetype);
-    updateFaqDto.icon = generatedFilename;
+      await SojebStorage.put(key, file.buffer, file.mimetype);
+      updateFaqDto.icon = generatedFilename;
+    }
+
     const result = await this.washWithPurposeFaqService.update(id, updateFaqDto);
 
     if (result.icon) {
