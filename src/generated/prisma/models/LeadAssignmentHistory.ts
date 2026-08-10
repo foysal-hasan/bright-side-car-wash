@@ -172,7 +172,7 @@ export type LeadAssignmentHistoryGroupByOutputType = {
   _max: LeadAssignmentHistoryMaxAggregateOutputType | null
 }
 
-type GetLeadAssignmentHistoryGroupByPayload<T extends LeadAssignmentHistoryGroupByArgs> = Prisma.PrismaPromise<
+export type GetLeadAssignmentHistoryGroupByPayload<T extends LeadAssignmentHistoryGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<LeadAssignmentHistoryGroupByOutputType, T['by']> &
       {
@@ -1456,6 +1456,11 @@ export type LeadAssignmentHistoryFindManyArgs<ExtArgs extends runtime.Types.Exte
    * Skip the first `n` LeadAssignmentHistories.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of LeadAssignmentHistories.
+   */
   distinct?: Prisma.LeadAssignmentHistoryScalarFieldEnum | Prisma.LeadAssignmentHistoryScalarFieldEnum[]
 }
 

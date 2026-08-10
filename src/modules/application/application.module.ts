@@ -6,6 +6,7 @@ import { TestimonialModule } from './testimonial/testimonial.module';
 import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
 import { QuoteModule } from './quote/quote.module';
 import { PagesApplicationModule } from './pages/pages.application.module';
+import { WashWithPurposeFaqModule } from './wash-with-purpose-faq/wash-with-purpose-faq.module';
 
 
 @Module({
@@ -17,6 +18,7 @@ import { PagesApplicationModule } from './pages/pages.application.module';
   NewsAndEventsModule,
   QuoteModule,
   PagesApplicationModule,
+  WashWithPurposeFaqModule,
 ],
 })
 export class ApplicationModule {}

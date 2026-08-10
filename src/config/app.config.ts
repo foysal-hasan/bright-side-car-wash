@@ -126,6 +126,9 @@ export default () => ({
 
     // dynamic section media uploads
     sectionMedia: '/section-media/',
+
+    // faq-icons
+    washWithPurposeFAQ: '/wash-with-purpose-faq/'
   },
 
   defaultUser: {

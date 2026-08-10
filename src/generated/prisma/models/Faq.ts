@@ -206,7 +206,7 @@ export type FaqGroupByOutputType = {
   _max: FaqMaxAggregateOutputType | null
 }
 
-type GetFaqGroupByPayload<T extends FaqGroupByArgs> = Prisma.PrismaPromise<
+export type GetFaqGroupByPayload<T extends FaqGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FaqGroupByOutputType, T['by']> &
       {
@@ -1054,6 +1054,11 @@ export type FaqFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Skip the first `n` Faqs.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Faqs.
+   */
   distinct?: Prisma.FaqScalarFieldEnum | Prisma.FaqScalarFieldEnum[]
 }
 

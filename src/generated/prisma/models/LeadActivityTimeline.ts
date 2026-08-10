@@ -179,7 +179,7 @@ export type LeadActivityTimelineGroupByOutputType = {
   _max: LeadActivityTimelineMaxAggregateOutputType | null
 }
 
-type GetLeadActivityTimelineGroupByPayload<T extends LeadActivityTimelineGroupByArgs> = Prisma.PrismaPromise<
+export type GetLeadActivityTimelineGroupByPayload<T extends LeadActivityTimelineGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<LeadActivityTimelineGroupByOutputType, T['by']> &
       {
@@ -1365,6 +1365,11 @@ export type LeadActivityTimelineFindManyArgs<ExtArgs extends runtime.Types.Exten
    * Skip the first `n` LeadActivityTimelines.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of LeadActivityTimelines.
+   */
   distinct?: Prisma.LeadActivityTimelineScalarFieldEnum | Prisma.LeadActivityTimelineScalarFieldEnum[]
 }
 

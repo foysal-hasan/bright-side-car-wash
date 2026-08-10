@@ -199,7 +199,7 @@ export type MediaFileGroupByOutputType = {
   _max: MediaFileMaxAggregateOutputType | null
 }
 
-type GetMediaFileGroupByPayload<T extends MediaFileGroupByArgs> = Prisma.PrismaPromise<
+export type GetMediaFileGroupByPayload<T extends MediaFileGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<MediaFileGroupByOutputType, T['by']> &
       {
@@ -1026,6 +1026,11 @@ export type MediaFileFindManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Skip the first `n` MediaFiles.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of MediaFiles.
+   */
   distinct?: Prisma.MediaFileScalarFieldEnum | Prisma.MediaFileScalarFieldEnum[]
 }
 

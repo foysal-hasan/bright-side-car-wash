@@ -753,3 +753,19 @@ model FileRecord {
   @@index([newsAndEventId])
 }
 // =================== Attachment tracking end =====================
+
+
+model WashWithPurposeFaq {
+  id         String      @id @default(cuid())
+  updated_at  DateTime @updatedAt 
+  created_at  DateTime @default(now()) 
+  
+  icon       String?
+  question   String
+  ans        String
+  is_publish Boolean  @default(true)
+  display_order Int      @default(0)
+
+  @@index([is_publish, display_order])
+  @@map("wash_with_purpose_faqs")
+}

@@ -16,6 +16,7 @@ import { PaymentTransactionModule } from './payment-transaction/payment-transact
 import { NewsAndEventsModule } from './news-and-events/news-and-events.module';
 import { SectionsAdminModule } from './sections/sections.admin.module';
 import { QuoteModule } from './quote/quote.module';
+import { WashWithPurposeFaqModule } from './wash-with-purpose-faq/wash-with-purpose-faq.module';
 
 
 @Module({
@@ -37,6 +38,7 @@ import { QuoteModule } from './quote/quote.module';
     SectionsAdminModule,
     NotificationModule,
     QuoteModule,
+    WashWithPurposeFaqModule,
   ],
 })
 export class AdminModule {}

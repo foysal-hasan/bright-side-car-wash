@@ -167,3 +167,8 @@ export type NotificationLog = Prisma.NotificationLogModel
  * 
  */
 export type FileRecord = Prisma.FileRecordModel
+/**
+ * Model WashWithPurposeFaq
+ * 
+ */
+export type WashWithPurposeFaq = Prisma.WashWithPurposeFaqModel

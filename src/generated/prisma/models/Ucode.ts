@@ -220,7 +220,7 @@ export type UcodeGroupByOutputType = {
   _max: UcodeMaxAggregateOutputType | null
 }
 
-type GetUcodeGroupByPayload<T extends UcodeGroupByArgs> = Prisma.PrismaPromise<
+export type GetUcodeGroupByPayload<T extends UcodeGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<UcodeGroupByOutputType, T['by']> &
       {
@@ -1306,6 +1306,11 @@ export type UcodeFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Skip the first `n` Ucodes.
    */
   skip?: number
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+   * 
+   * Filter by unique combinations of Ucodes.
+   */
   distinct?: Prisma.UcodeScalarFieldEnum | Prisma.UcodeScalarFieldEnum[]
 }
 
