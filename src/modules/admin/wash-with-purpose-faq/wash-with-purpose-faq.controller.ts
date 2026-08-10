@@ -87,6 +87,23 @@ export class WashWithPurposeFaqController {
     return result
   }
 
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a single FAQ by ID' })
+  @ApiResponse({ status: 200, description: 'Return the FAQ details.' })
+  @ApiResponse({ status: 404, description: 'FAQ not found.' })
+  @LogActivity({ action: 'read', entity: 'wash-with-purpose-faqs' })
+  async findOne(@Param('id') id: string) {
+    const result = await this.washWithPurposeFaqService.findOne(id);
+
+    if (result && result.icon) {
+      const key = `${appConfig().storageUrl.washWithPurposeFAQ}${result.icon}`;
+      result.icon = SojebStorage.url(key);
+    }
+
+    return result;
+  }
+
   @Patch(':id')
   @ApiOperation({ summary: 'Update an existing FAQ with icon upload (Admin)' })
   @LogActivity({ action: 'update', entity: 'wash-with-purpose-faqs' })

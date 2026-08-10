@@ -30,6 +30,14 @@ export class WashWithPurposeFaqService {
     });
   }
 
+  async findOne(id: string) {
+    const faq = await this.prisma.washWithPurposeFaq.findUnique({ where: { id } });
+    if (!faq) {
+      throw new NotFoundException(`FAQ with ID ${id} not found`);
+    }
+    return faq;
+  }
+
   async update(id: string, updateFaqDto: UpdateWashWithPurposeFaqDto) {
     const existingFaq = await this.findOne(id);
 
@@ -65,11 +73,5 @@ export class WashWithPurposeFaqService {
     });
   }
 
-  private async findOne(id: string) {
-    const faq = await this.prisma.washWithPurposeFaq.findUnique({ where: { id } });
-    if (!faq) {
-      throw new NotFoundException(`FAQ with ID ${id} not found`);
-    }
-    return faq;
-  }
+  
 }
