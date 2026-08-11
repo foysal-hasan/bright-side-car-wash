@@ -8,6 +8,8 @@ import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
 import { ActivityLogInterceptor } from 'src/activity-log/interceptor/activity-log.interceptor';
 import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
+import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
+import appConfig from 'src/config/app.config';
 
 @ApiTags('Team Member Management')
 @ApiBearerAuth()
@@ -25,6 +27,11 @@ export class TeamController {
   @RequirePermission('member:read')
   async list(@Query() query: MemberQueryDto) {
     const members = await this.teamService.listMembers(query);
+    members?.data?.forEach(member => {
+      if(member?.avatar){
+        member.avatar = SojebStorage.url(appConfig().storageUrl.avatar + member.avatar,)
+      }
+    })
     return {
       success: true,
       message: 'Members retrieved successfully',

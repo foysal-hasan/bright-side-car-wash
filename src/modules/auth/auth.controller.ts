@@ -246,8 +246,6 @@ export class AuthController {
     }
   })
   @ApiBearerAuth()
-
-
   @UseGuards(JwtAuthGuard, PermissionGuard)
   @RequirePermission('staff:invite')
   @Post('resend-invite')
