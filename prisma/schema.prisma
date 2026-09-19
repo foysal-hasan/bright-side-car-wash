@@ -232,6 +232,7 @@ model Stage {
 }
 
 enum DepositStatus {
+  NONE
   PENDING
   PAID
   REFUNDED

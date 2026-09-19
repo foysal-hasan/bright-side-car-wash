@@ -31,7 +31,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthGuard } from '@nestjs/passport';
 import { LoggerModule } from 'pino-nestjs';
 import { loggerConfig } from './logger.config';
-import { PinoLoggerService } from './common/logger/pino-logger.service';
 
 @Injectable()
 export class OptionalJwtGuard extends AuthGuard('jwt') {
@@ -123,9 +122,17 @@ export class OptionalJwtGuard extends AuthGuard('jwt') {
         provide: APP_GUARD,
         useClass: ThrottlerBehindProxyGuard,
       }] : []),
+    // disabling throttling for dev
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: ThrottlerGuard,
+    // },
     AppService,
     AnalyticsTrackingService,
-    PinoLoggerService,
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: PermissionGuard,
+    // },
 
 
   ],

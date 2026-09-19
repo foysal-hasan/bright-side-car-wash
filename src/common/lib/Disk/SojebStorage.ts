@@ -6,8 +6,8 @@ import { IStorage } from './drivers/iStorage';
 
 /**
  * SojebStorage for handling storage (local storage, aws s3 storage)
- * @class SojebStorage
- * @author Sojeb Sikder <sojebsikder@gmail.com>
+ * 
+ * 
  */
 export class SojebStorage {
   private static _config: DiskOption;

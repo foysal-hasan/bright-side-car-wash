@@ -12,17 +12,13 @@ import appConfig from './config/app.config';
 import { CustomExceptionFilter } from './common/exception/custom-exception.filter';
 import { SojebStorage } from './common/lib/Disk/SojebStorage';
 import { PrismaExceptionFilter } from './common/exception/prisma-exception-filter';
-import { AllExceptionsFilter } from './common/exception/all-exceptions.filter';
 import { DiskType } from './common/lib/Disk/Option';
-import { PinoLoggerService } from './common/logger/pino-logger.service';
-import { pinoLogger } from './logger.config';
 
 async function bootstrap() {
-  const pinoLoggerService = new PinoLoggerService();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
-    bufferLogs: true,
-     ...(appConfig().app.environment === 'production' && {logger: pinoLoggerService}),
+    logger: appConfig().app.environment === 'production' ? ['error', 'warn'] : ['log', 'error', 'warn', 'debug', 'verbose'],
+    bufferLogs: true
   });
 
 
@@ -44,14 +40,14 @@ async function bootstrap() {
       // Allow requests with no origin (like mobile apps, curl, postman)
       if (!origin) return callback(null, true);
 
-      pinoLogger.info(`Incoming request from origin: ${origin}`);
+      console.log(`Incoming request from origin: ${origin}`);
 
       // Allow if origin is in the allowed list
       if (corsOrigins.includes(origin) || corsOrigins.includes('*')) {
         callback(null, true);
       } else {
-        pinoLogger.warn(`CORS blocked: ${origin}`);
-        pinoLogger.warn(`Allowed origins: ${corsOrigins.join(', ')}`);
+        console.warn(`CORS blocked: ${origin}`);
+        console.warn(`Allowed origins: ${corsOrigins.join(', ')}`);
         callback(new Error(`CORS policy: ${origin} not allowed`));
       }
     },
@@ -91,11 +87,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(
-    new CustomExceptionFilter(),
-    new PrismaExceptionFilter(),
-    new AllExceptionsFilter(),
-  );
+  app.useGlobalFilters(new CustomExceptionFilter(), new PrismaExceptionFilter());
 
   // storage setup
   SojebStorage.config({

@@ -82,7 +82,7 @@ export class LocalAdapter implements IStorage {
     try {
       await fs.unlink(`${this._config.connection.rootUrl}/${key}`);
     } catch (err) {
-      if (err.code !== 'ENOENT') console.error(err);
+      if (err?.code !== 'ENOENT') console.error(err);
     }
   }
 }
