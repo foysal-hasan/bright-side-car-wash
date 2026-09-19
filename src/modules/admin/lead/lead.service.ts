@@ -67,12 +67,20 @@ export class LeadService {
     });
 
     if (lead.assigned_to_id) {
+      // await this.prisma.leadAssignmentHistory.create({
+      //   data: {
+      //     lead_id: lead.id,
+      //     description: `Lead created and Assigned to ${lead.assignee.first_name} ${lead.assignee.last_name}`,
+      //     user_id: createLeadDto.created_by || null,
+      //     source: createLeadDto.created_source || 'Website',
+      //   },
+      // });
+
       await this.prisma.leadAssignmentHistory.create({
         data: {
           lead_id: lead.id,
-          description: `Lead created and Assigned to ${lead.assignee.first_name} ${lead.assignee.last_name}`,
-          user_id: createLeadDto.created_by || null,
-          source: createLeadDto.created_source || 'Website',
+          assigned_to_id: lead.assigned_to_id || null,
+          assigned_by_id: createLeadDto.created_by || null,
         },
       });
     }
