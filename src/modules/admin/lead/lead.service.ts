@@ -709,6 +709,7 @@ export class LeadService {
         select: {
           id: true,
           name: true,
+          icon: true,
         },
       },
       creator: {

@@ -79,7 +79,7 @@ export class LeadController {
       const result = await this.leadService.create(createLeadDto);
 
       result['attachments_url_paths'] = result.attachments?.map(filename => {
-         const key = `${appConfig().storageUrl.lead}${filename}`;
+        const key = `${appConfig().storageUrl.lead}${filename}`;
         const url = SojebStorage.url(key);
         return {
           filename,
@@ -164,7 +164,7 @@ export class LeadController {
     @Res() res: Response
   ) {
     const { buffer, mimeType, extension } = await this.leadService.exportLeadsToBuffer(body);
-    
+
     const filename = `leads_export_${Date.now()}.${extension}`;
 
     // Set standard browser content headers to trigger immediate download windows
@@ -178,7 +178,7 @@ export class LeadController {
 
   @OnlyApiTags('Admin Dashboard Analytics Overview')
   @Get('metrics')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Fetch full analytical dataset summaries for widgets',
     description: 'Returns real-time aggregated system KPI cards, rolling line chart trend arrays, and status color mappings.'
   })
@@ -227,6 +227,10 @@ export class LeadController {
         const url = SojebStorage.url(key);
         return { filename, url };
       });
+      if (lead?.stage?.icon) {
+        const key = `${appConfig().storageUrl.stage}${lead.stage.icon}`;
+        lead.stage.icon = SojebStorage.url(key);
+      }
     });
     return {
       success: true,
@@ -297,8 +301,8 @@ export class LeadController {
   async getStagesWithCounts() {
     const stages = await this.leadService.getStagesWithCounts();
     stages.forEach(stage => {
-        const key = `${appConfig().storageUrl.stage}${stage.icon}`;
-        stage.icon = stage.icon? SojebStorage.url(key) : null;
+      const key = `${appConfig().storageUrl.stage}${stage.icon}`;
+      stage.icon = stage.icon ? SojebStorage.url(key) : null;
     });
     return {
       success: true,
@@ -373,7 +377,7 @@ export class LeadController {
         const url = SojebStorage.url(key);
         return { filename, url };
       });
-      
+
       return {
         success: true,
         message: 'Lead updated successfully',
@@ -392,7 +396,7 @@ export class LeadController {
     }
   }
 
-  
+
   @ApiOperation({ summary: 'Delete an attachment from a lead' })
   @ApiBody({ type: DeleteAttachmentDto })
   @RequirePermission('lead:update')
