@@ -10,6 +10,7 @@
 */
 
 export const DepositStatus = {
+  NONE: 'NONE',
   PENDING: 'PENDING',
   PAID: 'PAID',
   REFUNDED: 'REFUNDED',
