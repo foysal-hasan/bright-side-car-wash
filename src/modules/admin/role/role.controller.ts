@@ -17,11 +17,12 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 @UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/role')
 export class RoleController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(private readonly roleService: RoleService) { }
 
   @ApiOperation({ summary: 'Create a new role' })
   @ApiBody({ type: CreateRoleDto })
   @LogActivity({ action: 'create', entity: 'role' })
+  @RequirePermission('role:create')
   @Post()
   async create(@Body() createRoleDto: CreateRoleDto) {
     const role = await this.roleService.create(createRoleDto);
@@ -57,10 +58,11 @@ export class RoleController {
       data: permissions,
     };
   }
-  
+
 
   @ApiOperation({ summary: 'Retrieve a role by name' })
   @LogActivity({ action: 'get', entity: 'role' })
+  @RequirePermission('role:read')
   @Get(':name')
   async findOne(@Param('name') name: string) {
     const role = await this.roleService.findOne(name);
@@ -75,6 +77,7 @@ export class RoleController {
   @LogActivity({ action: 'update', entity: 'role' })
   @ApiBody({ type: UpdateRoleDto })
   @Patch(':id')
+  @RequirePermission('role:update')
   async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const updatedRole = await this.roleService.update(id, updateRoleDto);
     return {
@@ -87,6 +90,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Delete a role by ID' })
   @LogActivity({ action: 'delete', entity: 'role' })
   @Delete(':id')
+  @RequirePermission('role:delete')
   async remove(@Param('id') id: string) {
     const deletedRole = await this.roleService.remove(id);
     return {
