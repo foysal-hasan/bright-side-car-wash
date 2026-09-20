@@ -40,7 +40,8 @@ export class TeamService {
     if (search?.trim()) {
       const searchTerms = search.trim();
       where.OR = [
-        { name: { contains: searchTerms, mode: 'insensitive' } },
+        { first_name: { contains: searchTerms, mode: 'insensitive' } },
+        { last_name: { contains: searchTerms, mode: 'insensitive' } },
         { email: { contains: searchTerms, mode: 'insensitive' } },
         { username: { contains: searchTerms, mode: 'insensitive' } },
       ];
