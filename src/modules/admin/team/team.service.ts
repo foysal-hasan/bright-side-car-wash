@@ -110,7 +110,7 @@ export class TeamService {
         _count: {
           select: {
             assigned_leads: { where: { deleted_at: null } },
-            sent_messages: true,
+            // sent_messages: true,
           },
         },
       },
@@ -210,7 +210,7 @@ export class TeamService {
     });
 
     if (block) {
-       // block list all the session in redis for the user to force re-login and refresh permissions
+      // block list all the session in redis for the user to force re-login and refresh permissions
       const userSessions = await this.prisma.userSession.findMany({ where: { userId: id } });
       for (const session of userSessions) {
         await this.invalidateSession(session.id, DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').date.getTime() - new Date().getTime());
