@@ -62,13 +62,18 @@ export class EmailManagementController {
     try {
       const fileUrls: string[] = [];
       // Handle file uploads and store file paths in the database
-      files.files?.forEach(async file => {
-        const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
-        const key = `${appConfig().storageUrl.emailAttachments}${generatedFilename}`;
-        await SojebStorage.put(key, file.buffer);
-        body.attachments.push(generatedFilename);
-        fileUrls.push(SojebStorage.url(key));
-      });
+      if (files?.files && files.files.length > 0) {
+        if (!body.attachments) {
+          body.attachments = [];
+        }
+        for (const file of files.files) {
+          const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+          const key = `${appConfig().storageUrl.emailAttachments}${generatedFilename}`;
+          await SojebStorage.put(key, file.buffer);
+          body.attachments.push(generatedFilename);
+          fileUrls.push(SojebStorage.url(key));
+        }
+      }
       const currentUserId = req.user?.userId;
 
       return await this.emailManagementService.sendEmail(body, currentUserId, fileUrls);

@@ -65,12 +65,17 @@ export class LeadController {
   async create(@Body() createLeadDto: CreateLeadDto, @Req() req: Request, @UploadedFiles() files: { files?: Express.Multer.File[] }) {
     try {
       // Handle file uploads and store file paths in the database
-      files.files?.forEach(async file => {
-        const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
-        const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
-        await SojebStorage.put(key, file.buffer);
-        createLeadDto.attachments.push(generatedFilename);
-      });
+      if (files?.files && files.files.length > 0) {
+        if (!createLeadDto.attachments) {
+          createLeadDto.attachments = [];
+        }
+        for (const file of files.files) {
+          const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+          const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
+          await SojebStorage.put(key, file.buffer);
+          createLeadDto.attachments.push(generatedFilename);
+        }
+      }
 
 
       createLeadDto.created_by = req.user?.userId;
@@ -360,12 +365,17 @@ export class LeadController {
   async update(@Param('id') id: string, @Req() req: Request, @Body() updateLeadDto: UpdateLeadDto, @UploadedFiles() files: { files?: Express.Multer.File[] }) {
     try {
       // Handle file uploads and store file paths in the database
-      files?.files?.forEach(async file => {
-        const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
-        const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
-        await SojebStorage.put(key, file.buffer);
-        updateLeadDto.attachments?.push(generatedFilename);
-      });
+      if (files?.files && files.files.length > 0) {
+        if (!updateLeadDto.attachments) {
+          updateLeadDto.attachments = [];
+        }
+        for (const file of files.files) {
+          const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
+          const key = `${appConfig().storageUrl.lead}${generatedFilename}`;
+          await SojebStorage.put(key, file.buffer);
+          updateLeadDto.attachments.push(generatedFilename);
+        }
+      }
 
       updateLeadDto.updated_by = req?.user?.userId;
       updateLeadDto.updated_source = 'Admin Panel';
