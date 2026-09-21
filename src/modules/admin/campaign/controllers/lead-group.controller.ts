@@ -8,6 +8,7 @@ import { DisconnectLeadsDto } from '../dto/disconnect-leads';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GroupPaginationQueryDto } from '../dto/group-pagination-query.dto';
 import { LeadPaginationQueryDto } from '../dto/lead-pagination-query.dto';
+import { NonGroupLeadPaginationQueryDto } from '../dto/non-group-lead-pagination-query.dto';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
 import { PermissionGuard } from 'src/modules/auth/guards/permission.guard';
 import { RequirePermission } from 'src/modules/auth/decorators/require-permission.decorator';
@@ -119,6 +120,26 @@ export class LeadGroupController {
     return {
       success: true,
       message: 'Leads retrieved successfully',
+      data: {
+        leads: result.data,
+        meta: result.meta,
+      },
+    };
+  }
+
+  @LogActivity({ action: 'view', entity: 'lead_group' })
+  @Get(':id/non-group-leads')
+  @ApiOperation({ summary: 'Get a paginated and searchable list of leads NOT belonging to this group' })
+  @ApiResponse({ status: 200, description: 'Leads list fetched successfully.' })
+  @ApiResponse({ status: 404, description: 'Lead Group not found.' })
+  async getNonGroupLeads(
+    @Param('id') id: string,
+    @Query() query: NonGroupLeadPaginationQueryDto,
+  ) {
+    const result = await this.groupService.getNonGroupLeads(id, query);
+    return {
+      success: true,
+      message: 'Non-group leads retrieved successfully',
       data: {
         leads: result.data,
         meta: result.meta,

@@ -6,6 +6,7 @@ import { IEmailProvider } from '../interfaces/email-provider.interface';
 import { GroupPaginationQueryDto } from '../dto/group-pagination-query.dto';
 import { Prisma } from 'src/generated/prisma/browser';
 import { LeadPaginationQueryDto } from '../dto/lead-pagination-query.dto';
+import { NonGroupLeadPaginationQueryDto } from '../dto/non-group-lead-pagination-query.dto';
 import * as XLSX from 'xlsx';
 import { ExportFormat, ExportLeadGroupDto } from '../dto/export-lead-group.dto';
 
@@ -301,6 +302,65 @@ export class LeadGroupService {
       },
     };
   }
-}
 
+  async getNonGroupLeads(groupId: string, query: NonGroupLeadPaginationQueryDto) {
+    // Verify group existence first
+    const groupExists = await this.prisma.leadGroup.findUnique({
+      where: { id: groupId },
+      select: { id: true },
+    });
+
+    if (!groupExists) {
+      throw new NotFoundException(`Lead Group with ID "${groupId}" not found.`);
+    }
+
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 10;
+    const search = query.search?.trim();
+    const skip = (page - 1) * limit;
+
+    // Filter condition specifically targetting leads NOT in this group
+    const baseWhereCondition: Prisma.LeadWhereInput = {
+      NOT: {
+        leadGroups: {
+          some: { id: groupId },
+        },
+      },
+    };
+
+    if (search) {
+      baseWhereCondition.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { phone: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    // Process parallel query sets
+    const [totalItems, data] = await this.prisma.$transaction([
+      this.prisma.lead.count({ where: baseWhereCondition }),
+      this.prisma.lead.findMany({
+        where: baseWhereCondition,
+        skip,
+        take: limit,
+        orderBy: { created_at: 'desc' },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      meta: {
+        totalItems,
+        itemCount: data.length,
+        itemsPerPage: limit,
+        totalPages,
+        currentPage: page,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
+  }
+}
 
