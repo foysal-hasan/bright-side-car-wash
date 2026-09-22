@@ -494,7 +494,7 @@ export class AuthService implements OnModuleInit {
     }
 
     // delete old refresh token
-    await this.redis.del(`refresh_token:${newSession.id}`);
+    await this.redis.del(`refresh_token:${sessionId}`);
 
     const payload = { email: userDetails.email, sub: userDetails.id, sessionId: newSession.id, roles: userDetails.roleUsers.map(item => item.role.name) };
     const accessToken = this.jwtService.sign(payload, { expiresIn: DateHelper.generateFutureDate(appConfig().jwt.access_token_expiry || '7d').unixSeconds, secret: appConfig().jwt.access_token_secret });
