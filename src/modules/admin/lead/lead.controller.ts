@@ -168,17 +168,7 @@ export class LeadController {
     @Body() body: ExportLeadDto,
     @Res() res: Response
   ) {
-    const { buffer, mimeType, extension } = await this.leadService.exportLeadsToBuffer(body);
-
-    const filename = `leads_export_${Date.now()}.${extension}`;
-
-    // Set standard browser content headers to trigger immediate download windows
-    res.setHeader('Content-Type', mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', buffer.length);
-
-    // Send binary buffer directly down the pipeline stream connection
-    return res.end(buffer);
+    return this.leadService.exportLeadsStream(body, res);
   }
 
   @OnlyApiTags('Admin Dashboard Analytics Overview')

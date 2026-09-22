@@ -7,7 +7,7 @@ import { GroupPaginationQueryDto } from '../dto/group-pagination-query.dto';
 import { Prisma } from 'src/generated/prisma/browser';
 import { LeadPaginationQueryDto } from '../dto/lead-pagination-query.dto';
 import { NonGroupLeadPaginationQueryDto } from '../dto/non-group-lead-pagination-query.dto';
-import * as XLSX from 'xlsx';
+import { Response } from 'express';
 import { ExportFormat, ExportLeadGroupDto } from '../dto/export-lead-group.dto';
 
 @Injectable()
@@ -108,52 +108,130 @@ export class LeadGroupService {
     return updatedGroup;
   }
 
-  async exportGroupLeadsToBuffer(groupId: string, query: ExportLeadGroupDto) {
+  async exportGroupLeadsStream(groupId: string, query: ExportLeadGroupDto, res: Response) {
     const group = await this.prisma.leadGroup.findUnique({
-      where: { id: groupId },
-      include: {
-        leads: {
-          include: {
-            stage: { select: { name: true } },
-          },
-        },
-      },
+      where: { id: groupId }
     });
 
     if (!group) {
       throw new NotFoundException(`Lead Group with ID "${groupId}" not found.`);
     }
 
-    // 3. Flatten complex database models into table spreadsheet columns
-    const flattenedRows = group.leads.map((lead) => ({
-      ID: lead.id,
-      Name: lead.name || '',
-      Email: lead.email || '',
-      Phone: lead.phone || '',
-      Service: lead.service || '',
-      // Vehicle: lead.vehicle || '',
-      Source: lead.source || '',
-      Stage: lead.stage?.name || 'N/A',
-      // 'Deposit Status': lead.deposit_status || 'PENDING',
-      Priority: lead.priority || 'LOW',
-      'Created At': lead.created_at.toISOString(),
-    }));
+    const take = 10000;
+    let skip = 0;
+    let hasMore = true;
 
-    // 4. Generate worksheet structures via SheetJS
-    const worksheet = XLSX.utils.json_to_sheet(flattenedRows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads Export');
+    const filename = `lead_group_${group.name}_${Date.now()}.${query.format === ExportFormat.CSV ? 'csv' : 'xlsx'}`;
 
-    // 5. Compile sheet layouts down to binary buffers matching requested formats
     if (query.format === ExportFormat.EXCEL) {
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      return { buffer, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', extension: 'xlsx', groupName: group.name };
-    } else if (query.format === ExportFormat.CSV) {
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'csv' });
-      return { buffer, mimeType: 'text/csv', extension: 'csv', groupName: group.name };
-    }
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      const ExcelJS = require('exceljs');
+      const workbook = new ExcelJS.stream.xlsx.WorkbookWriter({
+        stream: res,
+        useStyles: false,
+        useSharedStrings: false
+      });
+      
+      const worksheet = workbook.addWorksheet('Leads Export');
+      worksheet.columns = [
+        { header: 'ID', key: 'id' },
+        { header: 'Name', key: 'name' },
+        { header: 'Email', key: 'email' },
+        { header: 'Phone', key: 'phone' },
+        { header: 'Service', key: 'service' },
+        { header: 'Source', key: 'source' },
+        { header: 'Stage', key: 'stage' },
+        { header: 'Priority', key: 'priority' },
+        { header: 'Created At', key: 'createdAt' },
+      ];
 
-    throw new BadRequestException('Unsupported export file format requested.');
+      while (hasMore) {
+        const groupBatch = await this.prisma.leadGroup.findUnique({
+          where: { id: groupId },
+          include: {
+            leads: {
+              take,
+              skip,
+              include: {
+                stage: { select: { name: true } },
+              },
+            },
+          },
+        });
+
+        if (!groupBatch || groupBatch.leads.length === 0) {
+          hasMore = false;
+          break;
+        }
+
+        for (const lead of groupBatch.leads) {
+          worksheet.addRow({
+            id: lead.id,
+            name: lead.name || '',
+            email: lead.email || '',
+            phone: lead.phone || '',
+            service: lead.service || '',
+            source: lead.source || '',
+            stage: lead.stage?.name || 'N/A',
+            priority: lead.priority || 'LOW',
+            createdAt: lead.created_at.toISOString(),
+          }).commit();
+        }
+
+        skip += take;
+      }
+
+      worksheet.commit();
+      await workbook.commit();
+      
+    } else if (query.format === ExportFormat.CSV) {
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      res.write('ID,Name,Email,Phone,Service,Source,Stage,Priority,Created At\n');
+      
+      while (hasMore) {
+        const groupBatch = await this.prisma.leadGroup.findUnique({
+          where: { id: groupId },
+          include: {
+            leads: {
+              take,
+              skip,
+              include: {
+                stage: { select: { name: true } },
+              },
+            },
+          },
+        });
+
+        if (!groupBatch || groupBatch.leads.length === 0) {
+          hasMore = false;
+          break;
+        }
+
+        for (const lead of groupBatch.leads) {
+          const row = [
+            lead.id,
+            `"${(lead.name || '').replace(/"/g, '""')}"`,
+            `"${(lead.email || '').replace(/"/g, '""')}"`,
+            `"${(lead.phone || '').replace(/"/g, '""')}"`,
+            `"${(lead.service || '').replace(/"/g, '""')}"`,
+            `"${(lead.source || '').replace(/"/g, '""')}"`,
+            `"${(lead.stage?.name || 'N/A').replace(/"/g, '""')}"`,
+            `"${(lead.priority || 'LOW').replace(/"/g, '""')}"`,
+            `"${lead.created_at.toISOString()}"`
+          ];
+          res.write(row.join(',') + '\n');
+        }
+
+        skip += take;
+      }
+      res.end();
+    } else {
+      throw new BadRequestException('Unsupported export file format requested.');
+    }
   }
 
   async getGroups(query: GroupPaginationQueryDto) {

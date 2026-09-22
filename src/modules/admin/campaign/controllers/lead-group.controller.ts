@@ -80,17 +80,7 @@ export class LeadGroupController {
     @Query() query: ExportLeadGroupDto,
     @Res() res: Response
   ) {
-    const { buffer, mimeType, extension, groupName } = await this.groupService.exportGroupLeadsToBuffer(groupId, query);
-
-    const filename = `lead_group_${groupName}_${Date.now()}.${extension}`;
-
-    // Set standard browser content headers to trigger immediate download windows
-    res.setHeader('Content-Type', mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', buffer.length);
-
-    // Send binary buffer directly down the pipeline stream connection
-    return res.end(buffer);
+    return this.groupService.exportGroupLeadsStream(groupId, query, res);
   }
 
   @LogActivity({ action: 'view', entity: 'lead_group' })

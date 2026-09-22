@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Response } from 'express';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LeadSortField, QueryLeadDto, SortOrder } from './dto/query-lead.dto';
 import { DepositStatus, LeadPriority, NotificationChannel, PaymentStatus, Prisma } from 'src/generated/prisma/client';
 import { AssignLeadDto } from './dto/assign-lead.dto';
-import * as XLSX from 'xlsx';
 import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
 import { UnassignLeadDto } from './dto/unassign-lead.dto';
 import { NotificationProducer } from 'src/modules/notification/queue/notification.producer';
@@ -158,9 +158,7 @@ export class LeadService {
     });
   }
 
-  async exportLeadsToBuffer(body: ExportLeadDto) {
-    // 1. Compile filters using your existing where clause builder framework
-    // (Replace `this.buildWhereClause` with your service's structural path reference)
+  async exportLeadsStream(body: ExportLeadDto, res: Response) {
     const { sort_by, sort_order, leadIds } = body;
 
     let where = {};
@@ -171,47 +169,119 @@ export class LeadService {
     }
     const orderBy = this.buildOrderBy(sort_by, sort_order);
 
+    const take = 10000;
+    let skip = 0;
+    let hasMore = true;
 
-    // 2. Fetch all matching leads from DB
-    const leads = await this.prisma.lead.findMany({
-      where,
-      orderBy,
-      include: {
-        stage: { select: { name: true } },
-        assignee: { select: { first_name: true, last_name: true } },
-      },
-    });
+    const filename = `leads_export_${Date.now()}.${body.format === ExportFormat.CSV ? 'csv' : 'xlsx'}`;
 
-    // 3. Flatten complex database models into table spreadsheet columns
-    const flattenedRows = leads.map((lead) => ({
-      ID: lead.id,
-      Name: `${lead.assignee?.first_name || ''} ${lead.assignee?.last_name || ''}`.trim() || lead.name || '',
-      Email: lead.email || '',
-      Phone: lead.phone || '',
-      Service: lead.service || '',
-      // Vehicle: lead.vehicle || '',
-      Source: lead.source || '',
-      Stage: lead.stage?.name || 'N/A',
-      // 'Deposit Status': lead.deposit_status || 'PENDING',
-      Priority: lead.priority || 'LOW',
-      'Created At': lead.created_at.toISOString(),
-    }));
-
-    // 4. Generate worksheet structures via SheetJS
-    const worksheet = XLSX.utils.json_to_sheet(flattenedRows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads Export');
-
-    // 5. Compile sheet layouts down to binary buffers matching requested formats
     if (body.format === ExportFormat.EXCEL) {
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      return { buffer, mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', extension: 'xlsx' };
-    } else if (body.format === ExportFormat.CSV) {
-      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'csv' });
-      return { buffer, mimeType: 'text/csv', extension: 'csv', };
-    }
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      const ExcelJS = require('exceljs');
+      const workbook = new ExcelJS.stream.xlsx.WorkbookWriter({
+        stream: res,
+        useStyles: false,
+        useSharedStrings: false
+      });
+      
+      const worksheet = workbook.addWorksheet('Leads Export');
+      worksheet.columns = [
+        { header: 'ID', key: 'id' },
+        { header: 'Name', key: 'name' },
+        { header: 'Email', key: 'email' },
+        { header: 'Phone', key: 'phone' },
+        { header: 'Service', key: 'service' },
+        { header: 'Source', key: 'source' },
+        { header: 'Stage', key: 'stage' },
+        { header: 'Priority', key: 'priority' },
+        { header: 'Created At', key: 'createdAt' },
+      ];
 
-    throw new BadRequestException('Unsupported export file format requested.');
+      while (hasMore) {
+        const leads = await this.prisma.lead.findMany({
+          where,
+          orderBy,
+          take,
+          skip,
+          include: {
+            stage: { select: { name: true } },
+            assignee: { select: { first_name: true, last_name: true } },
+          },
+        });
+
+        if (leads.length === 0) {
+          hasMore = false;
+          break;
+        }
+
+        for (const lead of leads) {
+          worksheet.addRow({
+            id: lead.id,
+            name: `${lead.assignee?.first_name || ''} ${lead.assignee?.last_name || ''}`.trim() || lead.name || '',
+            email: lead.email || '',
+            phone: lead.phone || '',
+            service: lead.service || '',
+            source: lead.source || '',
+            stage: lead.stage?.name || 'N/A',
+            priority: lead.priority || 'LOW',
+            createdAt: lead.created_at.toISOString(),
+          }).commit();
+        }
+
+        skip += take;
+      }
+
+      worksheet.commit();
+      await workbook.commit();
+      
+    } else if (body.format === ExportFormat.CSV) {
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      
+      res.write('ID,Name,Email,Phone,Service,Source,Stage,Priority,Created At\n');
+      
+      while (hasMore) {
+        const leads = await this.prisma.lead.findMany({
+          where,
+          orderBy,
+          take,
+          skip,
+          include: {
+            stage: { select: { name: true } },
+            assignee: { select: { first_name: true, last_name: true } },
+          },
+        });
+
+        if (leads.length === 0) {
+          hasMore = false;
+          break;
+        }
+
+        for (const lead of leads) {
+          const name = `${lead.assignee?.first_name || ''} ${lead.assignee?.last_name || ''}`.trim() || lead.name || '';
+          // Escape quotes
+          const row = [
+            lead.id,
+            `"${name.replace(/"/g, '""')}"`,
+            `"${(lead.email || '').replace(/"/g, '""')}"`,
+            `"${(lead.phone || '').replace(/"/g, '""')}"`,
+            `"${(lead.service || '').replace(/"/g, '""')}"`,
+            `"${(lead.source || '').replace(/"/g, '""')}"`,
+            `"${(lead.stage?.name || 'N/A').replace(/"/g, '""')}"`,
+            `"${(lead.priority || 'LOW').replace(/"/g, '""')}"`,
+            `"${lead.created_at.toISOString()}"`
+          ];
+          res.write(row.join(',') + '\n');
+        }
+
+        skip += take;
+      }
+      res.end();
+    } else {
+      throw new BadRequestException('Unsupported export file format requested.');
+    }
   }
 
   private getBoundaries() {
@@ -1044,7 +1114,7 @@ export class LeadService {
         attachments: updatedAttachments,
       },
     });
-    
+
   }
 
   async assignLead(id: string, assignLeadDto: AssignLeadDto) {
@@ -1210,13 +1280,47 @@ export class LeadService {
       throw new BadRequestException('Invalid file upload payload. File buffer is empty.');
     }
 
-    // 1. Read file buffer straight from RAM memory
-    const workbook = XLSX.read(file.buffer, { type: 'buffer' });
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
+    const ExcelJS = require('exceljs');
+    const workbook = new ExcelJS.Workbook();
+    
+    try {
+      await workbook.xlsx.load(file.buffer);
+    } catch (e) {
+      // Fallback to CSV if it fails to parse as XLSX
+      const stream = require('stream');
+      const bufferStream = new stream.PassThrough();
+      bufferStream.end(file.buffer);
+      await workbook.csv.read(bufferStream);
+    }
+
+    const worksheet = workbook.worksheets[0];
+    if (!worksheet) {
+      throw new BadRequestException('Uploaded file is empty or invalid.');
+    }
 
     // 2. Convert spreadsheet layouts to raw row JSON data blocks
-    const rawRows = XLSX.utils.sheet_to_json<Record<string, any>>(worksheet, { defval: '' });
+    const rawRows: Record<string, any>[] = [];
+    const headers: string[] = [];
+    
+    worksheet.getRow(1).eachCell({ includeEmpty: true }, (cell: any, colNumber: number) => {
+      headers[colNumber] = cell.value ? String(cell.value) : `Column${colNumber}`;
+    });
+
+    worksheet.eachRow({ includeEmpty: false }, (row: any, rowNumber: number) => {
+      if (rowNumber === 1) return; // Skip headers
+      const rowData: Record<string, any> = {};
+      row.eachCell({ includeEmpty: true }, (cell: any, colNumber: number) => {
+        if (headers[colNumber]) {
+          // Handle rich text or standard text
+          let val = cell.value;
+          if (val && typeof val === 'object' && val.richText) {
+            val = val.richText.map((rt: any) => rt.text).join('');
+          }
+          rowData[headers[colNumber]] = val !== null && val !== undefined ? val : '';
+        }
+      });
+      rawRows.push(rowData);
+    });
 
     // --- OPTIMIZATION: Fetch all stages upfront to eliminate N+1 database queries ---
     const allStages = await this.prisma.stage.findMany({ select: { id: true, name: true } });

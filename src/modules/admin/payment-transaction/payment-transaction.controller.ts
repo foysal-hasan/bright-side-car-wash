@@ -45,18 +45,7 @@ export class PaymentTransactionController {
   @LogActivity({ action: 'export', entity: 'payment-transaction-excel' })
   @RequirePermission('payment-transaction:export')
   async exportExcel(@Query() query: ExportPaymentsTransactionQueryDto, @Res() res: Response) {
-    const buffer = await this.paymentTransactionService.exportToExcel(query);
-
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=payments-export-${Date.now()}.xlsx`,
-    );
-
-    return res.end(buffer);
+    return this.paymentTransactionService.exportToExcelStream(query, res);
   }
 
   @Get('export/csv')
@@ -64,15 +53,7 @@ export class PaymentTransactionController {
   @LogActivity({ action: 'export', entity: 'payment-transaction-csv' })
   @RequirePermission('payment-transaction:export')
   async exportCsv(@Query() query: ExportPaymentsTransactionQueryDto, @Res() res: Response) {
-    const buffer = await this.paymentTransactionService.exportToCsv(query);
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename=payments-export-${Date.now()}.csv`,
-    );
-
-    return res.end(buffer);
+    return this.paymentTransactionService.exportToCsvStream(query, res);
   }
 
 }

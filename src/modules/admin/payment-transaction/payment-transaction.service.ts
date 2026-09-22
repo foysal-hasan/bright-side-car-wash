@@ -5,7 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PaymentStatus } from 'src/generated/prisma/enums';
 import { GetPaymentsTransactionQueryDto } from './dto/get-payments-transaction-query.dto';
 import { Prisma } from 'src/generated/prisma/client';
-import * as XLSX from 'xlsx';
+import { Response } from 'express';
 import { ExportPaymentsTransactionQueryDto } from './dto/export-payments-transaction-query.dto';
 
 @Injectable()
@@ -151,7 +151,7 @@ export class PaymentTransactionService {
   }
 
 
-  private async getExportData(query: ExportPaymentsTransactionQueryDto) {
+  async exportToExcelStream(query: ExportPaymentsTransactionQueryDto, res: Response) {
     const { search, status } = query;
     const where: Prisma.PaymentWhereInput = {};
 
@@ -167,49 +167,127 @@ export class PaymentTransactionService {
       ];
     }
 
-    const payments = await this.prisma.payment.findMany({
-      where,
-      orderBy: { created_at: 'desc' },
+    const take = 10000;
+    let skip = 0;
+    let hasMore = true;
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=payments-export-${Date.now()}.xlsx`,
+    );
+
+    const ExcelJS = require('exceljs');
+    const workbook = new ExcelJS.stream.xlsx.WorkbookWriter({
+      stream: res,
+      useStyles: false,
+      useSharedStrings: false
     });
 
-    // Map your database records to a human-readable layout matching your grid headers
-    return payments.map((p) => ({
-      'Customer Name': p.customer_name || 'N/A',
-      'Service': p.service || 'N/A',
-      'Transaction Id': p.transaction_id,
-      'Amount': `${p.currency} ${Number(p.amount).toFixed(2)}`,
-      'Status': p.status,
-      'Date': p.created_at.toISOString().split('T')[0], // YYYY-MM-DD format
-    }));
+    const worksheet = workbook.addWorksheet('Payments');
+    worksheet.columns = [
+      { header: 'Customer Name', key: 'customerName' },
+      { header: 'Service', key: 'service' },
+      { header: 'Transaction Id', key: 'transactionId' },
+      { header: 'Amount', key: 'amount' },
+      { header: 'Status', key: 'status' },
+      { header: 'Date', key: 'date' },
+    ];
+
+    while (hasMore) {
+      const payments = await this.prisma.payment.findMany({
+        where,
+        orderBy: { created_at: 'desc' },
+        take,
+        skip,
+      });
+
+      if (payments.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      for (const p of payments) {
+        worksheet.addRow({
+          customerName: p.customer_name || 'N/A',
+          service: p.service || 'N/A',
+          transactionId: p.transaction_id,
+          amount: `${p.currency} ${Number(p.amount).toFixed(2)}`,
+          status: p.status,
+          date: p.created_at.toISOString().split('T')[0],
+        }).commit();
+      }
+
+      skip += take;
+    }
+
+    worksheet.commit();
+    await workbook.commit();
   }
 
+  async exportToCsvStream(query: ExportPaymentsTransactionQueryDto, res: Response) {
+    const { search, status } = query;
+    const where: Prisma.PaymentWhereInput = {};
 
-  async exportToExcel(query: ExportPaymentsTransactionQueryDto): Promise<Buffer> {
-    const data = await this.getExportData(query);
+    if (status) {
+      where.status = status;
+    }
 
-    // Create a new sheet worksheet from the structural rows array
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Payments');
+    if (search) {
+      where.OR = [
+        { customer_name: { contains: search, mode: 'insensitive' } },
+        { service: { contains: search, mode: 'insensitive' } },
+        { transaction_id: { contains: search, mode: 'insensitive' } },
+      ];
+    }
 
-    // Generate sheet buffer stream
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'buffer',
-    });
+    const take = 10000;
+    let skip = 0;
+    let hasMore = true;
 
-    return excelBuffer;
-  }
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=payments-export-${Date.now()}.csv`,
+    );
 
+    res.write('Customer Name,Service,Transaction Id,Amount,Status,Date\n');
 
-  async exportToCsv(query: ExportPaymentsTransactionQueryDto): Promise<Buffer> {
-    const data = await this.getExportData(query);
+    while (hasMore) {
+      const payments = await this.prisma.payment.findMany({
+        where,
+        orderBy: { created_at: 'desc' },
+        take,
+        skip,
+      });
 
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    // Convert worksheet layout directly into Comma-Separated Values text block
-    const csvString = XLSX.utils.sheet_to_csv(worksheet);
+      if (payments.length === 0) {
+        hasMore = false;
+        break;
+      }
 
-    return Buffer.from(csvString, 'utf-8');
+      for (const p of payments) {
+        const customerName = p.customer_name || 'N/A';
+        const service = p.service || 'N/A';
+        const amount = `${p.currency} ${Number(p.amount).toFixed(2)}`;
+        
+        const row = [
+          `"${customerName.replace(/"/g, '""')}"`,
+          `"${service.replace(/"/g, '""')}"`,
+          `"${p.transaction_id.replace(/"/g, '""')}"`,
+          `"${amount.replace(/"/g, '""')}"`,
+          `"${p.status.replace(/"/g, '""')}"`,
+          `"${p.created_at.toISOString().split('T')[0]}"`
+        ];
+        res.write(row.join(',') + '\n');
+      }
+
+      skip += take;
+    }
+    res.end();
   }
 
 }

@@ -10,7 +10,7 @@ import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   /**
    * get user by email
    * @param email
@@ -68,7 +68,7 @@ export class UserRepository {
    * @returns
    */
   async exist({ field, value }) {
-      const model = await this.prisma.user.findFirst({
+    const model = await this.prisma.user.findFirst({
       where: {
         [field]: value,
       },
@@ -237,16 +237,16 @@ export class UserRepository {
           field: 'email',
           value: String(email),
         });
-        if(avatar){
+        if (avatar) {
           data['avatar'] = avatar;
         }
 
-        if(gender){
-          data['gender']=gender;
+        if (gender) {
+          data['gender'] = gender;
         }
 
-        if(date_of_birth){
-          data['date_of_birth']=date_of_birth;
+        if (date_of_birth) {
+          data['date_of_birth'] = date_of_birth;
         }
 
         if (userEmailExist) {
