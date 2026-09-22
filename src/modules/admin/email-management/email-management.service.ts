@@ -21,7 +21,7 @@ export class EmailManagementService {
       select: { id: true, email: true, name: true }
     });
 
-    const mailSenderName = appConfig().mail.sender_email.trim();
+    const mailSenderName = appConfig().mail.sender_name.trim();
     const mailSenderEmail = appConfig().mail.sender_email.trim().toLowerCase();
 
     let firstName = 'Valued Customer';
