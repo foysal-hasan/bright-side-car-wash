@@ -616,19 +616,20 @@ export class LeadService {
       where.deleted_at = null;
     }
 
-    // Stage ID (exact match)
-    if (filters.stage_id) {
-      where.stage_id = filters.stage_id;
-    }
-
-    // Stage Name (exact match - case insensitive)
-    if (filters.stage_name) {
-      where.stage = {
-        name: {
+    // Stage Filters (ID and Name)
+    if (filters.stage_id || filters.stage_name) {
+      where.stage = {};
+      
+      if (filters.stage_id) {
+        where.stage.id = filters.stage_id;
+      }
+      
+      if (filters.stage_name) {
+        where.stage.name = {
           equals: filters.stage_name,
           mode: 'insensitive' as Prisma.QueryMode,
-        },
-      };
+        };
+      }
     }
 
     // Deposit Status (exact match)
