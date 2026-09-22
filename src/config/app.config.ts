@@ -9,6 +9,7 @@ export default () => ({
     port: parseInt(process.env.PORT, 10) || 3000,
     environment: process.env.NODE_ENV || 'development',
     file_storage: process.env.FILE_STORAGE || 'local', // local, s3, gcs
+    enable_swagger: process.env.ENABLE_SWAGGER === 'true',
   },
 
   fileSystems: {

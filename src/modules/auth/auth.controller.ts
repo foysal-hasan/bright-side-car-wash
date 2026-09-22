@@ -296,8 +296,6 @@ export class AuthController {
     }, deviceInfo
     );
 
-
-
     // store to secure cookies
     res.cookie('refresh_token', response.authorization.refresh_token, {
       httpOnly: true,
@@ -320,160 +318,299 @@ export class AuthController {
     let decoded: any;
     try {
       decoded = await this.jwtService.verifyAsync(refreshTokenDto.refresh_token, { secret: appConfig().jwt.refresh_token_secret });
-    } catch (error) {      
+    } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }
-      console.log('Decoded refresh token:', decoded);
-      const sessionId = decoded.sessionId;
-      const user_id = decoded.sub;
 
-      const response = await this.authService.refreshToken(
-        user_id,
-        sessionId,
-        refreshTokenDto.refresh_token,
-        deviceInfo
-      );
+    const sessionId = decoded.sessionId;
+    const user_id = decoded.sub;
 
-      // store to secure cookies
-      res.cookie('refresh_token', response.authorization.refresh_token, {
-        httpOnly: true,
-        secure: true,
-        maxAge: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '7d').date.getTime() - Date.now(),
-      });
+    const response = await this.authService.refreshToken(
+      user_id,
+      sessionId,
+      refreshTokenDto.refresh_token,
+      deviceInfo
+    );
+
+    // store to secure cookies
+    res.cookie('refresh_token', response.authorization.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      maxAge: DateHelper.generateFutureDate(appConfig().jwt.refresh_token_expiry || '7d').date.getTime() - Date.now(),
+    });
 
 
-      return res.json(response);
+    return res.json(response);
+  }
+
+  @ApiOperation({ summary: 'Logout user from current or specific session' })
+  @ApiBearerAuth()
+  @ApiBody({
+    type: LogoutDto,
+    description: 'Session ID to logout from. If not provided, logs out from current session.'
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req: Request, @Body() logoutDto: LogoutDto) {
+    const userId = req.user.userId;
+    const response = await this.authService.revokeRefreshToken(userId, logoutDto.sessionId);
+
+    return {
+      success: true,
+      message: 'Logged out successfully',
+      data: response,
+    };
+  }
+
+  // --- DEVICE MANAGEMENT ENDPOINTS ---
+  @ApiOperation({ summary: 'Get active sessions/devices' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get('devices')
+  async getActiveDevices(@Req() req: Request) {
+    const userId = req.user.userId;
+    const sessions = await this.authService.deviceSessions(userId);
+    return {
+      success: true,
+      message: 'Active devices retrieved successfully',
+      data: sessions,
+    };
+  }
+
+  // logout from all devices  
+  @ApiOperation({ summary: 'Logout from all devices' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('logout-all')
+  async logoutAllDevices(@Req() req: Request) {
+    const userId = req.user.userId;
+    const sessions = await this.authService.deviceSessions(userId);
+
+    for (const session of sessions) {
+      await this.authService.revokeRefreshToken(userId, session.id);
     }
 
-    @ApiOperation({ summary: 'Logout user from current or specific session' })
-    @ApiBearerAuth()
-    @ApiBody({
-      type: LogoutDto,
-      description: 'Session ID to logout from. If not provided, logs out from current session.'
-    })
-    @UseGuards(JwtAuthGuard)
-    @Post('logout')
-    async logout(@Req() req: Request, @Body() logoutDto: LogoutDto) {
-      const userId = req.user.userId;
-      const response = await this.authService.revokeRefreshToken(userId, logoutDto.sessionId);
+    return {
+      success: true,
+      message: 'Logged out from all devices successfully',
+    };
+  }
 
-      return {
-        success: true,
-        message: 'Logged out successfully',
-        data: response,
-      };
+  // @Get('google/redirect')
+  // @UseGuards(AuthGuard('google'))
+  // async googleLoginRedirect(@Req() req: Request): Promise<any> {
+  //   return {
+  //     statusCode: HttpStatus.OK,
+  //     data: req.user,
+  //   };
+  // }
+
+  // update user
+  @ApiOperation({ summary: 'Update user' })
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard)
+  @Patch('update')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: memoryStorage(),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+          return cb(
+            new BadRequestException('Only image files are allowed!'),
+            false,
+          );
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async updateUser(
+    @Req() req: Request,
+    @Body() data: UpdateUserDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const user_id = req.user.userId;
+    const response = await this.authService.updateUser(user_id, data, image);
+    return response;
+  }
+
+  // --------------change password---------
+
+  // @ApiOperation({ summary: 'Forgot password' })
+  // @Post('forgot-password')
+  // @ApiBody({ type: ForgotPasswordDto })
+  // async forgotPassword(@Body() data: ForgotPasswordDto) {
+  //   try {
+  //     const email = data.email;
+  //     if (!email) {
+  //       throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+  //     }
+  //     return await this.authService.forgotPassword(email);
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: 'Something went wrong',
+  //     };
+  //   }
+  // }
+
+  @ApiOperation({ summary: 'Send forgot password OTP' })
+  @Post('forgot-password/send-otp')
+  @ApiBody({ type: ForgotPasswordDto })
+  async forgotPassword(@Body() data: ForgotPasswordDto) {
+    const email = data.email;
+    if (!email) {
+      throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+    }
+    return await this.authService.sendForgotPasswordOtp(email);
+  }
+
+  @ApiOperation({ summary: 'Verify forgot password OTP' })
+  @Post('forgot-password/verify-otp')
+  @ApiBody({ type: VerifyForgotPasswordOtpDto })
+  async verifyForgotPasswordOtp(@Body() data: VerifyForgotPasswordOtpDto) {
+    const email = data.email;
+    const otp = data.otp;
+
+    if (!email) {
+      throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+    }
+    if (!otp) {
+      throw new HttpException('OTP not provided', HttpStatus.UNAUTHORIZED);
     }
 
-    // --- DEVICE MANAGEMENT ENDPOINTS ---
-    @ApiOperation({ summary: 'Get active sessions/devices' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Get('devices')
-    async getActiveDevices(@Req() req: Request) {
-      const userId = req.user.userId;
-      const sessions = await this.authService.deviceSessions(userId);
-      return {
-        success: true,
-        message: 'Active devices retrieved successfully',
-        data: sessions,
-      };
-    }
+    return await this.authService.verifyForgotPasswordOtp(email, otp);
 
-    // logout from all devices  
-    @ApiOperation({ summary: 'Logout from all devices' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('logout-all')
-    async logoutAllDevices(@Req() req: Request) {
-      const userId = req.user.userId;
-      const sessions = await this.authService.deviceSessions(userId);
+  }
 
-      for (const session of sessions) {
-        await this.authService.revokeRefreshToken(userId, session.id);
+  @ApiExcludeEndpoint()
+  // verify email to verify the email
+  @ApiOperation({ summary: 'Verify email' })
+  @Post('verify-email')
+  async verifyEmail(@Body() data: VerifyEmailDto) {
+    try {
+      // const email = data.email;
+      const token = data.token;
+      const registerToken = data.register_token;
+      // if (!email) {
+      //   throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+      // }
+      if (!token) {
+        throw new HttpException('Token not provided', HttpStatus.UNAUTHORIZED);
       }
-
+      return await this.authService.verifyEmail({
+        token: token,
+        registerToken: registerToken,
+      });
+    } catch (error) {
       return {
-        success: true,
-        message: 'Logged out from all devices successfully',
+        success: false,
+        message: 'Failed to verify email',
       };
     }
+  }
 
-    // @Get('google/redirect')
-    // @UseGuards(AuthGuard('google'))
-    // async googleLoginRedirect(@Req() req: Request): Promise<any> {
-    //   return {
-    //     statusCode: HttpStatus.OK,
-    //     data: req.user,
-    //   };
-    // }
 
-    // update user
-    @ApiOperation({ summary: 'Update user' })
-    @ApiBearerAuth()
-    @ApiConsumes('multipart/form-data')
-    @UseGuards(JwtAuthGuard)
-    @Patch('update')
-    @UseInterceptors(
-      FileInterceptor('image', {
-        storage: memoryStorage(),
-        fileFilter: (req, file, cb) => {
-          if (!file.mimetype.startsWith('image/')) {
-            return cb(
-              new BadRequestException('Only image files are allowed!'),
-              false,
-            );
-          }
-          cb(null, true);
-        },
-      }),
-    )
-    async updateUser(
-      @Req() req: Request,
-      @Body() data: UpdateUserDto,
-      @UploadedFile() image: Express.Multer.File,
-    ) {
-        const user_id = req.user.userId;
-        const response = await this.authService.updateUser(user_id, data, image);
-        return response;
+  @ApiExcludeEndpoint()
+  // send phone number verification code
+  @ApiOperation({ summary: 'Send phone number verification code' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('send-phone-number-verification-code')
+  async sendPhoneNumberVerificationCode(@Req() req: Request, @Body() data: { phone: string }) {
+    const user_id = req.user.userId;
+    const phone = data?.phone;
+    if (!phone) {
+      throw new HttpException('Phone number not provided', HttpStatus.UNAUTHORIZED);
     }
 
-    // --------------change password---------
+    // validate phone number format + country code + space or without space
+    if (!phone.match(/^[+][0-9]{1,3}[ ]?[0-9]{10}$/)) {
+      throw new HttpException('Invalid phone number', HttpStatus.UNAUTHORIZED);
+    }
 
-    // @ApiOperation({ summary: 'Forgot password' })
-    // @Post('forgot-password')
-    // @ApiBody({ type: ForgotPasswordDto })
-    // async forgotPassword(@Body() data: ForgotPasswordDto) {
-    //   try {
-    //     const email = data.email;
-    //     if (!email) {
-    //       throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-    //     }
-    //     return await this.authService.forgotPassword(email);
-    //   } catch (error) {
-    //     return {
-    //       success: false,
-    //       message: 'Something went wrong',
-    //     };
-    //   }
-    // }
+    return await this.authService.sendPhoneNumberVerificationCode(user_id, phone);
+  }
 
-    @ApiOperation({ summary: 'Send forgot password OTP' })
-    @Post('forgot-password/send-otp')
-    @ApiBody({ type: ForgotPasswordDto })
-    async forgotPassword(@Body() data: ForgotPasswordDto) {
+  @ApiExcludeEndpoint()
+  @ApiOperation({ summary: 'Verify phone number' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('verify-phone-number')
+  async verifyPhoneNumber(@Req() req: Request, @Body() data: { phone: string, code: string }) {
+    const phone = data?.phone;
+    const code = data?.code;
+    if (!phone) {
+      throw new HttpException('Phone number not provided', HttpStatus.UNAUTHORIZED);
+    }
+    if (!code) {
+      throw new HttpException('Code not provided', HttpStatus.UNAUTHORIZED);
+    }
+    return await this.authService.verifyPhoneNumber(req.user.userId, phone, code);
+  }
+
+  @ApiExcludeEndpoint()
+  // resend verification email to verify the email
+  @ApiOperation({ summary: 'Resend verification email' })
+  @Post('resend-verification-email')
+  async resendVerificationEmail(@Body() data: { email: string }) {
+    try {
       const email = data.email;
       if (!email) {
         throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
       }
-      return await this.authService.sendForgotPasswordOtp(email);
+      return await this.authService.resendVerificationEmail(email);
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to resend verification email',
+      };
     }
+  }
 
-    @ApiOperation({ summary: 'Verify forgot password OTP' })
-    @Post('forgot-password/verify-otp')
-    @ApiBody({ type: VerifyForgotPasswordOtpDto })
-    async verifyForgotPasswordOtp(@Body() data: VerifyForgotPasswordOtpDto) {
+  // reset password if user forget the password
+  // @ApiOperation({ summary: 'Reset password' })
+  // @Post('reset-password')
+  // @ApiBody({ type: ResetPasswordDto })
+  // async resetPassword(@Body() data: ResetPasswordDto) {
+  //   try {
+  //     const email = data.email;
+  //     const token = data.token;
+  //     const password = data.password;
+  //     if (!email) {
+  //       throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+  //     }
+  //     if (!token) {
+  //       throw new HttpException('Token not provided', HttpStatus.UNAUTHORIZED);
+  //     }
+  //     if (!password) {
+  //       throw new HttpException(
+  //         'Password not provided',
+  //         HttpStatus.UNAUTHORIZED,
+  //       );
+  //     }
+  //     return await this.authService.resetPassword({
+  //       email: email,
+  //       token: token,
+  //       password: password,
+  //     });
+  //   } catch (error) {
+  //     return {
+  //       success: false,
+  //       message: 'Something went wrong',
+  //     };
+  //   }
+  // }
+
+  @ApiOperation({ summary: 'Reset password with OTP' })
+  @Post('forgot-password/reset-password')
+  @ApiBody({ type: ResetPasswordWithOtpDto })
+  async resetPassword(@Body() data: ResetPasswordWithOtpDto) {
+    try {
       const email = data.email;
       const otp = data.otp;
+      const newPassword = data.new_password;
 
       if (!email) {
         throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
@@ -481,338 +618,199 @@ export class AuthController {
       if (!otp) {
         throw new HttpException('OTP not provided', HttpStatus.UNAUTHORIZED);
       }
+      if (!newPassword) {
+        throw new HttpException(
+          'New password not provided',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
 
-      return await this.authService.verifyForgotPasswordOtp(email, otp);
-
+      return await this.authService.resetPasswordWithOtp({
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
+      });
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
     }
-
-    @ApiExcludeEndpoint()
-    // verify email to verify the email
-    @ApiOperation({ summary: 'Verify email' })
-    @Post('verify-email')
-    async verifyEmail(@Body() data: VerifyEmailDto) {
-      try {
-        // const email = data.email;
-        const token = data.token;
-        const registerToken = data.register_token;
-        // if (!email) {
-        //   throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-        // }
-        if (!token) {
-          throw new HttpException('Token not provided', HttpStatus.UNAUTHORIZED);
-        }
-        return await this.authService.verifyEmail({
-          token: token,
-          registerToken: registerToken,
-        });
-      } catch (error) {
-        return {
-          success: false,
-          message: 'Failed to verify email',
-        };
-      }
-    }
-
-
-    @ApiExcludeEndpoint()
-    // send phone number verification code
-    @ApiOperation({ summary: 'Send phone number verification code' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('send-phone-number-verification-code')
-    async sendPhoneNumberVerificationCode(@Req() req: Request, @Body() data: { phone: string }) {
-      const user_id = req.user.userId;
-      const phone = data?.phone;
-      if (!phone) {
-        throw new HttpException('Phone number not provided', HttpStatus.UNAUTHORIZED);
-      }
-
-      // validate phone number format + country code + space or without space
-      if (!phone.match(/^[+][0-9]{1,3}[ ]?[0-9]{10}$/)) {
-        throw new HttpException('Invalid phone number', HttpStatus.UNAUTHORIZED);
-      }
-
-      return await this.authService.sendPhoneNumberVerificationCode(user_id, phone);
-    }
-
-    @ApiExcludeEndpoint()
-    @ApiOperation({ summary: 'Verify phone number' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('verify-phone-number')
-    async verifyPhoneNumber(@Req() req: Request, @Body() data: { phone: string, code: string }) {
-      const phone = data?.phone;
-      const code = data?.code;
-      if (!phone) {
-        throw new HttpException('Phone number not provided', HttpStatus.UNAUTHORIZED);
-      }
-      if (!code) {
-        throw new HttpException('Code not provided', HttpStatus.UNAUTHORIZED);
-      }
-      return await this.authService.verifyPhoneNumber(req.user.userId, phone, code);
-    }
-
-    @ApiExcludeEndpoint()
-    // resend verification email to verify the email
-    @ApiOperation({ summary: 'Resend verification email' })
-    @Post('resend-verification-email')
-    async resendVerificationEmail(@Body() data: { email: string }) {
-      try {
-        const email = data.email;
-        if (!email) {
-          throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-        }
-        return await this.authService.resendVerificationEmail(email);
-      } catch (error) {
-        return {
-          success: false,
-          message: 'Failed to resend verification email',
-        };
-      }
-    }
-
-    // reset password if user forget the password
-    // @ApiOperation({ summary: 'Reset password' })
-    // @Post('reset-password')
-    // @ApiBody({ type: ResetPasswordDto })
-    // async resetPassword(@Body() data: ResetPasswordDto) {
-    //   try {
-    //     const email = data.email;
-    //     const token = data.token;
-    //     const password = data.password;
-    //     if (!email) {
-    //       throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-    //     }
-    //     if (!token) {
-    //       throw new HttpException('Token not provided', HttpStatus.UNAUTHORIZED);
-    //     }
-    //     if (!password) {
-    //       throw new HttpException(
-    //         'Password not provided',
-    //         HttpStatus.UNAUTHORIZED,
-    //       );
-    //     }
-    //     return await this.authService.resetPassword({
-    //       email: email,
-    //       token: token,
-    //       password: password,
-    //     });
-    //   } catch (error) {
-    //     return {
-    //       success: false,
-    //       message: 'Something went wrong',
-    //     };
-    //   }
-    // }
-
-    @ApiOperation({ summary: 'Reset password with OTP' })
-    @Post('forgot-password/reset-password')
-    @ApiBody({ type: ResetPasswordWithOtpDto })
-    async resetPassword(@Body() data: ResetPasswordWithOtpDto) {
-      try {
-        const email = data.email;
-        const otp = data.otp;
-        const newPassword = data.new_password;
-
-        if (!email) {
-          throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-        }
-        if (!otp) {
-          throw new HttpException('OTP not provided', HttpStatus.UNAUTHORIZED);
-        }
-        if (!newPassword) {
-          throw new HttpException(
-            'New password not provided',
-            HttpStatus.UNAUTHORIZED,
-          );
-        }
-
-        return await this.authService.resetPasswordWithOtp({
-          email: email,
-          otp: otp,
-          newPassword: newPassword,
-        });
-      } catch (error: any) {
-        return {
-          success: false,
-          message: error?.message || 'Something went wrong',
-        };
-      }
-    }
-
-    // change password if user want to change the password
-    @ApiOperation({ summary: 'Change password' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('change-password')
-    async changePassword(
-      @Req() req: Request,
-      @Body() data: ChangePasswordDto,
-    ) {
-      try {
-        // const email = data.email;
-        const user_id = req.user.userId;
-
-        const oldPassword = data.old_password;
-        const newPassword = data.new_password;
-        // if (!email) {
-        //   throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-        // }
-        if (!oldPassword) {
-          throw new HttpException(
-            'Old password not provided',
-            HttpStatus.UNAUTHORIZED,
-          );
-        }
-        if (!newPassword) {
-          throw new HttpException(
-            'New password not provided',
-            HttpStatus.UNAUTHORIZED,
-          );
-        }
-        return await this.authService.changePassword({
-          // email: email,
-          user_id: user_id,
-          oldPassword: oldPassword,
-          newPassword: newPassword,
-        });
-      } catch (error) {
-        return {
-          success: false,
-          message: 'Failed to change password',
-        };
-      }
-    }
-
-    // --------------end change password---------
-
-    // -------change email address------
-    @ApiExcludeEndpoint()
-    @ApiOperation({ summary: 'request email change' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('request-email-change')
-    async requestEmailChange(
-      @Req() req: Request,
-      @Body() data: { email: string },
-    ) {
-      try {
-        const user_id = req.user.userId;
-        const email = data.email;
-        if (!email) {
-          throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-        }
-        return await this.authService.requestEmailChange(user_id, email);
-      } catch (error) {
-        return {
-          success: false,
-          message: 'Something went wrong',
-        };
-      }
-    }
-
-    @ApiExcludeEndpoint()
-    @ApiOperation({ summary: 'Change email address' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('change-email')
-    async changeEmail(
-      @Req() req: Request,
-      @Body() data: { email: string; token: string },
-    ) {
-      try {
-        const user_id = req.user.userId;
-        const email = data.email;
-
-        const token = data.token;
-        if (!email) {
-          throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-        }
-        if (!token) {
-          throw new HttpException('Token not provided', HttpStatus.UNAUTHORIZED);
-        }
-        return await this.authService.changeEmail({
-          user_id: user_id,
-          new_email: email,
-          token: token,
-        });
-      } catch (error) {
-        return {
-          success: false,
-          message: 'Something went wrong',
-        };
-      }
-    }
-    // -------end change email address------
-
-    @ApiExcludeEndpoint()
-    // --------- 2FA ---------
-    @ApiOperation({ summary: 'Generate 2FA secret' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('generate-2fa-secret')
-    async generate2FASecret(@Req() req: Request) {
-      try {
-        const user_id = req.user.userId;
-        return await this.authService.generate2FASecret(user_id);
-      } catch (error: any) {
-        return {
-          success: false,
-          message: error?.message || 'Something went wrong',
-        };
-      }
-    }
-
-    @ApiExcludeEndpoint()
-    @ApiOperation({ summary: 'Verify 2FA' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('verify-2fa')
-    async verify2FA(@Req() req: Request, @Body() data: { token: string }) {
-      try {
-        const user_id = req.user.userId;
-        const token = data.token;
-        return await this.authService.verify2FA(user_id, token);
-      } catch (error: any) {
-        return {
-          success: false,
-          message: error?.message || 'Something went wrong',
-        };
-      }
-    }
-
-    @ApiExcludeEndpoint()
-    @ApiOperation({ summary: 'Enable 2FA' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('enable-2fa')
-    async enable2FA(@Req() req: Request) {
-      try {
-        const user_id = req.user.userId;
-        return await this.authService.enable2FA(user_id);
-      } catch (error: any) {
-        return {
-          success: false,
-          message: error?.message || 'Something went wrong',
-        };
-      }
-    }
-
-    @ApiExcludeEndpoint()
-    @ApiOperation({ summary: 'Disable 2FA' })
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Post('disable-2fa')
-    async disable2FA(@Req() req: Request) {
-      try {
-        const user_id = req.user.userId;
-        return await this.authService.disable2FA(user_id);
-      } catch (error: any) {
-        return {
-          success: false,
-          message: error?.message || 'Something went wrong',
-        };
-      }
-    }
-    // --------- end 2FA ---------
   }
+
+  // change password if user want to change the password
+  @ApiOperation({ summary: 'Change password' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @Req() req: Request,
+    @Body() data: ChangePasswordDto,
+  ) {
+    try {
+      // const email = data.email;
+      const user_id = req.user.userId;
+
+      const oldPassword = data.old_password;
+      const newPassword = data.new_password;
+      // if (!email) {
+      //   throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+      // }
+      if (!oldPassword) {
+        throw new HttpException(
+          'Old password not provided',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      if (!newPassword) {
+        throw new HttpException(
+          'New password not provided',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      return await this.authService.changePassword({
+        // email: email,
+        user_id: user_id,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      });
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to change password',
+      };
+    }
+  }
+
+  // --------------end change password---------
+
+  // -------change email address------
+  @ApiExcludeEndpoint()
+  @ApiOperation({ summary: 'request email change' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('request-email-change')
+  async requestEmailChange(
+    @Req() req: Request,
+    @Body() data: { email: string },
+  ) {
+    try {
+      const user_id = req.user.userId;
+      const email = data.email;
+      if (!email) {
+        throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+      }
+      return await this.authService.requestEmailChange(user_id, email);
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Something went wrong',
+      };
+    }
+  }
+
+  @ApiExcludeEndpoint()
+  @ApiOperation({ summary: 'Change email address' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('change-email')
+  async changeEmail(
+    @Req() req: Request,
+    @Body() data: { email: string; token: string },
+  ) {
+    try {
+      const user_id = req.user.userId;
+      const email = data.email;
+
+      const token = data.token;
+      if (!email) {
+        throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+      }
+      if (!token) {
+        throw new HttpException('Token not provided', HttpStatus.UNAUTHORIZED);
+      }
+      return await this.authService.changeEmail({
+        user_id: user_id,
+        new_email: email,
+        token: token,
+      });
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Something went wrong',
+      };
+    }
+  }
+  // -------end change email address------
+
+  @ApiExcludeEndpoint()
+  // --------- 2FA ---------
+  @ApiOperation({ summary: 'Generate 2FA secret' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('generate-2fa-secret')
+  async generate2FASecret(@Req() req: Request) {
+    try {
+      const user_id = req.user.userId;
+      return await this.authService.generate2FASecret(user_id);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
+  }
+
+  @ApiExcludeEndpoint()
+  @ApiOperation({ summary: 'Verify 2FA' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('verify-2fa')
+  async verify2FA(@Req() req: Request, @Body() data: { token: string }) {
+    try {
+      const user_id = req.user.userId;
+      const token = data.token;
+      return await this.authService.verify2FA(user_id, token);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
+  }
+
+  @ApiExcludeEndpoint()
+  @ApiOperation({ summary: 'Enable 2FA' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('enable-2fa')
+  async enable2FA(@Req() req: Request) {
+    try {
+      const user_id = req.user.userId;
+      return await this.authService.enable2FA(user_id);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
+  }
+
+  @ApiExcludeEndpoint()
+  @ApiOperation({ summary: 'Disable 2FA' })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('disable-2fa')
+  async disable2FA(@Req() req: Request) {
+    try {
+      const user_id = req.user.userId;
+      return await this.authService.disable2FA(user_id);
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error?.message || 'Something went wrong',
+      };
+    }
+  }
+  // --------- end 2FA ---------
+}

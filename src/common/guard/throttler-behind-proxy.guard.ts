@@ -7,6 +7,7 @@ export class ThrottlerBehindProxyGuard extends ThrottlerGuard {
     if (req.user?.userId) {
       return Promise.resolve(`user:${req.user.userId}`);
     }
-    return req.ips.length ? req.ips[0] : req.ip; // individualize IP extraction to meet your own needs
+    // individualize IP extraction to meet your own needs
+    return Promise.resolve(req.ips.length ? req.ips[0] : req.ip);
   }
 }

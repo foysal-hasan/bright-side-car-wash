@@ -103,7 +103,6 @@ export class AuthService implements OnModuleInit {
         first_name: firstName,
         last_name: lastName,
         username: username,
-        password: hashedPassword,
         status: 1,
         isActive: true,
         email_verified_at: new Date(),
@@ -839,33 +838,33 @@ export class AuthService implements OnModuleInit {
   // }
 
   async forgotPassword(email) {
-      const user = await this.userRepository.exist({
-        field: 'email',
-        value: email,
+    const user = await this.userRepository.exist({
+      field: 'email',
+      value: email,
+    });
+
+    if (user) {
+      const token = await this.ucodeRepository.createToken({
+        userId: user.id,
+        isOtp: true,
       });
 
-      if (user) {
-        const token = await this.ucodeRepository.createToken({
-          userId: user.id,
-          isOtp: true,
-        });
+      await this.mailService.sendOtpCodeToEmail({
+        email: email,
+        first_name: user.name,
+        otp: token,
+      });
 
-        await this.mailService.sendOtpCodeToEmail({
-          email: email,
-          first_name: user.name,
-          otp: token,
-        });
-
-        return {
-          success: true,
-          message: 'We have sent an OTP code to your email',
-        };
-      } else {
-        return {
-          success: false,
-          message: 'Email not found',
-        };
-      }
+      return {
+        success: true,
+        message: 'We have sent an OTP code to your email',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Email not found',
+      };
+    }
   }
 
   async sendForgotPasswordOtp(email: string) {
@@ -983,257 +982,257 @@ export class AuthService implements OnModuleInit {
   }
 
   async resetPassword({ email, token, password }) {
-      const user = await this.userRepository.exist({
-        field: 'email',
-        value: email,
+    const user = await this.userRepository.exist({
+      field: 'email',
+      value: email,
+    });
+
+    if (user) {
+      const existToken = await this.ucodeRepository.validateToken({
+        email: email,
+        token: token,
       });
 
-      if (user) {
-        const existToken = await this.ucodeRepository.validateToken({
+      if (existToken) {
+        await this.userRepository.changePassword({
+          email: email,
+          password: password,
+        });
+
+        // delete otp code
+        await this.ucodeRepository.deleteToken({
           email: email,
           token: token,
         });
 
-        if (existToken) {
-          await this.userRepository.changePassword({
-            email: email,
-            password: password,
-          });
-
-          // delete otp code
-          await this.ucodeRepository.deleteToken({
-            email: email,
-            token: token,
-          });
-
-          return {
-            success: true,
-            message: 'Password updated successfully',
-          };
-        } else {
-          return {
-            success: false,
-            message: 'Invalid token',
-          };
-        }
+        return {
+          success: true,
+          message: 'Password updated successfully',
+        };
       } else {
         return {
           success: false,
-          message: 'Email not found',
+          message: 'Invalid token',
         };
       }
+    } else {
+      return {
+        success: false,
+        message: 'Email not found',
+      };
+    }
   }
 
   async verifyEmail({ token, registerToken }) {
-      const decoded = await this.ucodeRepository.decodeJWT(registerToken);
+    const decoded = await this.ucodeRepository.decodeJWT(registerToken);
 
-      const email = decoded.payload.email;
+    const email = decoded.payload.email;
 
-      // Check user existence
-      const userExist = await this.userRepository.exist({
-        field: 'email',
-        value: email,
+    // Check user existence
+    const userExist = await this.userRepository.exist({
+      field: 'email',
+      value: email,
+    });
+
+    if (userExist && userExist.email_verified_at) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    //  Validate OTP
+    const isValidToken = await this.ucodeRepository.validateToken({
+      email,
+      token,
+      isRegistrationVerification: true,
+    });
+
+    if (!isValidToken) {
+      return {
+        success: false,
+        message: 'Invalid or expired token',
+      };
+    }
+
+    //  Prevent double verification
+    const user = await this.userRepository.createUser({
+      // name: name,
+      first_name: decoded.payload.first_name,
+      last_name: decoded.payload.last_name,
+      email: decoded.payload.email,
+      password: decoded.payload.password,
+      type: decoded.payload.type.toLowerCase(),
+      avatar: decoded.payload.avatar,
+      gender: decoded.payload.gender,
+      date_of_birth: DateHelper.format(decoded.payload.date_of_birth),
+      phone_number: decoded.payload.phone_number,
+    });
+
+    if (user == null && user.success == false) throw new BadRequestException(user.message);
+
+    // create stripe customer account
+    // const stripeCustomer = await StripePayment.createCustomer({
+    //   user_id: user.data.id,
+    //   email: email,
+    //   name: decoded.payload.first_name,
+    // });
+
+    // if (stripeCustomer) {
+    //   await this.prisma.user.update({
+    //     where: {
+    //       id: user.data.id,
+    //     },
+    //     data: {
+    //       billing_id: stripeCustomer.id,
+    //     },
+    //   });
+    // }
+
+    // // based on user role create customer or barber
+    // if (decoded.payload.type == 'customer') {
+    //   await this.prisma.customer.create({
+    //     data: {
+    //       userId: user.data.id,
+    //     },
+    //   });
+    // }
+
+    // if (decoded.payload.type == 'barber') {
+    //   await this.prisma.barber.create({
+    //     data: {
+    //       userId: user.data.id,
+    //     },
+    //   });
+    // }
+
+
+
+    //Mark email as verified
+    await this.prisma.user.update({
+      where: { id: user.data.id },
+      data: {
+        email_verified_at: new Date(),
+      },
+    });
+
+    // Generate tokens
+    const payload = { sub: user.data.id, email: user.data.email };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
+
+    // Store refresh token (single-session model)
+    await this.redis.set(
+      `refresh_token:${user.data.id}`,
+      refreshToken,
+      'EX',
+      60 * 60 * 24 * 7, // 7 days
+    );
+
+    // Cleanup OTP
+    await this.ucodeRepository.deleteToken({
+      email,
+      token,
+    });
+
+    return {
+      success: true,
+      message: 'Email verified successfully',
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
+  }
+
+  async resendVerificationEmail(email: string) {
+    const user = await this.userRepository.getUserByEmail(email);
+
+    if (user) {
+      // create otp code
+      const token = await this.ucodeRepository.createToken({
+        userId: user.id,
+        isOtp: true,
       });
 
-      if (userExist && userExist.email_verified_at) {
-        throw new BadRequestException('Email already verified');
-      }
-
-      //  Validate OTP
-      const isValidToken = await this.ucodeRepository.validateToken({
-        email,
-        token,
-        isRegistrationVerification: true,
-      });
-
-      if (!isValidToken) {
-        return {
-          success: false,
-          message: 'Invalid or expired token',
-        };
-      }
-
-      //  Prevent double verification
-      const user = await this.userRepository.createUser({
-        // name: name,
-        first_name: decoded.payload.first_name,
-        last_name: decoded.payload.last_name,
-        email: decoded.payload.email,
-        password: decoded.payload.password,
-        type: decoded.payload.type.toLowerCase(),
-        avatar: decoded.payload.avatar,
-        gender: decoded.payload.gender,
-        date_of_birth: DateHelper.format(decoded.payload.date_of_birth),
-        phone_number: decoded.payload.phone_number,
-      });
-
-      if (user == null && user.success == false) throw new BadRequestException(user.message);
-
-      // create stripe customer account
-      // const stripeCustomer = await StripePayment.createCustomer({
-      //   user_id: user.data.id,
-      //   email: email,
-      //   name: decoded.payload.first_name,
-      // });
-
-      // if (stripeCustomer) {
-      //   await this.prisma.user.update({
-      //     where: {
-      //       id: user.data.id,
-      //     },
-      //     data: {
-      //       billing_id: stripeCustomer.id,
-      //     },
-      //   });
-      // }
-
-      // // based on user role create customer or barber
-      // if (decoded.payload.type == 'customer') {
-      //   await this.prisma.customer.create({
-      //     data: {
-      //       userId: user.data.id,
-      //     },
-      //   });
-      // }
-
-      // if (decoded.payload.type == 'barber') {
-      //   await this.prisma.barber.create({
-      //     data: {
-      //       userId: user.data.id,
-      //     },
-      //   });
-      // }
-
-
-
-      //Mark email as verified
-      await this.prisma.user.update({
-        where: { id: user.data.id },
-        data: {
-          email_verified_at: new Date(),
-        },
-      });
-
-      // Generate tokens
-      const payload = { sub: user.data.id, email: user.data.email };
-
-      const accessToken = this.jwtService.sign(payload, {
-        expiresIn: '1h',
-      });
-
-      const refreshToken = this.jwtService.sign(payload, {
-        expiresIn: '7d',
-      });
-
-      // Store refresh token (single-session model)
-      await this.redis.set(
-        `refresh_token:${user.data.id}`,
-        refreshToken,
-        'EX',
-        60 * 60 * 24 * 7, // 7 days
-      );
-
-      // Cleanup OTP
-      await this.ucodeRepository.deleteToken({
-        email,
-        token,
+      // send otp code to email
+      await this.mailService.sendOtpCodeToEmail({
+        email: email,
+        first_name: user.name,
+        otp: token,
       });
 
       return {
         success: true,
-        message: 'Email verified successfully',
-        access_token: accessToken,
-        refresh_token: refreshToken,
+        message: 'We have sent a verification code to your email',
       };
-  }
-
-  async resendVerificationEmail(email: string) {
-      const user = await this.userRepository.getUserByEmail(email);
-
-      if (user) {
-        // create otp code
-        const token = await this.ucodeRepository.createToken({
-          userId: user.id,
-          isOtp: true,
-        });
-
-        // send otp code to email
-        await this.mailService.sendOtpCodeToEmail({
-          email: email,
-          first_name: user.name,
-          otp: token,
-        });
-
-        return {
-          success: true,
-          message: 'We have sent a verification code to your email',
-        };
-      } else {
-        return {
-          success: false,
-          message: 'Email not found',
-        };
-      }
+    } else {
+      return {
+        success: false,
+        message: 'Email not found',
+      };
+    }
   }
 
   async changePassword({ user_id, oldPassword, newPassword }) {
 
-      const user = await this.userRepository.getUserDetails(user_id);
+    const user = await this.userRepository.getUserDetails(user_id);
 
-      if (user) {
-        const _isValidPassword = await this.userRepository.validatePassword({
+    if (user) {
+      const _isValidPassword = await this.userRepository.validatePassword({
+        email: user.email,
+        password: oldPassword,
+      });
+      if (_isValidPassword) {
+        await this.userRepository.changePassword({
           email: user.email,
-          password: oldPassword,
-        });
-        if (_isValidPassword) {
-          await this.userRepository.changePassword({
-            email: user.email,
-            password: newPassword,
-          });
-
-          return {
-            success: true,
-            message: 'Password updated successfully',
-          };
-        } else {
-          return {
-            success: false,
-            message: 'Invalid password',
-          };
-        }
-      } else {
-        return {
-          success: false,
-          message: 'Email not found',
-        };
-      }
-  }
-
-  async requestEmailChange(user_id: string, email: string) {
-      const user = await this.userRepository.getUserDetails(user_id);
-      if (user) {
-        const token = await this.ucodeRepository.createToken({
-          userId: user.id,
-          isOtp: true,
-          email: email,
-        });
-
-        await this.mailService.sendOtpCodeToEmail({
-          email: email,
-          first_name: email,
-          otp: token,
+          password: newPassword,
         });
 
         return {
           success: true,
-          message: 'We have sent an OTP code to your email',
+          message: 'Password updated successfully',
         };
       } else {
         return {
           success: false,
-          message: 'User not found',
+          message: 'Invalid password',
         };
       }
+    } else {
+      return {
+        success: false,
+        message: 'Email not found',
+      };
+    }
+  }
+
+  async requestEmailChange(user_id: string, email: string) {
+    const user = await this.userRepository.getUserDetails(user_id);
+    if (user) {
+      const token = await this.ucodeRepository.createToken({
+        userId: user.id,
+        isOtp: true,
+        email: email,
+      });
+
+      await this.mailService.sendOtpCodeToEmail({
+        email: email,
+        first_name: email,
+        otp: token,
+      });
+
+      return {
+        success: true,
+        message: 'We have sent an OTP code to your email',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
   }
 
   async changeEmail({
@@ -1245,43 +1244,43 @@ export class AuthService implements OnModuleInit {
     new_email: string;
     token: string;
   }) {
-      const user = await this.userRepository.getUserDetails(user_id);
+    const user = await this.userRepository.getUserDetails(user_id);
 
-      if (user) {
-        const existToken = await this.ucodeRepository.validateToken({
-          email: new_email,
-          token: token,
-          forEmailChange: true,
+    if (user) {
+      const existToken = await this.ucodeRepository.validateToken({
+        email: new_email,
+        token: token,
+        forEmailChange: true,
+      });
+
+      if (existToken) {
+        await this.userRepository.changeEmail({
+          user_id: user.id,
+          new_email: new_email,
         });
 
-        if (existToken) {
-          await this.userRepository.changeEmail({
-            user_id: user.id,
-            new_email: new_email,
-          });
+        // delete otp code
+        await this.ucodeRepository.deleteToken({
+          email: new_email,
+          token: token,
+        });
 
-          // delete otp code
-          await this.ucodeRepository.deleteToken({
-            email: new_email,
-            token: token,
-          });
-
-          return {
-            success: true,
-            message: 'Email updated successfully',
-          };
-        } else {
-          return {
-            success: false,
-            message: 'Invalid token',
-          };
-        }
+        return {
+          success: true,
+          message: 'Email updated successfully',
+        };
       } else {
         return {
           success: false,
-          message: 'User not found',
+          message: 'Invalid token',
         };
       }
+    } else {
+      return {
+        success: false,
+        message: 'User not found',
+      };
+    }
   }
 
   // --------- 2FA ---------

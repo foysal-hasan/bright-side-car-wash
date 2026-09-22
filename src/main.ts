@@ -21,6 +21,10 @@ async function bootstrap() {
     bufferLogs: true
   });
 
+  // Raw body size limit to 5MB to support Stripe webhook payloads
+  app.use(express.json({ limit: '5mb' }));
+  app.use(express.urlencoded({ extended: true }));
+
 
   app.getHttpAdapter().getInstance().set('trust proxy', true);
 
@@ -110,21 +114,23 @@ async function bootstrap() {
     },
   });
 
-  // swagger
-  const options = new DocumentBuilder()
-    .setTitle(`${process.env.APP_NAME} API`)
-    .setDescription(`${process.env.APP_NAME} api docs`)
-    .setVersion('1.0')
-    .addTag(`${process.env.APP_NAME}`)
-    .addBearerAuth()
-    .build();
+  // swagger — controlled by ENABLE_SWAGGER env variable (set in appConfig)
+  if (appConfig().app.enable_swagger) {
+    const options = new DocumentBuilder()
+      .setTitle(`${appConfig().app.name} API`)
+      .setDescription(`${appConfig().app.name} api docs`)
+      .setVersion('1.0')
+      .addTag(`${appConfig().app.name}`)
+      .addBearerAuth()
+      .build();
 
-  const document = SwaggerModule.createDocument(app, options, {
-    ignoreGlobalPrefix: false,
-  });
-  SwaggerModule.setup('api/docs', app, document);
+    const document = SwaggerModule.createDocument(app, options, {
+      ignoreGlobalPrefix: false,
+    });
+    SwaggerModule.setup('api/docs', app, document);
+  }
   // end swagger
 
-  await app.listen(process.env.PORT ?? 4000, '0.0.0.0');
+  await app.listen(appConfig().app.port, '0.0.0.0');
 }
 bootstrap();
