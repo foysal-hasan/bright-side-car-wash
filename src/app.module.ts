@@ -12,7 +12,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import appConfig from './config/app.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerMiddleware } from './common/middleware/logger.middleware';
+// import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 // import { ThrottlerBehindProxyGuard } from './common/guard/throttler-behind-proxy.guard';
@@ -110,7 +110,7 @@ export class OptionalJwtGuard extends AuthGuard('jwt') {
         limit: 100,
       },
     ]),
-    
+
   ],
   controllers: [AppController],
 
@@ -140,7 +140,7 @@ export class OptionalJwtGuard extends AuthGuard('jwt') {
   ],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(LoggerMiddleware).forRoutes('*');
+  // }
 }
