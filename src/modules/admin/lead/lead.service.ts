@@ -312,16 +312,17 @@ export class LeadService {
       }),
 
       // == COMPONENT 2: YEAR TREND LINE DATA (Total vs Converted) ==
-      this.prisma.lead.findMany({
-        where: {
-          created_at: { gte: rollingTwelveMonthsStart },
-          deleted_at: null,
-        },
-        select: {
-          created_at: true,
-          stage: { select: { name: true } }
-        }
-      })
+      this.prisma.$queryRaw`
+        SELECT 
+          EXTRACT(YEAR FROM l.created_at)::text AS year,
+          EXTRACT(MONTH FROM l.created_at)::text AS month,
+          COUNT(*)::int AS total,
+          COUNT(CASE WHEN s.name ILIKE 'converted' THEN 1 END)::int AS converted
+        FROM leads l
+        LEFT JOIN stages s ON l.stage_id = s.id
+        WHERE l.created_at >= ${rollingTwelveMonthsStart} AND l.deleted_at IS NULL
+        GROUP BY EXTRACT(YEAR FROM l.created_at), EXTRACT(MONTH FROM l.created_at)
+      `
     ]);
 
     // --- Dynamic Percentage Math Calculation Engine ---
@@ -353,18 +354,13 @@ export class LeadService {
     }
 
     // Distribute data points across month slots dynamically
-    rawMonthlyTrendData.forEach((lead) => {
-      const key = `${lead.created_at.getFullYear()}-${lead.created_at.getMonth()}`;
+    (rawMonthlyTrendData as any[]).forEach((row) => {
+      // Postgres EXTRACT(MONTH) returns 1-12, while JavaScript getMonth() is 0-11
+      const key = `${row.year}-${Number(row.month) - 1}`;
       if (trendMap.has(key)) {
         const slot = trendMap.get(key)!;
-
-        // Every record found increments the Total counter for that month
-        slot.total++;
-
-        // Check if this specific lead achieved Converted status
-        if (lead.stage?.name.toLowerCase() === 'converted') {
-          slot.converted++;
-        }
+        slot.total += Number(row.total);
+        slot.converted += Number(row.converted);
       }
     });
 
