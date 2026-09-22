@@ -1073,7 +1073,7 @@ export class AuthService implements OnModuleInit {
       phone_number: decoded.payload.phone_number,
     });
 
-    if (user == null && user.success == false) throw new BadRequestException(user.message);
+    if (!user || user.success === false) throw new BadRequestException(user?.message || 'Failed to create user');
 
     // create stripe customer account
     // const stripeCustomer = await StripePayment.createCustomer({
