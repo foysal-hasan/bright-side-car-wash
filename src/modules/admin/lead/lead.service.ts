@@ -178,14 +178,14 @@ export class LeadService {
     if (body.format === ExportFormat.EXCEL) {
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      
+
       const ExcelJS = require('exceljs');
       const workbook = new ExcelJS.stream.xlsx.WorkbookWriter({
         stream: res,
         useStyles: false,
         useSharedStrings: false
       });
-      
+
       const worksheet = workbook.addWorksheet('Leads Export');
       worksheet.columns = [
         { header: 'ID', key: 'id' },
@@ -235,13 +235,13 @@ export class LeadService {
 
       worksheet.commit();
       await workbook.commit();
-      
+
     } else if (body.format === ExportFormat.CSV) {
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-      
+
       res.write('ID,Name,Email,Phone,Service,Source,Stage,Priority,Created At\n');
-      
+
       while (hasMore) {
         const leads = await this.prisma.lead.findMany({
           where,
@@ -974,6 +974,9 @@ export class LeadService {
         deposit_status: true,
         priority: true,
         attachments: true,
+        stage: {
+          select: { name: true }
+        }
       },
     });
 
@@ -1003,7 +1006,7 @@ export class LeadService {
       }
 
       // --- CRITICAL FIELD: Stage Change ---
-      if (updateLeadDto.stage_name !== undefined && updateLeadDto.stage_name !== existingLead.name) {
+      if (updateLeadDto.stage_name !== undefined && updateLeadDto.stage_name !== existingLead.stage?.name) {
         const stage = await tx.stage.findFirst({
           where: { name: updateLeadDto.stage_name },
           select: { id: true, name: true },
@@ -1282,7 +1285,7 @@ export class LeadService {
 
     const ExcelJS = require('exceljs');
     const workbook = new ExcelJS.Workbook();
-    
+
     try {
       await workbook.xlsx.load(file.buffer);
     } catch (e) {
@@ -1301,7 +1304,7 @@ export class LeadService {
     // 2. Convert spreadsheet layouts to raw row JSON data blocks
     const rawRows: Record<string, any>[] = [];
     const headers: string[] = [];
-    
+
     worksheet.getRow(1).eachCell({ includeEmpty: true }, (cell: any, colNumber: number) => {
       headers[colNumber] = cell.value ? String(cell.value) : `Column${colNumber}`;
     });
@@ -1430,16 +1433,19 @@ export class LeadService {
     // =========================================================================
     // PASS 2: BULK DATABASE WRITE
     // =========================================================================
+    let successfullyProcessed = 0;
     if (validatedLeadsToCreate.length > 0) {
-      await this.prisma.lead.createMany({
+      const result = await this.prisma.lead.createMany({
         data: validatedLeadsToCreate,
+        skipDuplicates: true,
       });
+      successfullyProcessed = result.count;
     }
 
     return {
       success: true,
       totalRowsFound: rawRows.length,
-      successfullyProcessed: validatedLeadsToCreate.length,
+      successfullyProcessed,
     };
   }
 }
