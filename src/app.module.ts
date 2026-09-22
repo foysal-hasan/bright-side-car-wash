@@ -1,5 +1,6 @@
 // external imports
 import { Injectable, MiddlewareConsumer, Module } from '@nestjs/common';
+import { HealthModule } from './modules/health/health.module';
 // import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 // import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
@@ -90,6 +91,7 @@ export class OptionalJwtGuard extends AuthGuard('jwt') {
     PrometheusModule,
     ActivityLogModule,
     NotificationModule,
+    HealthModule,
     // throttling
     ThrottlerModule.forRoot([
       {

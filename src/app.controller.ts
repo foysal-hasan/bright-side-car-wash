@@ -30,11 +30,11 @@ export class AppController {
   }
 
 
-  @Get('/health')
-  @HttpCode(200)
-  health() {
-    return { status: 'healthy' };
-  }
+  // @Get('/health')
+  // @HttpCode(200)
+  // health() {
+  //   return { status: 'healthy' };
+  // }
 
   @ApiExcludeEndpoint()
   @Get('test-chunk-stream')
