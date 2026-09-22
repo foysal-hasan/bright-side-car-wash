@@ -12,6 +12,11 @@ export default () => ({
     enable_swagger: process.env.ENABLE_SWAGGER === 'true',
   },
 
+  swagger: {
+    user: process.env.SWAGGER_USER || 'admin',
+    password: process.env.SWAGGER_PASSWORD || '',
+  },
+
   fileSystems: {
     public: {},
     s3: {

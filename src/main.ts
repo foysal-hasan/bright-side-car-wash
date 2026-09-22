@@ -116,6 +116,30 @@ async function bootstrap() {
 
   // swagger — controlled by ENABLE_SWAGGER env variable (set in appConfig)
   if (appConfig().app.enable_swagger) {
+    // Protect Swagger UI with HTTP Basic Auth
+    const swaggerUser = appConfig().swagger.user;
+    const swaggerPassword = appConfig().swagger.password;
+
+    app.use(['/api/docs', '/api/docs-json'], (req, res, next) => {
+      const authHeader = req.headers['authorization'];
+
+      if (!authHeader || !authHeader.startsWith('Basic ')) {
+        res.setHeader('WWW-Authenticate', 'Basic realm="Swagger Docs"');
+        return res.status(401).send('Authentication required');
+      }
+
+      const base64 = authHeader.slice('Basic '.length);
+      const [user, ...rest] = Buffer.from(base64, 'base64').toString('utf-8').split(':');
+      const password = rest.join(':'); // handle passwords that contain ':'
+
+      if (user === swaggerUser && password === swaggerPassword) {
+        return next();
+      }
+
+      res.setHeader('WWW-Authenticate', 'Basic realm="Swagger Docs"');
+      return res.status(401).send('Invalid credentials');
+    });
+
     const options = new DocumentBuilder()
       .setTitle(`${appConfig().app.name} API`)
       .setDescription(`${appConfig().app.name} api docs`)
@@ -130,6 +154,7 @@ async function bootstrap() {
     SwaggerModule.setup('api/docs', app, document);
   }
   // end swagger
+
 
   await app.listen(appConfig().app.port, '0.0.0.0');
 }
