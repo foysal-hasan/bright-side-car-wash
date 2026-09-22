@@ -13,6 +13,10 @@ import { MyQueryLeadDto, QueryLeadDto } from './dto/query-lead.dto';
 import { AssignLeadDto } from './dto/assign-lead.dto';
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+
+// @ts-ignore: TS module resolution complains about ESM types in CommonJS, but dynamic import works at runtime
+const fileTypePromise = import('file-type');
+
 import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 import { extname } from 'path/win32';
 import appConfig from 'src/config/app.config';
@@ -148,6 +152,20 @@ export class LeadController {
     if (!file) {
       throw new BadRequestException('No file uploaded. Please attach a CSV or Excel file.');
     }
+
+    const fileType = await fileTypePromise;
+    const type = await fileType.fileTypeFromBuffer(file.buffer);
+    
+    // CSV files are plain text and do not have magic bytes.
+    if (file.mimetype === 'text/csv' && type !== undefined) {
+      throw new BadRequestException('Invalid CSV file content. Malicious file detected.');
+    } else if (file.mimetype !== 'text/csv') {
+      // For Excel files, they are essentially zipped XMLs.
+      if (!type || (type.ext !== 'xlsx' && type.ext !== 'xls' && type.mime !== 'application/zip')) {
+        throw new BadRequestException('Invalid Excel file content. Malicious file detected.');
+      }
+    }
+
     const result = await this.leadService.importLeads(file);
     return {
       success: true,

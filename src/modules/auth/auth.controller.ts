@@ -20,6 +20,10 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiExcludeController, ApiExcludeEn
 import { Request, Response } from 'express';
 import { memoryStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
+
+// @ts-ignore: TS module resolution complains about ESM types in CommonJS, but dynamic import works at runtime
+const fileTypePromise = import('file-type');
+
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -432,6 +436,14 @@ export class AuthController {
     @Body() data: UpdateUserDto,
     @UploadedFile() image: Express.Multer.File,
   ) {
+    if (image) {
+      const fileType = await fileTypePromise;
+      const type = await fileType.fileTypeFromBuffer(image.buffer);
+      if (!type || !type.mime.startsWith('image/')) {
+        throw new BadRequestException('Invalid image file content. Malicious file detected.');
+      }
+    }
+
     const user_id = req.user.userId;
     const response = await this.authService.updateUser(user_id, data, image);
     return response;
