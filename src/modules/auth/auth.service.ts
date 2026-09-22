@@ -1,5 +1,5 @@
-import { randomInt, createHash } from 'crypto';
-import { BadRequestException, ConflictException, Inject, Injectable, Logger, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
+import { randomInt, createHash, createHmac, timingSafeEqual } from 'crypto';
+import { BadRequestException, ConflictException, Inject, Injectable, InternalServerErrorException, Logger, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
@@ -444,7 +444,7 @@ export class AuthService implements OnModuleInit {
         roles: roles,
       };
     } catch (error) {
-      console.log('Login error:', error);
+      throw new InternalServerErrorException('Failed to login');
     }
 
   }
@@ -587,8 +587,8 @@ export class AuthService implements OnModuleInit {
     const inviteTokenExpiry = new Date();
     inviteTokenExpiry.setHours(inviteTokenExpiry.getHours() + 24); // 24 hours
 
-    // Hash the token for storage (optional but recommended)
-    const hashedToken = await bcrypt.hash(inviteToken, 10);
+    // Hash the token for storage using HMAC
+    const hashedToken = createHmac('sha256', appConfig().jwt.access_token_secret || 'secret').update(inviteToken).digest('hex');
 
     // Create user with invite token
     const user = await this.prisma.user.create({
@@ -657,7 +657,14 @@ export class AuthService implements OnModuleInit {
 
 
     // Verify token
-    const isValidToken = await bcrypt.compare(token, user.inviteToken);
+    let isValidToken = false;
+    if (user.inviteToken.startsWith('$')) {
+      // Backward compatibility for existing bcrypt tokens
+      isValidToken = await bcrypt.compare(token, user.inviteToken);
+    } else {
+      const expectedHash = createHmac('sha256', appConfig().jwt.access_token_secret || 'secret').update(token).digest('hex');
+      isValidToken = user.inviteToken.length === expectedHash.length && timingSafeEqual(Buffer.from(expectedHash, 'hex'), Buffer.from(user.inviteToken, 'hex'));
+    }
     if (!isValidToken) {
       throw new BadRequestException('Invalid invitation token');
     }

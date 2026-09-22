@@ -5,12 +5,12 @@ import appConfig from '../config/app.config';
 
 @Injectable()
 export class MailService {
-  private readonly logger: Logger = new Logger(MailService.name) ;
+  private readonly logger: Logger = new Logger(MailService.name);
 
   constructor(
     @InjectQueue('mail-queue') private queue: Queue,
   ) {
-   
+
   }
 
   async sendMemberInvitation({ user, member, url }) {
@@ -31,7 +31,7 @@ export class MailService {
         },
       });
     } catch (error) {
-      console.log(error);
+      this.logger.error(`Failed to queue invitation email to ${member.email}: ${error instanceof Error ? error.message : error}`);
     }
   }
 
@@ -56,7 +56,7 @@ export class MailService {
       });
 
     } catch (error) {
-      this.logger.error(`Failed to queue invite email to ${to}: ${ error instanceof Error ? error.message : error}`);
+      this.logger.error(`Failed to queue invite email to ${to}: ${error instanceof Error ? error.message : error}`);
     }
   }
 
@@ -80,7 +80,7 @@ export class MailService {
         },
       });
     } catch (err) {
-      this.logger.error(`Failed to queue OTP email to ${email}: ${ err instanceof Error ? err.message : err}`);
+      this.logger.error(`Failed to queue OTP email to ${email}: ${err instanceof Error ? err.message : err}`);
     }
   }
 
@@ -143,7 +143,7 @@ export class MailService {
     }
   }
 
-   async sendSmsOtpCode(to: string, otp: string) {
+  async sendSmsOtpCode(to: string, otp: string) {
     try {
       await this.queue.add('sendSmsOtpCode', {
         to: to,
