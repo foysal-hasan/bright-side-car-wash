@@ -1322,6 +1322,10 @@ export class LeadService {
       rawRows.push(rowData);
     });
 
+    if (rawRows.length > 10000) {
+      throw new BadRequestException('You can only import a maximum of 10000 leads at a time. Please split your file.');
+    }
+
     // --- OPTIMIZATION: Fetch all stages upfront to eliminate N+1 database queries ---
     const allStages = await this.prisma.stage.findMany({ select: { id: true, name: true } });
 
@@ -1424,22 +1428,18 @@ export class LeadService {
     }
 
     // =========================================================================
-    // PASS 2: DATABASE WRITE LOOP (Guaranteed Safe Operations)
+    // PASS 2: BULK DATABASE WRITE
     // =========================================================================
-    let processedCount = 0;
-
-    for (const leadData of validatedLeadsToCreate) {
-      // Use upsert or create depending on your requirement. Here we stick with your 'create' workflow safely.
-      await this.prisma.lead.create({
-        data: leadData,
+    if (validatedLeadsToCreate.length > 0) {
+      await this.prisma.lead.createMany({
+        data: validatedLeadsToCreate,
       });
-      processedCount++;
     }
 
     return {
       success: true,
       totalRowsFound: rawRows.length,
-      successfullyProcessed: processedCount,
+      successfullyProcessed: validatedLeadsToCreate.length,
     };
   }
 }
