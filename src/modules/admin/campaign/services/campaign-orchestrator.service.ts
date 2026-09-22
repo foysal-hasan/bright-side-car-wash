@@ -107,18 +107,30 @@ export class CampaignOrchestratorService {
         });
 
         // Create a delivery log entry for each lead in the group
-        const leads = await this.prisma.lead.findMany({
-            where: { leadGroups: { some: { id: campaign.emailConfig.leadGroupId } } },
+        const validLeads = await this.prisma.lead.findMany({
+            where: {
+                leadGroups: {
+                    some: { id: campaign.emailConfig.leadGroupId }
+                },
+                email: {
+                    not: null,
+                },
+                NOT: {
+                    email: ''
+                }
+            },
             select: { email: true },
         });
 
-        await this.prisma.deliveryLog.createMany({
-            data: leads.map((lead) => ({
-                campaignId,
-                recipient: lead.email,
-                status: DeliveryStatus.PENDING,
-            })),
-        });
+        if (validLeads.length > 0) {
+            await this.prisma.deliveryLog.createMany({
+                data: validLeads.map((lead) => ({
+                    campaignId,
+                    recipient: lead.email as string,
+                    status: DeliveryStatus.PENDING,
+                })),
+            });
+        }
 
         return { success: true, providerCampaignId };
     }
@@ -301,7 +313,7 @@ export class CampaignOrchestratorService {
                     ...(dto.subject && { subject: dto.subject }),
                     ...(htmlContentFromTemplate && { htmlContent: htmlContentFromTemplate }),
                     ...(dto.leadGroupId && { leadGroupId: dto.leadGroupId }),
-                    ...(dto.templateId && { templateId: dto.templateId})
+                    ...(dto.templateId && { templateId: dto.templateId })
                 },
             },
         }
@@ -328,7 +340,7 @@ export class CampaignOrchestratorService {
                     select: {
                         template: {
                             select: {
-                                id:true,
+                                id: true,
                                 name: true,
                             }
                         }
