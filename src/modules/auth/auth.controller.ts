@@ -386,9 +386,11 @@ export class AuthController {
     const userId = req.user.userId;
     const sessions = await this.authService.deviceSessions(userId);
 
-    for (const session of sessions) {
-      await this.authService.revokeRefreshToken(userId, session.id);
-    }
+    await Promise.all(
+      sessions.map((session) =>
+        this.authService.revokeRefreshToken(userId, session.id),
+      ),
+    );
 
     return {
       success: true,
