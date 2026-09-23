@@ -61,7 +61,8 @@ async function bootstrap() {
   });
 
   app.use(helmet({
-    crossOriginResourcePolicy: false,
+    // CORP is kept at its secure default ('same-origin') for API endpoints.
+    // We selectively override it to 'cross-origin' only for static asset routes below.
   }));
 
   // Enable it, if special charactrers not encoding perfectly
@@ -78,11 +79,17 @@ async function bootstrap() {
   app.useStaticAssets(path.join(process.cwd(), 'public'), {
     index: false,
     prefix: '/public',
+    setHeaders: (res) => {
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   app.useStaticAssets(path.join(process.cwd(), 'public/storage'), {
     index: false,
     prefix: '/storage',
+    setHeaders: (res) => {
+      res.set('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   app.useGlobalPipes(
