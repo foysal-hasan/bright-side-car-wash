@@ -29,14 +29,30 @@ export class S3Adapter implements IStorage {
   }
 
   /**
+   * Safe path formatter to prevent double slashes (//)
+   */
+  private formatPath(...parts: string[]): string {
+    return parts
+      .map((part) => part ? part.replace(/^\/+|\/+$/g, '') : '')
+      .filter(Boolean)
+      .join('/');
+  }
+
+  /**
    * Generate file URL
    */
   url(key: string): string {
+    const bucket = this._config.connection.awsBucket;
+
     if (this._config.connection.minio) {
-      return `${this._config.connection.awsEndpoint}/${this._config.connection.awsBucket}/${key}`;
+      const endpoint = this._config.connection.awsEndpoint?.replace(/\/+$/, '');
+      const cleanPath = this.formatPath(bucket, key);
+      return `${endpoint}/${cleanPath}`;
     }
 
-    return `https://${this._config.connection.awsBucket}.s3.${this._config.connection.awsDefaultRegion}.amazonaws.com/${key}`;
+    const region = this._config.connection.awsDefaultRegion;
+    const cleanKey = key.replace(/^\/+/, '');
+    return `https://${bucket}.s3.${region}.amazonaws.com/${cleanKey}`;
   }
 
   /**
