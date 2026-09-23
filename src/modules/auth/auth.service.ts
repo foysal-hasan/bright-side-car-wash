@@ -15,7 +15,7 @@ import { DateHelper } from '../../common/helper/date.helper';
 import { StringHelper } from '../../common/helper/string.helper';
 import { randomBytes } from 'crypto';
 // import {decodeJWT} from '../../common/lib/JWT/jwt.service'
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { CreateStaffDto } from './dto/create-staff.dto';
 import { DeviceInfo } from 'src/common/decorator/get-device-info.decorator';
 import { SYSTEM_ADMIN_ROLE_NAME, SYSTEM_SUPER_USER_ROLE_NAME } from 'src/common/constants/system-roles';

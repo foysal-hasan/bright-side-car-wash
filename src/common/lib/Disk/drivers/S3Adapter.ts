@@ -1,76 +1,59 @@
-import * as AWS from 'aws-sdk';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3';
+
 import { IStorage } from './iStorage';
 import { DiskOption } from '../Option';
+import { Readable } from 'stream';
 
-/**
- * S3Adapter for s3 bucket storage
- */
 export class S3Adapter implements IStorage {
   private _config: DiskOption;
-  private s3: AWS.S3;
+  private s3: S3Client;
 
   constructor(config: DiskOption) {
     this._config = config;
 
-    // Clean up endpoint trailing slash if present
-    const endpoint = this._config.connection.awsEndpoint?.replace(/\/+$/, '');
-
-    const awsConfig: AWS.S3.ClientConfiguration = {
-      endpoint: endpoint,
+    this.s3 = new S3Client({
       region: this._config.connection.awsDefaultRegion,
+      endpoint: this._config.connection.awsEndpoint || undefined,
       credentials: {
         accessKeyId: this._config.connection.awsAccessKeyId,
         secretAccessKey: this._config.connection.awsSecretAccessKey,
       },
-    };
-
-    if (this._config.connection.minio) {
-      awsConfig['s3ForcePathStyle'] = true;
-    }
-
-    this.s3 = new AWS.S3({
-      ...awsConfig,
+      forcePathStyle: this._config.connection.minio ?? false, // Required for MinIO
     });
   }
 
   /**
-   * Safe path formatter to prevent double slashes (//)
-   */
-  private formatPath(...parts: string[]): string {
-    return parts
-      .map((part) => part ? part.replace(/^\/+|\/+$/g, '') : '')
-      .filter(Boolean)
-      .join('/');
-  }
-
-  /**
-   * Returns object URL
+   * Generate file URL
    */
   url(key: string): string {
-    const bucket = this._config.connection.awsBucket;
-
     if (this._config.connection.minio) {
-      const endpoint = this._config.connection.awsEndpoint?.replace(/\/+$/, '');
-      const cleanPath = this.formatPath(bucket, key);
-      return `${endpoint}/${cleanPath}`;
+      return `${this._config.connection.awsEndpoint}/${this._config.connection.awsBucket}/${key}`;
     }
 
-    const region = this._config.connection.awsDefaultRegion;
-    const cleanKey = key.replace(/^\/+/, '');
-    return `https://${bucket}.s3.${region}.amazonaws.com/${cleanKey}`;
+    return `https://${this._config.connection.awsBucket}.s3.${this._config.connection.awsDefaultRegion}.amazonaws.com/${key}`;
   }
 
   /**
-   * Check if file exists
+   * Check if object exists
    */
   async isExists(key: string): Promise<boolean> {
     try {
       const cleanKey = key.replace(/^\/+/, '');
-      const params = { Bucket: this._config.connection.awsBucket, Key: cleanKey };
-      await this.s3.headObject(params).promise();
+      await this.s3.send(
+        new HeadObjectCommand({
+          Bucket: this._config.connection.awsBucket,
+          Key: cleanKey,
+        }),
+      );
       return true;
-    } catch (error) {
-      if ((error as AWS.AWSError).code === 'NotFound') {
+    } catch (error: any) {
+      if (error.name === 'NotFound') {
         return false;
       }
       throw error;
@@ -78,55 +61,86 @@ export class S3Adapter implements IStorage {
   }
 
   /**
-   * Get data
+   * Get file stream
    */
-  async get(key: string) {
+  async get(key: string): Promise<Readable> {
     try {
       const cleanKey = key.replace(/^\/+/, '');
-      const params = { Bucket: this._config.connection.awsBucket, Key: cleanKey };
-      const data = this.s3.getObject(params).createReadStream();
-      return data;
+      const response = await this.s3.send(
+        new GetObjectCommand({
+          Bucket: this._config.connection.awsBucket,
+          Key: cleanKey,
+        }),
+      );
+
+      return response.Body as Readable;
     } catch (error) {
       throw new Error(`Failed to get object ${key}: ${error}`);
     }
   }
 
   /**
-   * Put data
+   * get data stream
+   * @param key
+   */
+  async getStream(key: string): Promise<Readable> {
+    try {
+      const cleanKey = key.replace(/^\/+/, '');
+      const response = await this.s3.send(
+        new GetObjectCommand({
+          Bucket: this._config.connection.awsBucket,
+          Key: cleanKey,
+        }),
+      );
+
+      return response.Body as Readable;
+    } catch (error) {
+      throw new Error(`Failed to get S3 stream for object ${key}: ${error}`);
+    }
+  }
+  
+  /**
+   * Upload file
    */
   async put(
     key: string,
     value: Buffer | Uint8Array | string,
-    contentType?: string | undefined | null
-  ): Promise<AWS.S3.ManagedUpload.SendData> {
+    contentType?: string,
+    isPublic: boolean = true,
+  ): Promise<string> {
     try {
-      // ⚠️ FIX: Strip leading slash from S3 Key (e.g. '/avatar/pic.png' -> 'avatar/pic.png')
       const cleanKey = key.replace(/^\/+/, '');
+      await this.s3.send(
+        new PutObjectCommand({
+          Bucket: this._config.connection.awsBucket,
+          Key: cleanKey,
+          Body: value,
+          ContentType: contentType,
+          // ACL: isPublic ? 'public-read' : undefined,
+        }),
+      );
 
-      const params: AWS.S3.PutObjectRequest = {
-        Bucket: this._config.connection.awsBucket,
-        Key: cleanKey,
-        Body: value,
-        ...(contentType && { ContentType: contentType })
-      };
-      const upload = await this.s3.upload(params).promise();
-      return upload;
+      return this.url(key);
     } catch (error) {
       throw error;
     }
   }
 
   /**
-   * Delete data
+   * Delete object
    */
   async delete(key: string): Promise<boolean> {
     try {
       const cleanKey = key.replace(/^\/+/, '');
-      const params = { Bucket: this._config.connection.awsBucket, Key: cleanKey };
-      await this.s3.deleteObject(params).promise();
+      await this.s3.send(
+        new DeleteObjectCommand({
+          Bucket: this._config.connection.awsBucket,
+          Key: cleanKey,
+        }),
+      );
       return true;
-    } catch (error) {
-      if ((error as AWS.AWSError).code === 'NotFound') {
+    } catch (error: any) {
+      if (error.name === 'NotFound') {
         return false;
       }
       throw error;

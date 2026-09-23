@@ -50,7 +50,6 @@ import { DateHelper } from 'src/common/helper/date.helper';
 import appConfig from 'src/config/app.config';
 import { JwtService } from '@nestjs/jwt';
 import { LogoutDto } from './dto/logout.dto';
-import { RefreshToken } from 'aws-sdk/clients/ssooidc';
 import { RefreshTokensDto } from './dto/refresh-tokens.dto';
 import { JwtBlacklistGuard } from './guards/jwt-blacklisted.guard';
 
