@@ -26,7 +26,7 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
 
 
-  app.getHttpAdapter().getInstance().set('trust proxy', true);
+  app.getHttpAdapter().getInstance().set('trust proxy', 1);
 
   // Handle raw body for Stripe webhooks (must be before any JSON body parsing)
   // app.use('/payment/stripe/webhook', express.raw({ type: 'application/json' }));
