@@ -56,5 +56,13 @@ export const RedisKeys = {
     }
 
     return parts.join(':');
+  },
+
+  forgotPasswordOtp(email: string): string {
+    return `forgot_password_otp:${email}`;
+  },
+
+  forgotPasswordOtpAttempts(email: string): string {
+    return `forgot_password_otp:${email}:attempts`;
   }
 };

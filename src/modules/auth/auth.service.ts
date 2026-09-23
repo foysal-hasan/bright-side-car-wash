@@ -36,9 +36,7 @@ export class AuthService implements OnModuleInit {
     @InjectRedis() private readonly redis: Redis,
   ) { }
 
-  private getForgotPasswordOtpKey(email: string) {
-    return `forgot_password_otp:${email.trim().toLowerCase()}`;
-  }
+
 
   async onModuleInit() {
     await this.ensureSuperUser();
@@ -888,7 +886,7 @@ export class AuthService implements OnModuleInit {
     const otp = String(randomInt(100000, 1000000));
 
     await this.redis.set(
-      this.getForgotPasswordOtpKey(normalizedEmail),
+      RedisKeys.forgotPasswordOtp(normalizedEmail),
       otp,
       'EX',
       this.forgotPasswordOtpExpirySeconds,
@@ -910,7 +908,9 @@ export class AuthService implements OnModuleInit {
 
   async verifyForgotPasswordOtp(email: string, otp: string) {
     const normalizedEmail = email.trim().toLowerCase();
-    const forgotPasswordOtpKey = this.getForgotPasswordOtpKey(normalizedEmail);
+    const forgotPasswordOtpKey = RedisKeys.forgotPasswordOtp(normalizedEmail);
+    const attemptKey = RedisKeys.forgotPasswordOtpAttempts(normalizedEmail);
+
     const user = await this.userRepository.exist({
       field: 'email',
       value: normalizedEmail,
@@ -929,8 +929,23 @@ export class AuthService implements OnModuleInit {
     }
 
     if (storedOtp !== otp) {
-      throw new BadRequestException('Invalid or expired OTP');
+      const attempts = await this.redis.incr(attemptKey);
+
+      if (attempts === 1) {
+        await this.redis.expire(attemptKey, this.forgotPasswordOtpExpirySeconds);
+      }
+
+      if (attempts >= 5) {
+        await this.redis.del(forgotPasswordOtpKey);
+        await this.redis.del(attemptKey);
+        throw new BadRequestException('Too many failed attempts. OTP has been invalidated. Please request a new one.');
+      }
+
+      throw new BadRequestException(`Invalid OTP. You have ${5 - attempts} attempts left.`);
     }
+
+    // OTP verified successfully, clear attempts
+    await this.redis.del(attemptKey);
 
     await this.redis.expire(
       forgotPasswordOtpKey,
@@ -964,7 +979,7 @@ export class AuthService implements OnModuleInit {
     }
 
     const storedOtp = await this.redis.get(
-      this.getForgotPasswordOtpKey(normalizedEmail),
+      RedisKeys.forgotPasswordOtp(normalizedEmail),
     );
 
     if (!storedOtp) {
@@ -980,7 +995,7 @@ export class AuthService implements OnModuleInit {
       password: newPassword,
     });
 
-    await this.redis.del(this.getForgotPasswordOtpKey(normalizedEmail));
+    await this.redis.del(RedisKeys.forgotPasswordOtp(normalizedEmail));
 
     return {
       success: true,
