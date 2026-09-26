@@ -6,11 +6,20 @@ import { QueryActivityLogDto } from './dto/query.dto';
 
 @Injectable()
 export class ActivityLogService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async findAll(queryDto: QueryActivityLogDto) {
     const { page = 1, limit = 10 } = queryDto;
     const skip = (page - 1) * limit;
     const data = await this.prisma.activityLog.findMany({
+      include: {
+        user: {
+          select: {
+            first_name: true,
+            last_name: true,
+            avatar: true,
+          }
+        }
+      },
       skip,
       take: limit,
       orderBy: {
