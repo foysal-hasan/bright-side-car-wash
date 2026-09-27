@@ -1217,7 +1217,7 @@ export class AuthService implements OnModuleInit {
           message: 'Password updated successfully',
         };
       } else {
-        throw new BadRequestException('Invalid old password');
+        throw new BadRequestException('Invalid current password');
       }
     } else {
       throw new BadRequestException('User not found');
