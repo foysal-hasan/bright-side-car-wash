@@ -25,6 +25,16 @@ export class LeadService {
       throw new NotFoundException(`Stage with name ${createLeadDto.stage_name} does not exist`);
     }
 
+    // check with email lead already exist or not
+    const existingLeadByEmail = await this.prisma.lead.findFirst({
+      where: { email: createLeadDto.email },
+      select: { id: true, email: true },
+    });
+
+    if (existingLeadByEmail) {
+      throw new BadRequestException(`Lead with email ${createLeadDto.email} already exists`);
+    }
+
     const lead = await this.prisma.lead.create({
       data: {
         name: createLeadDto.name,
@@ -619,11 +629,11 @@ export class LeadService {
     // Stage Filters (ID and Name)
     if (filters.stage_id || filters.stage_name) {
       where.stage = {};
-      
+
       if (filters.stage_id) {
         where.stage.id = filters.stage_id;
       }
-      
+
       if (filters.stage_name) {
         where.stage.name = {
           equals: filters.stage_name,
