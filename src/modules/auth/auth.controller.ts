@@ -660,39 +660,33 @@ export class AuthController {
     @Req() req: Request,
     @Body() data: ChangePasswordDto,
   ) {
-    try {
-      // const email = data.email;
-      const user_id = req.user.userId;
+    // const email = data.email;
+    const user_id = req.user.userId;
 
-      const oldPassword = data.old_password;
-      const newPassword = data.new_password;
-      // if (!email) {
-      //   throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
-      // }
-      if (!oldPassword) {
-        throw new HttpException(
-          'Old password not provided',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-      if (!newPassword) {
-        throw new HttpException(
-          'New password not provided',
-          HttpStatus.UNAUTHORIZED,
-        );
-      }
-      return await this.authService.changePassword({
-        // email: email,
-        user_id: user_id,
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      });
-    } catch (error) {
-      return {
-        success: false,
-        message: 'Failed to change password',
-      };
+    const oldPassword = data.old_password;
+    const newPassword = data.new_password;
+    // if (!email) {
+    //   throw new HttpException('Email not provided', HttpStatus.UNAUTHORIZED);
+    // }
+    if (!oldPassword) {
+      throw new HttpException(
+        'Old password not provided',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
+    if (!newPassword) {
+      throw new HttpException(
+        'New password not provided',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return await this.authService.changePassword({
+      // email: email,
+      user_id: user_id,
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    });
   }
 
   // --------------end change password---------

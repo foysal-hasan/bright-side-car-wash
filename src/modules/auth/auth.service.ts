@@ -1217,16 +1217,10 @@ export class AuthService implements OnModuleInit {
           message: 'Password updated successfully',
         };
       } else {
-        return {
-          success: false,
-          message: 'Invalid password',
-        };
+        throw new BadRequestException('Invalid old password');
       }
     } else {
-      return {
-        success: false,
-        message: 'Email not found',
-      };
+      throw new BadRequestException('User not found');
     }
   }
 
