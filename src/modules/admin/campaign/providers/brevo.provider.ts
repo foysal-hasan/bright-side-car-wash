@@ -45,7 +45,31 @@ export class BrevoProvider implements IEmailProvider {
   }
 
   async getCampaignReport(providerCampaignId: string): Promise<any> {
-    return await this.client.emailCampaigns.getEmailCampaign(Number(providerCampaignId));
+    const campaignId = Number(providerCampaignId);
+
+    if (isNaN(campaignId) || campaignId <= 0) {
+      throw new BadRequestException(`Invalid Brevo campaign ID provided: ${providerCampaignId}`);
+    }
+
+    try {
+      const response = await fetch(`https://api.brevo.com/v3/emailCampaigns/${campaignId}`, {
+        method: 'GET',
+        headers: {
+          'api-key': appConfig().campaign.brevo.apiKey,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Brevo HTTP Error ${response.status}: ${errorBody}`);
+      }
+
+      return await response.json();
+    } catch (err) {
+      console.error(`Failed to fetch Brevo campaign report ${campaignId}:`, err);
+      throw err;
+    }
   }
 
   /**

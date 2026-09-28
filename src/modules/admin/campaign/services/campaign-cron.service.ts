@@ -29,13 +29,14 @@ export class CampaignCronService {
     }
 
     for (const campaign of runningCampaigns) {
-      if (!campaign.emailConfig?.providerCampaignId) {
-        this.logger.warn(`Campaign ${campaign.id} is missing providerCampaignId. Skipping...`);
+      const providerId = campaign.emailConfig?.providerCampaignId;
+      if (!providerId || providerId === 'undefined') {
+        this.logger.warn(`Campaign ${campaign.id} is missing a valid providerCampaignId (found: ${providerId}). Skipping...`);
         continue;
       }
 
       try {
-        const report = await this.emailProvider.getCampaignReport(campaign.emailConfig.providerCampaignId);
+        const report = await this.emailProvider.getCampaignReport(providerId);
         
         // Check if Brevo considers the campaign as sent, suspended, or archived
         if (['sent', 'suspended', 'archive'].includes(report.status)) {
