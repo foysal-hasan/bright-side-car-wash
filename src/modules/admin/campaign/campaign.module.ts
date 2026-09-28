@@ -8,6 +8,7 @@ import { CampaignOrchestratorService } from './services/campaign-orchestrator.se
 import { LeadGroupService } from './services/lead-group.service';
 import { CampaignService } from './services/campaign.service';
 import { LeadGroupController } from './controllers/lead-group.controller';
+import { CampaignCronService } from './services/campaign-cron.service';
 
 
 @Module({
@@ -23,6 +24,7 @@ import { LeadGroupController } from './controllers/lead-group.controller';
     CampaignService,
     CampaignOrchestratorService,
     LeadGroupService,
+    CampaignCronService,
   ],
   exports: [CampaignOrchestratorService],
 })

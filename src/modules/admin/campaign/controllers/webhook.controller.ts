@@ -157,7 +157,8 @@ export class WebhookController {
 
     const email = payload.email || payload.recipient;
     const event = payload.event;
-    const messageId = payload['message-id'] || payload.id;
+    // Do not use payload.id as it's the webhook event ID, not the email message ID
+    const messageId = payload['message-id'];
     const campId = payload.camp_id;
 
     if (!email) {
@@ -183,15 +184,22 @@ export class WebhookController {
       }
 
       const statusMapping: Record<string, DeliveryStatus> = {
+        'request': DeliveryStatus.PENDING,
+        'deferred': DeliveryStatus.PENDING,
         'sent': DeliveryStatus.SENT,
         'delivered': DeliveryStatus.DELIVERED,
         'opened': DeliveryStatus.OPENED,
         'click': DeliveryStatus.CLICKED,
         'hard_bounce': DeliveryStatus.BOUNCED,
         'soft_bounce': DeliveryStatus.BOUNCED,
+        'hardBounce': DeliveryStatus.BOUNCED,
+        'softBounce': DeliveryStatus.BOUNCED,
         'invalid_email': DeliveryStatus.FAILED,
         'blocked': DeliveryStatus.FAILED,
         'unsubscribed': DeliveryStatus.FAILED,
+        'spam': DeliveryStatus.FAILED,
+        'complaint': DeliveryStatus.FAILED,
+        'error': DeliveryStatus.FAILED,
       };
 
       const mappedStatus = statusMapping[event];
@@ -206,7 +214,7 @@ export class WebhookController {
         },
         data: {
           status: mappedStatus,
-          providerEventId: messageId?.toString() || null,
+          providerEventId: messageId ? messageId.toString() : undefined,
           metaData: payload as any,
         },
       });
@@ -220,25 +228,37 @@ export class WebhookController {
     // ====================================================================
     // PATH B: THE EVENT IS A GENERAL / TRANSACTIONAL EMAIL (No camp_id)
     // ====================================================================
-    if (messageId) {
+    if (messageId || email) { // Allow entry if we have email even if messageId is somehow missing
       const emailStatusMapping: Record<string, EmailStatus> = {
+        'request': EmailStatus.PENDING,
+        'deferred': EmailStatus.PENDING,
+        'sent': EmailStatus.PENDING,
         'delivered': EmailStatus.DELIVERED,
         'hard_bounce': EmailStatus.BOUNCED,
         'soft_bounce': EmailStatus.BOUNCED,
+        'hardBounce': EmailStatus.BOUNCED,
+        'softBounce': EmailStatus.BOUNCED,
         'invalid_email': EmailStatus.FAILED,
         'blocked': EmailStatus.FAILED,
+        'spam': EmailStatus.FAILED,
+        'complaint': EmailStatus.FAILED,
+        'error': EmailStatus.FAILED,
+        'unsubscribed': EmailStatus.FAILED,
       };
 
       const mappedEmailStatus = emailStatusMapping[event];
 
       // Find log by message ID, fallback to searching recent matching recipients if ID parsing isn't configured
+      const orConditions: any[] = [
+        { to: email, status: { in: [EmailStatus.PENDING, EmailStatus.DELIVERED] } }
+      ];
+      
+      if (messageId) {
+        orConditions.unshift({ provider_email_id: messageId.toString() });
+      }
+
       const targetLog = await this.prisma.emailLog.findFirst({
-        where: {
-          OR: [
-            { provider_email_id: messageId.toString() },
-            { to: email, status: EmailStatus.DELIVERED } // Fallback: match recent delivered emails to the same recipient
-          ]
-        },
+        where: { OR: orConditions },
         orderBy: { createdAt: 'desc' }
       });
 
