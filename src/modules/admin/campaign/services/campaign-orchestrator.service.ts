@@ -186,6 +186,11 @@ export class CampaignOrchestratorService {
                             leadGroup: { select: { name: true } },
                         },
                     },
+                    _count: {
+                        select: {
+                            deliveryLogs: true,
+                        }
+                    }
                 },
             }),
         ]);
@@ -219,10 +224,16 @@ export class CampaignOrchestratorService {
         });
 
         // Step 5: Merge analytics back into rows entirely in-memory
-        const data = campaigns.map((campaign) => ({
-            ...campaign,
-            analytics: analyticsLookup[campaign.id],
-        }));
+        const data = campaigns.map((campaign) => {
+            const analytics = analyticsLookup[campaign.id];
+            const totalRecipients = campaign._count.deliveryLogs;
+
+            return {
+                ...campaign,
+                analytics,
+                totalRecipients,
+            };
+        });
 
         const totalPages = Math.ceil(totalItems / limit);
 
