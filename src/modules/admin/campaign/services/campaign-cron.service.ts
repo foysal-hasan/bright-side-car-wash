@@ -12,9 +12,9 @@ export class CampaignCronService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(EMAIL_PROVIDER_TOKEN) private readonly emailProvider: IEmailProvider,
-  ) {}
+  ) { }
 
-  @Cron(CronExpression.EVERY_HOUR)
+  @Cron(CronExpression.EVERY_5_MINUTES)
   async handleStuckCampaigns() {
     this.logger.log('Starting CRON job to check for stuck campaigns...');
 
@@ -37,7 +37,7 @@ export class CampaignCronService {
 
       try {
         const report = await this.emailProvider.getCampaignReport(providerId);
-        
+
         // Check if Brevo considers the campaign as sent, suspended, or archived
         if (['sent', 'suspended', 'archive'].includes(report.status)) {
           this.logger.log(`Campaign ${campaign.id} is marked as ${report.status} in Brevo but RUNNING locally. Evaluating pending logs...`);
