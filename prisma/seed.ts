@@ -160,7 +160,7 @@ async function seedRoleAndPermission() {
     'campaign:change_status',
     // 'notification:metrics',
     'report:campaign',
-    'report:deposit_revenue',
+    // 'report:deposit_revenue',
     'report:stage',
     'report:member',
     'quote:read',
