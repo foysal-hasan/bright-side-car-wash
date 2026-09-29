@@ -120,7 +120,7 @@ async function seedRoleAndPermission() {
     'testimonial',
     'news-and-events-category',
     'news-and-events',
-    'section',
+    'website-sections',
   ];
 
   const ACTIONS = ['create', 'read', 'update', 'delete'];
@@ -169,6 +169,8 @@ async function seedRoleAndPermission() {
 
     'activity-log:read',
     'activity-log:delete',
+
+    'dashboard:view',
   ];
 
   console.log('🔄 Starting permission seeding with ioredis...');

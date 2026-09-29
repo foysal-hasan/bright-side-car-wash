@@ -155,7 +155,7 @@ export class LeadController {
 
     const fileType = await fileTypePromise;
     const type = await fileType.fileTypeFromBuffer(file.buffer);
-    
+
     // CSV files are plain text and do not have magic bytes.
     if (file.mimetype === 'text/csv' && type !== undefined) {
       throw new BadRequestException('Invalid CSV file content. Malicious file detected.');
@@ -190,6 +190,8 @@ export class LeadController {
   }
 
   @OnlyApiTags('Admin Dashboard Analytics Overview')
+  @RequirePermission('dashboard:view')
+  @LogActivity({ action: 'read', entity: 'dashboard' })
   @Get('metrics')
   @ApiOperation({
     summary: 'Fetch full analytical dataset summaries for widgets',

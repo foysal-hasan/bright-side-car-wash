@@ -27,34 +27,34 @@ import { LogActivity } from 'src/activity-log/decorator/activity-log.decorator';
 @ApiTags('Admin / Sections')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
-@RequirePermission('section')
+@RequirePermission('website-sections')
 @UseInterceptors(TransformResponseInterceptor, ActivityLogInterceptor)
 @Controller('admin/sections')
 export class SectionsAdminController {
-  constructor(private readonly sectionsAdminService: SectionsAdminService) {}
+  constructor(private readonly sectionsAdminService: SectionsAdminService) { }
 
-  @LogActivity({ action: 'create_section' , entity: 'section' })
+  @LogActivity({ action: 'create_section', entity: 'section' })
   @Post()
   @ApiOperation({ summary: 'Create a dynamic website section' })
   async create(@Body() dto: CreateSectionAdminDto) {
     return this.sectionsAdminService.create(dto);
   }
 
-  @LogActivity({ action: 'get_sections' , entity: 'section' })
+  @LogActivity({ action: 'get_sections', entity: 'section' })
   @Get()
   @ApiOperation({ summary: 'Fetch all sections with pagination and optional filters' })
   async findAll(@Query() query: QuerySectionsAdminDto) {
     return this.sectionsAdminService.findAll(query);
   }
 
-  @LogActivity({ action: 'get_section' , entity: 'section' })
+  @LogActivity({ action: 'get_section', entity: 'section' })
   @Get(':key')
   @ApiOperation({ summary: 'Fetch section details by key' })
   async findOne(@Param('key') key: string) {
     return this.sectionsAdminService.findOneByKey(key);
   }
 
-  @LogActivity({ action: 'update_section' , entity: 'section' })
+  @LogActivity({ action: 'update_section', entity: 'section' })
   @Patch(':key')
   @ApiBody({
     description: 'Update section fields using snake_case payload properties',
@@ -99,7 +99,7 @@ export class SectionsAdminController {
     return this.sectionsAdminService.upsertByKey(key, dto);
   }
 
-  @LogActivity({ action: 'delete_section' , entity: 'section' })
+  @LogActivity({ action: 'delete_section', entity: 'section' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':key')
   @ApiOperation({ summary: 'Delete section by key' })
