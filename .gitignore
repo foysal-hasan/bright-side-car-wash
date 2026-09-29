@@ -1,33 +1,32 @@
+# Nest App
 # compiled output
-/dist
-/node_modules
-/build
-/public/storage
+**/dist/
+**/node_modules/
+**/build/
+**/public/storage/
 
 # Logs
-logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
+**/logs/
+**/*.log
+**/*-debug.log*
+**/*-error.log*
+**/lerna-debug.log*
 
 # OS
 .DS_Store
 
 # Tests
-/coverage
-/.nyc_output
+**/coverage/
+**/.nyc_output
 
 # IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+apps/nest-app/.idea
+apps/nest-app/.project
+apps/nest-app/.classpath
+apps/nest-app/.c9/
+apps/nest-app/*.launch
+apps/nest-app/.settings/
+apps/nest-app/*.sublime-workspace
 
 # IDE - VSCode
 .vscode/*
@@ -56,7 +55,9 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-/prisma/generated
+/apps/nest-app/prisma/generated
 
 plans
 audit_report.csv
+
+# Django app
