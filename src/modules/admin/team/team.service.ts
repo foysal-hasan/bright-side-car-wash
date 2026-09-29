@@ -61,6 +61,7 @@ export class TeamService {
           email: true,
           avatar: true,
           status: true,
+          isActive: true,
           created_at: true,
           roleUsers: {
             include: {
