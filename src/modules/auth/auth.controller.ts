@@ -261,6 +261,34 @@ export class AuthController {
     }
   }
 
+  // remove invite staff
+  @ApiOperation({
+    summary: 'Remove staff invitation',
+    description: 'Remove an invitation sent to a staff member.'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Invitation removed successfully',
+    schema: {
+      example: {
+        success: true,
+        message: 'Invitation removed successfully',
+      }
+    }
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, PermissionGuard)
+  @RequirePermission('staff:invite')
+  @Delete(':id/remove-invitation')
+  async removeInvitation(@Param('id') id: string) {
+    await this.authService.removeInvitation(id);
+    return {
+      success: true,
+      message: 'Invitation removed successfully',
+    }
+  }
+
+
   // set password for invited staff  @ApiOperation({ summary: 'Set password for invited staff' })
   @ApiBody({
     type: ResetPasswordDto,

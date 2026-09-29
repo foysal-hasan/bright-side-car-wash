@@ -732,6 +732,27 @@ export class AuthService implements OnModuleInit {
     return { message: 'Invitation resent successfully' };
   }
 
+  async removeInvitation(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.isActive) {
+      throw new BadRequestException('Cannot remove invitation for an active user');
+    }
+
+    // Delete the pending user record entirely
+    await this.prisma.user.delete({
+      where: { id: userId }
+    });
+
+    return null;
+  }
+
   // async register(
   //   {
   //     name,
