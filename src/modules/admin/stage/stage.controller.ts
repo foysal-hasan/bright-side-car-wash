@@ -17,13 +17,13 @@ import { SojebStorage } from 'src/common/lib/Disk/SojebStorage';
 @ApiTags('Admin Stage Management')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
-@RequirePermission('stage')
+
 @UseInterceptors(ActivityLogInterceptor)
 @Controller('admin/stage')
 export class StageController {
   constructor(private readonly stageService: StageService) { }
 
-  
+
   @ApiOperation({ summary: 'Create a new stage' })
   @ApiConsumes('multipart/form-data')
   @LogActivity({ action: 'create', entity: 'stage' })
@@ -42,6 +42,7 @@ export class StageController {
       },
     }),
   )
+  @RequirePermission('stage:create')
   @Post()
   async create(@Body() createStageDto: CreateStageDto, @UploadedFile() file: Express.Multer.File) {
     try {
@@ -50,7 +51,7 @@ export class StageController {
       }
       const generatedFilename = `${Date.now()}-${Math.random().toString(16).slice(2)}${extname(file.originalname)}`;
       const key = `${appConfig().storageUrl.stage}${generatedFilename}`;
-   
+
       await SojebStorage.put(key, file.buffer, file.mimetype);
       createStageDto.icon = generatedFilename;
       const result = await this.stageService.create(createStageDto);
@@ -128,6 +129,7 @@ export class StageController {
       },
     }),
   )
+  @RequirePermission('stage:update')
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateStageDto: UpdateStageDto, @UploadedFile() file: Express.Multer.File) {
     try {
@@ -158,8 +160,10 @@ export class StageController {
     }
   }
 
+
   @ApiOperation({ summary: 'Delete a stage by ID' })
   @LogActivity({ action: 'delete', entity: 'stage' })
+  @RequirePermission('stage:delete')
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const result = await this.stageService.remove(id);
