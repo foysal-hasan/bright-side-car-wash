@@ -252,6 +252,9 @@ model Lead {
   updated_at DateTime  @default(now())
   deleted_at DateTime?
 
+  // LexoRank string for Kanban board ordering (partitioned per stage)
+  rank       String    @default("000000065536")
+
   name           String?
   email          String? @unique
   phone          String?
@@ -295,6 +298,7 @@ model Lead {
   payments           Payment[]
 
   @@index([email])
+  @@index([stage_id, rank, id])  // Composite index for Kanban keyset pagination
   @@map("leads")
 }
 

@@ -11,6 +11,8 @@ import { UnassignLeadDto } from './dto/unassign-lead.dto';
 import { NotificationProducer } from 'src/modules/notification/queue/notification.producer';
 import { NotificationPayload } from 'src/modules/notification/interfaces/notification-strategy.interface';
 import { MailService } from 'src/mail/mail.service';
+import { getMidpointRank, getInitialRankForNewLead } from 'src/utils/lexorank';
+import { MoveLeadDto } from './dto/move-lead.dto';
 
 @Injectable()
 export class LeadService {
@@ -40,6 +42,14 @@ export class LeadService {
       throw new BadRequestException(`Lead with email ${createLeadDto.email} already exists`);
     }
 
+    // Compute rank: append new lead at the bottom of the target stage
+    const lastLeadInStage = await this.prisma.lead.findFirst({
+      where: { stage_id: stage.id, deleted_at: null },
+      orderBy: [{ rank: 'desc' }, { id: 'desc' }],
+      select: { rank: true },
+    });
+    const initialRank = getInitialRankForNewLead(lastLeadInStage?.rank ?? null);
+
     const lead = await this.prisma.lead.create({
       data: {
         name: createLeadDto.name,
@@ -51,6 +61,7 @@ export class LeadService {
         deposit_status: createLeadDto.deposit_status || DepositStatus.PENDING,
         priority: createLeadDto.priority || LeadPriority.LOW,
         notes: createLeadDto.notes || [],
+        rank: initialRank,
         // ...(createLeadDto.created_by && { created_by_id: createLeadDto.created_by }),
         stage: {
           connect: { id: stage.id },
@@ -1294,6 +1305,54 @@ export class LeadService {
       }
       return updatedLead;
     });
+  }
+
+  // ============ MOVE / REORDER LEAD (Kanban) ============
+  async moveLead(id: string, dto: MoveLeadDto) {
+    // 1. Verify lead exists
+    const lead = await this.prisma.lead.findUnique({
+      where: { id },
+      select: { id: true, name: true, stage_id: true },
+    });
+    if (!lead) {
+      throw new NotFoundException(`Lead with ID ${id} not found`);
+    }
+
+    // 2. Verify target stage exists
+    const stage = await this.prisma.stage.findUnique({
+      where: { id: dto.target_stage_id },
+      select: { id: true, name: true },
+    });
+    if (!stage) {
+      throw new NotFoundException(`Stage with ID ${dto.target_stage_id} not found`);
+    }
+
+    // 3. Calculate new rank between neighbors
+    const newRank = getMidpointRank(dto.prev_rank ?? null, dto.next_rank ?? null);
+
+    // 4. Atomic single-row update: stage + rank + updated_at
+    const updated = await this.prisma.lead.update({
+      where: { id },
+      data: {
+        stage_id: dto.target_stage_id,
+        rank: newRank,
+        updated_at: new Date(),
+      },
+    });
+
+    // 5. Log activity timeline
+    const isSameStage = lead.stage_id === dto.target_stage_id;
+    await this.prisma.leadActivityTimeline.create({
+      data: {
+        lead_id: id,
+        description: isSameStage
+          ? `Lead reordered within stage "${stage.name}"`
+          : `Lead moved to stage "${stage.name}"`,
+        source: 'Admin Panel',
+      },
+    });
+
+    return updated;
   }
 
   async remove(id: string) {

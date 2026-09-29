@@ -39,6 +39,7 @@ export type LeadMinAggregateOutputType = {
   created_at: Date | null
   updated_at: Date | null
   deleted_at: Date | null
+  rank: string | null
   name: string | null
   email: string | null
   phone: string | null
@@ -59,6 +60,7 @@ export type LeadMaxAggregateOutputType = {
   created_at: Date | null
   updated_at: Date | null
   deleted_at: Date | null
+  rank: string | null
   name: string | null
   email: string | null
   phone: string | null
@@ -79,6 +81,7 @@ export type LeadCountAggregateOutputType = {
   created_at: number
   updated_at: number
   deleted_at: number
+  rank: number
   name: number
   email: number
   phone: number
@@ -111,6 +114,7 @@ export type LeadMinAggregateInputType = {
   created_at?: true
   updated_at?: true
   deleted_at?: true
+  rank?: true
   name?: true
   email?: true
   phone?: true
@@ -131,6 +135,7 @@ export type LeadMaxAggregateInputType = {
   created_at?: true
   updated_at?: true
   deleted_at?: true
+  rank?: true
   name?: true
   email?: true
   phone?: true
@@ -151,6 +156,7 @@ export type LeadCountAggregateInputType = {
   created_at?: true
   updated_at?: true
   deleted_at?: true
+  rank?: true
   name?: true
   email?: true
   phone?: true
@@ -260,6 +266,7 @@ export type LeadGroupByOutputType = {
   created_at: Date
   updated_at: Date
   deleted_at: Date | null
+  rank: string
   name: string | null
   email: string | null
   phone: string | null
@@ -305,6 +312,7 @@ export type LeadWhereInput = {
   created_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   deleted_at?: Prisma.DateTimeNullableFilter<"Lead"> | Date | string | null
+  rank?: Prisma.StringFilter<"Lead"> | string
   name?: Prisma.StringNullableFilter<"Lead"> | string | null
   email?: Prisma.StringNullableFilter<"Lead"> | string | null
   phone?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -335,6 +343,7 @@ export type LeadOrderByWithRelationInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  rank?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -369,6 +378,7 @@ export type LeadWhereUniqueInput = Prisma.AtLeast<{
   created_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   deleted_at?: Prisma.DateTimeNullableFilter<"Lead"> | Date | string | null
+  rank?: Prisma.StringFilter<"Lead"> | string
   name?: Prisma.StringNullableFilter<"Lead"> | string | null
   phone?: Prisma.StringNullableFilter<"Lead"> | string | null
   service?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -398,6 +408,7 @@ export type LeadOrderByWithAggregationInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   deleted_at?: Prisma.SortOrderInput | Prisma.SortOrder
+  rank?: Prisma.SortOrder
   name?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -428,6 +439,7 @@ export type LeadScalarWhereWithAggregatesInput = {
   created_at?: Prisma.DateTimeWithAggregatesFilter<"Lead"> | Date | string
   updated_at?: Prisma.DateTimeWithAggregatesFilter<"Lead"> | Date | string
   deleted_at?: Prisma.DateTimeNullableWithAggregatesFilter<"Lead"> | Date | string | null
+  rank?: Prisma.StringWithAggregatesFilter<"Lead"> | string
   name?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
   phone?: Prisma.StringNullableWithAggregatesFilter<"Lead"> | string | null
@@ -450,6 +462,7 @@ export type LeadCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -477,6 +490,7 @@ export type LeadUncheckedCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -504,6 +518,7 @@ export type LeadUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -531,6 +546,7 @@ export type LeadUncheckedUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -558,6 +574,7 @@ export type LeadCreateManyInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -580,6 +597,7 @@ export type LeadUpdateManyMutationInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -599,6 +617,7 @@ export type LeadUncheckedUpdateManyInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -639,6 +658,7 @@ export type LeadCountOrderByAggregateInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   deleted_at?: Prisma.SortOrder
+  rank?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -665,6 +685,7 @@ export type LeadMaxOrderByAggregateInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   deleted_at?: Prisma.SortOrder
+  rank?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -685,6 +706,7 @@ export type LeadMinOrderByAggregateInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   deleted_at?: Prisma.SortOrder
+  rank?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
@@ -977,6 +999,7 @@ export type LeadCreateWithoutCreatorInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1003,6 +1026,7 @@ export type LeadUncheckedCreateWithoutCreatorInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1039,6 +1063,7 @@ export type LeadCreateWithoutAssigneeInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1065,6 +1090,7 @@ export type LeadUncheckedCreateWithoutAssigneeInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1120,6 +1146,7 @@ export type LeadScalarWhereInput = {
   created_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"Lead"> | Date | string
   deleted_at?: Prisma.DateTimeNullableFilter<"Lead"> | Date | string | null
+  rank?: Prisma.StringFilter<"Lead"> | string
   name?: Prisma.StringNullableFilter<"Lead"> | string | null
   email?: Prisma.StringNullableFilter<"Lead"> | string | null
   phone?: Prisma.StringNullableFilter<"Lead"> | string | null
@@ -1158,6 +1185,7 @@ export type LeadCreateWithoutStageInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1184,6 +1212,7 @@ export type LeadUncheckedCreateWithoutStageInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1236,6 +1265,7 @@ export type LeadCreateWithoutAssignment_historyInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1262,6 +1292,7 @@ export type LeadUncheckedCreateWithoutAssignment_historyInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1304,6 +1335,7 @@ export type LeadUpdateWithoutAssignment_historyInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1330,6 +1362,7 @@ export type LeadUncheckedUpdateWithoutAssignment_historyInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1356,6 +1389,7 @@ export type LeadCreateWithoutActivity_timelinesInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1382,6 +1416,7 @@ export type LeadUncheckedCreateWithoutActivity_timelinesInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1424,6 +1459,7 @@ export type LeadUpdateWithoutActivity_timelinesInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1450,6 +1486,7 @@ export type LeadUncheckedUpdateWithoutActivity_timelinesInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1476,6 +1513,7 @@ export type LeadCreateWithoutPaymentsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1502,6 +1540,7 @@ export type LeadUncheckedCreateWithoutPaymentsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1544,6 +1583,7 @@ export type LeadUpdateWithoutPaymentsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1570,6 +1610,7 @@ export type LeadUncheckedUpdateWithoutPaymentsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1596,6 +1637,7 @@ export type LeadCreateWithoutLeadGroupsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1622,6 +1664,7 @@ export type LeadUncheckedCreateWithoutLeadGroupsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1669,6 +1712,7 @@ export type LeadCreateWithoutEmailLogsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1695,6 +1739,7 @@ export type LeadUncheckedCreateWithoutEmailLogsInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1737,6 +1782,7 @@ export type LeadUpdateWithoutEmailLogsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1763,6 +1809,7 @@ export type LeadUncheckedUpdateWithoutEmailLogsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1789,6 +1836,7 @@ export type LeadCreateManyCreatorInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1810,6 +1858,7 @@ export type LeadCreateManyAssigneeInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1831,6 +1880,7 @@ export type LeadUpdateWithoutCreatorInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1857,6 +1907,7 @@ export type LeadUncheckedUpdateWithoutCreatorInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1883,6 +1934,7 @@ export type LeadUncheckedUpdateManyWithoutCreatorInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1904,6 +1956,7 @@ export type LeadUpdateWithoutAssigneeInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1930,6 +1983,7 @@ export type LeadUncheckedUpdateWithoutAssigneeInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1956,6 +2010,7 @@ export type LeadUncheckedUpdateManyWithoutAssigneeInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1977,6 +2032,7 @@ export type LeadCreateManyStageInput = {
   created_at?: Date | string
   updated_at?: Date | string
   deleted_at?: Date | string | null
+  rank?: string
   name?: string | null
   email?: string | null
   phone?: string | null
@@ -1998,6 +2054,7 @@ export type LeadUpdateWithoutStageInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2024,6 +2081,7 @@ export type LeadUncheckedUpdateWithoutStageInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2050,6 +2108,7 @@ export type LeadUncheckedUpdateManyWithoutStageInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2071,6 +2130,7 @@ export type LeadUpdateWithoutLeadGroupsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2097,6 +2157,7 @@ export type LeadUncheckedUpdateWithoutLeadGroupsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2123,6 +2184,7 @@ export type LeadUncheckedUpdateManyWithoutLeadGroupsInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rank?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2212,6 +2274,7 @@ export type LeadSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   created_at?: boolean
   updated_at?: boolean
   deleted_at?: boolean
+  rank?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -2243,6 +2306,7 @@ export type LeadSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   created_at?: boolean
   updated_at?: boolean
   deleted_at?: boolean
+  rank?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -2268,6 +2332,7 @@ export type LeadSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   created_at?: boolean
   updated_at?: boolean
   deleted_at?: boolean
+  rank?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -2293,6 +2358,7 @@ export type LeadSelectScalar = {
   created_at?: boolean
   updated_at?: boolean
   deleted_at?: boolean
+  rank?: boolean
   name?: boolean
   email?: boolean
   phone?: boolean
@@ -2310,7 +2376,7 @@ export type LeadSelectScalar = {
   assigned_to_id?: boolean
 }
 
-export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "name" | "email" | "phone" | "service" | "vehicle" | "source" | "deposit_status" | "priority" | "notes" | "deposit_amount" | "deposit_currency" | "attachments" | "stage_id" | "created_by_id" | "assigned_to_id", ExtArgs["result"]["lead"]>
+export type LeadOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "updated_at" | "deleted_at" | "rank" | "name" | "email" | "phone" | "service" | "vehicle" | "source" | "deposit_status" | "priority" | "notes" | "deposit_amount" | "deposit_currency" | "attachments" | "stage_id" | "created_by_id" | "assigned_to_id", ExtArgs["result"]["lead"]>
 export type LeadInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   stage?: boolean | Prisma.Lead$stageArgs<ExtArgs>
   activity_timelines?: boolean | Prisma.Lead$activity_timelinesArgs<ExtArgs>
@@ -2350,6 +2416,7 @@ export type $LeadPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     created_at: Date
     updated_at: Date
     deleted_at: Date | null
+    rank: string
     name: string | null
     email: string | null
     phone: string | null
@@ -2800,6 +2867,7 @@ export interface LeadFieldRefs {
   readonly created_at: Prisma.FieldRef<"Lead", 'DateTime'>
   readonly updated_at: Prisma.FieldRef<"Lead", 'DateTime'>
   readonly deleted_at: Prisma.FieldRef<"Lead", 'DateTime'>
+  readonly rank: Prisma.FieldRef<"Lead", 'String'>
   readonly name: Prisma.FieldRef<"Lead", 'String'>
   readonly email: Prisma.FieldRef<"Lead", 'String'>
   readonly phone: Prisma.FieldRef<"Lead", 'String'>

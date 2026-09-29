@@ -25,6 +25,7 @@ import { ExportLeadDto } from './dto/export-lead.dto';
 import { OnlyApiTags } from 'src/common/decorator/only-api-tag.decorator';
 import { UnassignLeadDto } from './dto/unassign-lead.dto';
 import { DeleteAttachmentDto } from './dto/delete-attachment.dto';
+import { MoveLeadDto } from './dto/move-lead.dto';
 
 
 
@@ -490,6 +491,29 @@ export class LeadController {
     return {
       success: true,
       message: 'Lead unassigned successfully',
+      data: result,
+    };
+  }
+
+
+  @HttpCode(HttpStatus.OK)
+  @Patch(':id/move')
+  @ApiOperation({ summary: 'Move or reorder a lead on the Kanban board' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lead moved/reordered successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden. You do not have permission to move leads.',
+  })
+  @RequirePermission('lead:update')
+  @LogActivity({ action: 'move', entity: 'lead' })
+  async moveLead(@Param('id') id: string, @Body() moveLeadDto: MoveLeadDto) {
+    const result = await this.leadService.moveLead(id, moveLeadDto);
+    return {
+      success: true,
+      message: 'Lead moved successfully',
       data: result,
     };
   }
