@@ -29,7 +29,7 @@ export class PermissionGuard implements CanActivate {
     const method = request.method;
 
     // Step 1: Check for full permission string first (Format 1)
-    const fullPermission = this.reflector.getAllAndOverride<string>(
+    const fullPermission = this.reflector.getAllAndOverride<string | string[]>(
       PERMISSION_KEY,
       [
         context.getHandler(),
@@ -38,7 +38,7 @@ export class PermissionGuard implements CanActivate {
     );
 
     // Step 2: Check for resource-based permission (Format 2)
-    const resource = this.reflector.getAllAndOverride<string>(
+    const resource = this.reflector.getAllAndOverride<string | string[]>(
       PERMISSION_RESOURCE_KEY,
       [
         context.getHandler(),
@@ -51,21 +51,20 @@ export class PermissionGuard implements CanActivate {
       return true;
     }
 
-    let requiredPermission: string;
+    let requiredPermissions: string[] = [];
 
-    // Determine the required permission
+    // Normalize to array and determine the required permissions
     if (fullPermission) {
-      // Format 1: Use the exact permission string
-      requiredPermission = fullPermission;
-    //   console.log(`🔍 Using full permission: ${requiredPermission}`);
+      // Format 1: Use the exact permission strings
+      requiredPermissions = Array.isArray(fullPermission) ? fullPermission : [fullPermission];
     } else if (resource) {
       // Format 2: Construct from resource + action
       const action = this.methodActionMap[method];
       if (!action) {
         throw new ForbiddenException(`Unsupported HTTP method: ${method}`);
       }
-      requiredPermission = `${resource}:${action}`;
-    //   console.log(`🔍 Constructed permission: ${requiredPermission} from resource: ${resource}, action: ${action}`);
+      const resources = Array.isArray(resource) ? resource : [resource];
+      requiredPermissions = resources.map(r => `${r}:${action}`);
     }
 
     // Extract user roles
@@ -158,20 +157,16 @@ export class PermissionGuard implements CanActivate {
     // console.log(`✅ User permissions: ${Array.from(flattenedPermissions).join(', ')}`);
     // console.log(`🎯 Required: ${requiredPermission}`);
 
-    // Check permission
-    if (!flattenedPermissions.has(requiredPermission)) {
-      // Special check: For 'staff:invite', also check if user has 'staff:create' (fallback)
-    //   if (requiredPermission === 'staff:invite' && flattenedPermissions.has('staff:create')) {
-    //     // console.log(`⚠️ User has staff:create, allowing staff:invite as fallback`);
-    //     return true;
-    //   }
-      
+    // Check permission (OR logic: allow if user has at least one of the required permissions)
+    const hasPermission = requiredPermissions.some(reqPerm => flattenedPermissions.has(reqPerm));
+
+    if (!hasPermission) {
       throw new ForbiddenException(
-        `Forbidden: Requires '${requiredPermission}' permission`
+        `Forbidden: Requires at least one of the following permissions: '${requiredPermissions.join(', ')}'`
       );
     }
 
-    // console.log(`✅ Access granted for ${requiredPermission}`);
+    // console.log(`✅ Access granted for ${requiredPermissions.join(', ')}`);
     return true;
   }
 }

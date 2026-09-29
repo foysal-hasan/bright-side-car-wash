@@ -4,17 +4,19 @@ export const PERMISSION_KEY = 'permission';
 export const PERMISSION_RESOURCE_KEY = 'permission_resource';
 
 /**
- * Supports two formats:
+ * Supports formats:
  * 1. @RequirePermission('staff:invite') - Full permission string
- * 2. @RequirePermission('staff') - Resource only (action derived from HTTP method)
+ * 2. @RequirePermission('member:read', 'dashboard:view') - Multiple permissions (OR logic)
+ * 3. @RequirePermission('staff') - Resource only (action derived from HTTP method)
+ * 4. @RequirePermission('staff', 'user') - Multiple resources with same action (OR logic)
  */
-export const RequirePermission = (permissionOrResource: string) => {
-  // Check if it contains ':' - it's a full permission string
-  if (permissionOrResource.includes(':')) {
-    // Format 1: Full permission string
-    return SetMetadata(PERMISSION_KEY, permissionOrResource);
+export const RequirePermission = (...permissionsOrResources: string[]) => {
+  // If any item contains ':', we treat the array as full permissions
+  const isFullPermission = permissionsOrResources.some(p => p.includes(':'));
+
+  if (isFullPermission) {
+    return SetMetadata(PERMISSION_KEY, permissionsOrResources);
   } else {
-    // Format 2: Resource only
-    return SetMetadata(PERMISSION_RESOURCE_KEY, permissionOrResource);
+    return SetMetadata(PERMISSION_RESOURCE_KEY, permissionsOrResources);
   }
 };
