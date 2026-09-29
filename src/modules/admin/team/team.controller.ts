@@ -24,11 +24,11 @@ export class TeamController {
   @ApiOperation({ summary: 'List of team members with basic filters' })
   @ApiResponse({ status: 200, description: 'Members retrieved successfully.' })
   @LogActivity({ action: 'read', entity: 'member' })
-  @RequirePermission('member:read')
+  @RequirePermission('member:read', 'lead:assign', 'lead:unassign')
   async list(@Query() query: MemberQueryDto) {
     const members = await this.teamService.listMembers(query);
     members?.data?.forEach(member => {
-      if(member?.avatar){
+      if (member?.avatar) {
         member.avatar = SojebStorage.url(appConfig().storageUrl.avatar + member.avatar,)
       }
     })
