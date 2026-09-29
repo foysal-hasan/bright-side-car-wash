@@ -14,6 +14,7 @@ export class MailProcessor extends WorkerHost {
     'sendOtpCodeToEmail',
     'sendVerificationLink',
     'sendBookingConfirmationEmail',
+    'sendLeadAssignmentEmail',
   ]);
 
   constructor(

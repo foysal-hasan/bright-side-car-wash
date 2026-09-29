@@ -10,10 +10,15 @@ import { ExportFormat, ExportLeadDto } from './dto/export-lead.dto';
 import { UnassignLeadDto } from './dto/unassign-lead.dto';
 import { NotificationProducer } from 'src/modules/notification/queue/notification.producer';
 import { NotificationPayload } from 'src/modules/notification/interfaces/notification-strategy.interface';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class LeadService {
-  constructor(private prisma: PrismaService, private readonly notification: NotificationProducer) { }
+  constructor(
+    private prisma: PrismaService,
+    private readonly notification: NotificationProducer,
+    private readonly mailService: MailService,
+  ) { }
   async create(createLeadDto: CreateLeadDto) {
     // check if the stage_id exists in the stage table
     const stage = await this.prisma.stage.findFirst({
@@ -1204,6 +1209,15 @@ export class LeadService {
           },
         };
         await this.notification.trigger(NotificationChannel.IN_APP, payload);
+
+        if (updatedLead.assignee?.email) {
+          await this.mailService.sendLeadAssignmentEmail({
+            to: updatedLead.assignee.email,
+            assigneeName: updatedLead.assignee.first_name,
+            leadName: updatedLead.name,
+            leadId: id,
+          });
+        }
       }
       return updatedLead;
     });

@@ -143,6 +143,35 @@ export class MailService {
     }
   }
 
+  async sendLeadAssignmentEmail(params: {
+    to: string;
+    assigneeName: string;
+    leadName: string;
+    leadId: string;
+  }) {
+    try {
+      const from = `${appConfig().app.name} <${appConfig().mail.from}>`;
+      const subject = `New Lead Assigned - ${appConfig().app.name}`;
+
+      await this.queue.add('sendLeadAssignmentEmail', {
+        to: params.to,
+        from,
+        subject,
+        template: 'lead-assignment',
+        context: {
+          assigneeName: params.assigneeName,
+          leadName: params.leadName,
+          leadId: params.leadId,
+          appName: appConfig().app.name,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to queue lead assignment email to ${params.to}: ${error instanceof Error ? error.message : error}`,
+      );
+    }
+  }
+
   async sendSmsOtpCode(to: string, otp: string) {
     try {
       await this.queue.add('sendSmsOtpCode', {

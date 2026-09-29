@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>New Lead Assigned</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <h2>Hello <%= assigneeName %>,</h2>
+    
+    <p>A new lead has been assigned to you.</p>
+    
+    <div style="background-color: #f9f9f9; border-left: 4px solid #007bff; padding: 15px; margin: 20px 0;">
+        <p style="margin: 0;"><strong>Lead Name:</strong> <%= leadName %></p>
+    </div>
+    
+    <p>Please log in to the admin panel to view the details and contact the lead.</p>
+    
+    <br>
+    <p>Best regards,<br>
+    The <%= appName %> Team</p>
+</body>
+</html>
